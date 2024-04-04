@@ -1,0 +1,66 @@
+Terra:
+  platform: modrinth
+  modrinth-project-slug: terra
+ExcellentEnchant:
+  platform: spigot
+  spigot-resource-id: 61693
+ForcePack:
+  platform: spigot
+  spigot-resource-id: 45439
+HuskHomes:
+  platform: spigot
+  spigot-resource-id: 83767
+TabTPS:
+  platform: modrinth
+  modrinth-project-slug: tabtps
+VillagerMarket:
+  platform: spigot
+  spigot-resource-id: 82965
+Tweakin:
+  platform: spigot
+  spigot-resource-id: 93444
+SimplePortals:
+  platform: spigot
+  spigot-resource-id: 56772
+Multiverse-Core:
+  platform: spigot
+  spigot-resource-id: 390
+Skulls:
+  platform: spigot
+  spigot-resource-id: 90098
+Vault:
+  platform: spigot
+  spigot-resource-id: 34315
+VentureChat:
+  platform: spigot
+  spigot-resource-id: 771
+SunLight:
+  platform: spigot
+  spigot-resource-id: 67733
+SimpleVoiceChat:
+  platform: modrinth
+  modrinth-project-slug: simple-voice-chat
+commandtimer:
+  platform: github
+  github-repo: titivermeesch/CommandTimer
+Chunky:
+  platform: modrinth
+  modrinth-project-slug: chunky
+ChunkyBorder:
+  platform: modrinth
+  modrinth-project-slug: chunkyborder
+WorldEdit:
+  platform: modrinth
+  modrinth-project-slug: worldedit
+Dynmap:
+  platform: modrinth
+  modrinth-project-slug: dynmap
+BlueMap:
+  platform: modrinth
+  modrinth-project-slug: bluemap
+squaremap:
+  platform: modrinth
+  modrinth-project-slug: squaremap
+Pl3xMap:
+  platform: modrinth
+  modrinth-project-slug: pl3xmap

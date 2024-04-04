@@ -1,0 +1,16 @@
+name: PluginUpdater
+version: '${version}'
+main: me.oak.pluginupdater.PluginUpdater
+api-version: '1.18'
+modrinth-project-slug: "plugin-updater"
+commands:
+  pluginupdater:
+    description: PluginUpdater Main Command
+    usage: /pluginupdater
+    aliases:
+      - updater
+  pluginupdates:
+    description: Check for plugin updates
+    usage: /pluginupdates
+    aliases:
+      - updates

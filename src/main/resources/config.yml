@@ -1,0 +1,19 @@
+# Whether to check for updates on server startup
+check-updates-on-start: true
+
+plugins:
+  PluginUpdater:
+    platform: modrinth
+    # A project slug is a plugin's identifier which can be found at the end of a Modrinth plugin link
+    modrinth-project-slug: "plugin-updater"
+    # Some projects post all beta versions on Modrinth - disable this setting if you want to receive updates for all versions including beta versions
+    featured-only: true
+  ExamplePlugin:
+    enabled: false
+
+messages:
+  unchecked-color: "&8"
+  outdated-color: "&#ff6969"
+  update-prepared-color: "&#ffda54"
+  latest-version-color: "&#b7faa2"
+  updates-available: "&#e0c01b%amount% &#ffe27aupdates are available, type &#e0c01b'%updates_command%' &#ffe27afor more information!"
