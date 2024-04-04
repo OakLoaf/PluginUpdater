@@ -23,17 +23,22 @@ public class PluginUpdaterCommand implements CommandExecutor, TabCompleter {
             case 1 -> {
                 switch (args[0].toLowerCase()) {
                     case "update" -> {
-                        // TODO: Message
-                        ChatColorHandler.sendMessage(sender, "&cIncorrect formatting");
+                        ChatColorHandler.sendMessage(sender, "&#ff6969Incorrect formatting, try /updater update <plugin>");
                         return true;
                     }
                     case "updates" -> {
                         return true;
                     }
                     case "reload" -> {
-                        PluginUpdater.getInstance().getConfigManager().reloadConfig();
-                        // TODO: Message
-                        ChatColorHandler.sendMessage(sender, "&aReloaded PluginUpdater");
+                        try {
+                            PluginUpdater.getInstance().getConfigManager().reloadConfig();
+                        } catch (Throwable e) {
+                            ChatColorHandler.sendMessage(sender, "&#ff6969Something went wrong whilst reloading the plugin, check the console for errors");
+                            e.printStackTrace();
+                            return true;
+                        }
+
+                        ChatColorHandler.sendMessage(sender, "&#b7faa2Successfully reloaded PluginUpdater");
                         return true;
                     }
                 }
@@ -53,9 +58,9 @@ public class PluginUpdaterCommand implements CommandExecutor, TabCompleter {
 
                             int finalCount = updateCount.get();
                             if (finalCount == 0) {
-                                ChatColorHandler.sendMessage(sender, "&cNo updates found");
+                                ChatColorHandler.sendMessage(sender, "&#ff6969No updates found");
                             } else {
-                                ChatColorHandler.sendMessage(sender, "&aSuccessfully queued an update for " + finalCount + " plugins");
+                                ChatColorHandler.sendMessage(sender, "&#b7faa2Successfully queued an update for " + finalCount + " plugins");
                             }
 
                             return true;
@@ -63,21 +68,17 @@ public class PluginUpdaterCommand implements CommandExecutor, TabCompleter {
 
                         PluginData pluginData = PluginUpdater.getInstance().getConfigManager().getPluginData(args[1]);
                         if (pluginData == null) {
-                            // TODO: Message
-                            ChatColorHandler.sendMessage(sender, "&cInvalid plugin");
+                            ChatColorHandler.sendMessage(sender, "&#ff6969That plugin is not registered");
                         }
                         else if (pluginData.isAlreadyDownloaded()) {
-                            // TODO: Message
-                            ChatColorHandler.sendMessage(sender, "&eYou have already downloaded an update for this plugin - please restart your server");
+                            ChatColorHandler.sendMessage(sender, "&#ffda54You have already downloaded an update for this plugin - please restart your server");
                         }
                         else if (!pluginData.isUpdateAvailable()) {
-                            // TODO: Message
-                            ChatColorHandler.sendMessage(sender, "&cNo update has been found for this plugin");
+                            ChatColorHandler.sendMessage(sender, "&#ff6969No update has been found for this plugin");
                         }
                         else {
                             PluginUpdater.getInstance().getUpdateHandler().queueDownload(pluginData.getPluginName());
-                            // TODO: Message
-                            ChatColorHandler.sendMessage(sender, "&aSuccessfully queued an update for '" + pluginData.getPluginName() + "'");
+                            ChatColorHandler.sendMessage(sender, "&#b7faa2Successfully queued an update for '" + pluginData.getPluginName() + "'");
                         }
 
                         return true;

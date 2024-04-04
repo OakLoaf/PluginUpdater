@@ -3,6 +3,7 @@ package me.oak.pluginupdater.config;
 import me.oak.pluginupdater.PluginUpdater;
 import me.oak.pluginupdater.updater.PluginData;
 import me.oak.pluginupdater.updater.platform.modrinth.ModrinthPluginData;
+import me.oak.pluginupdater.updater.platform.spigot.SpigotPluginData;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -72,10 +73,11 @@ public class ConfigManager {
 
                 if (pluginYml.contains("modrinth-project-slug")) {
                     String modrinthSlug = pluginYml.getString("modrinth-slug");
-                    addPlugin(pluginName, new ModrinthPluginData(plugin1.getName(), plugin1.getDescription().getVersion(), modrinthSlug, true));
+                    addPlugin(pluginName, new ModrinthPluginData(pluginName, plugin1.getDescription().getVersion(), modrinthSlug, true));
                 }
                 else if (pluginYml.contains("spigot-resource-id")) {
                     String spigotResourceId = pluginYml.getString("spigot-resource-id");
+                    addPlugin(pluginName, new SpigotPluginData(pluginName, plugin1.getDescription().getVersion(), spigotResourceId));
                 }
                 else if (commonPluginsYml != null && commonPluginsYml.contains(pluginName)) {
                     ConfigurationSection pluginSection = commonPluginsYml.getConfigurationSection(pluginName);
@@ -98,7 +100,6 @@ public class ConfigManager {
         }
 
 //        setMessage("updates-available", config.getString("messages.updates-available", "&#e0c01b%amount% &#ffe27aupdates are available, type &#e0c01b'%updates_command%' &#ffe27afor more information!"));
-//        setMessage("insufficient-permissions", config.getString("messages.insufficient-permissions", "&#ff6969You don't have the sufficient permissions for this command"));
     }
 
     public boolean shouldCheckOnStartup() {
