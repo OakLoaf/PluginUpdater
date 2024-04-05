@@ -10,6 +10,9 @@ ChunkyBorder:
 commandtimer:
   platform: github
   github-repo: titivermeesch/CommandTimer
+CommandPanels:
+  platform: spigot
+  spigot-resource-id: 67788
 CoreProtect:
   platform: modrinth
   modrinth-project-slug: coreprotect
@@ -19,6 +22,9 @@ DiscordSRV:
 Dynmap:
   platform: modrinth
   modrinth-project-slug: dynmap
+EpicRename:
+  platform: spigot
+  spigot-resource-id: 4341
 ExcellentEnchants:
   platform: spigot
   spigot-resource-id: 61693
