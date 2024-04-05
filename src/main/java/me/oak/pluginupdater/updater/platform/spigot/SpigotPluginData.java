@@ -19,7 +19,7 @@ public class SpigotPluginData extends PluginData {
      * @param spigotResourceId Your Spigot Resource Id
      */
     public SpigotPluginData(String pluginName, String currentVersion, String spigotResourceId) {
-        super(pluginName, "modrinth", currentVersion);
+        super(pluginName, "spigot", currentVersion);
         this.spigotResourceId = spigotResourceId;
     }
 
