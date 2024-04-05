@@ -51,6 +51,7 @@ public class PluginUpdaterCommand implements CommandExecutor, TabCompleter {
             }
             case 2 -> {
                 if (args[0].equalsIgnoreCase("update")) {
+                    // TODO: Add warnings to major version changes, add confirm command, show version changes list before asking confirmation
                     if (sender.hasPermission("pluginupdater.downloadupdates")) {
                         if (args[1].equalsIgnoreCase("all")) {
                             UpdateHandler updateHandler = PluginUpdater.getInstance().getUpdateHandler();
