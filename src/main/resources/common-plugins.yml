@@ -19,12 +19,36 @@ ExcellentEnchants:
 ForcePack:
   platform: spigot
   spigot-resource-id: 45439
+GSit:
+  platform: spigot
+  spigot-resource-id: 62325
 HuskHomes:
   platform: spigot
   spigot-resource-id: 83767
 Multiverse-Core:
+  platform: modrinth
+  modrinth-project-slug: multiverse-core
+Multiverse-Inventories:
+  platform: modrinth
+  modrinth-project-slug: multiverse-inventories
+Multiverse-NetherPortals:
+  platform: modrinth
+  modrinth-project-slug: multiverse-netherportals
+Multiverse-Portals:
+  platform: modrinth
+  modrinth-project-slug: multiverse-portals
+Multiverse-SignPortals:
+  platform: modrinth
+  modrinth-project-slug: multiverse-signportals
+NametagEdit:
   platform: spigot
-  spigot-resource-id: 390
+  spigot-resource-id: 3836
+packetevents:
+  platform: modrinth
+  modrinth-project-slug: packetevents
+PlaceholderAPI:
+  platform: spigot
+  spigot-resource-id: 6245
 Pl3xMap:
   platform: modrinth
   modrinth-project-slug: pl3xmap
@@ -34,6 +58,9 @@ SimplePortals:
 SimpleVoiceChat:
   platform: modrinth
   modrinth-project-slug: simple-voice-chat
+SkinsRestorer:
+  platform: spigot
+  spigot-resource-id: 2124
 Skulls:
   platform: spigot
   spigot-resource-id: 90098
@@ -58,6 +85,15 @@ Vault:
 VentureChat:
   platform: spigot
   spigot-resource-id: 771
+ViaBackwards:
+  platform: modrinth
+  modrinth-project-slug: viabackwards
+ViaRewind:
+  platform: modrinth
+  modrinth-project-slug: viarewind
+ViaVersion:
+  platform: modrinth
+  modrinth-project-slug: viaversion
 VillagerMarket:
   platform: spigot
   spigot-resource-id: 82965
