@@ -26,9 +26,6 @@ public class PluginUpdaterCommand implements CommandExecutor, TabCompleter {
                         ChatColorHandler.sendMessage(sender, "&#ff6969Incorrect formatting, try /updater update <plugin>");
                         return true;
                     }
-                    case "updates" -> {
-                        return true;
-                    }
                     case "reload" -> {
                         try {
                             PluginUpdater.getInstance().getConfigManager().reloadConfig();
@@ -113,7 +110,6 @@ public class PluginUpdaterCommand implements CommandExecutor, TabCompleter {
                 }
                 if (sender.hasPermission("pluginupdater.checkupdates")) {
                     tabComplete.add("runchecks");
-                    tabComplete.add("updates");
                 }
                 if (sender.hasPermission("pluginupdater.reload")) {
                     tabComplete.add("reload");
