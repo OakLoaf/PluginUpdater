@@ -10,18 +10,30 @@ ChunkyBorder:
 commandtimer:
   platform: github
   github-repo: titivermeesch/CommandTimer
+CoreProtect:
+  platform: modrinth
+  modrinth-project-slug: coreprotect
+DiscordSRV:
+  platform: modrinth
+  modrinth-project-slug: discordsrv
 Dynmap:
   platform: modrinth
   modrinth-project-slug: dynmap
 ExcellentEnchants:
   platform: spigot
   spigot-resource-id: 61693
+FastAsyncWorldEdit:
+  platform: modrinth
+  modrinth-project-slug: fastasyncworldedit
 ForcePack:
   platform: spigot
   spigot-resource-id: 45439
 GSit:
   platform: spigot
   spigot-resource-id: 62325
+HuskChat:
+  platform: spigot
+  spigot-resource-id: 94496
 HuskHomes:
   platform: spigot
   spigot-resource-id: 83767
@@ -49,6 +61,9 @@ packetevents:
 PlaceholderAPI:
   platform: spigot
   spigot-resource-id: 6245
+PlayerParticles:
+  platform: spigot
+  spigot-resource-id: 40261
 Pl3xMap:
   platform: modrinth
   modrinth-project-slug: pl3xmap
