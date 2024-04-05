@@ -1,6 +1,8 @@
 package me.oak.pluginupdater.updater.platform;
 
 import com.mojang.datafixers.util.Pair;
+import me.oak.pluginupdater.updater.platform.github.GithubPluginData;
+import me.oak.pluginupdater.updater.platform.github.GithubVersionChecker;
 import me.oak.pluginupdater.updater.platform.modrinth.ModrinthPluginData;
 import me.oak.pluginupdater.updater.PluginData;
 import me.oak.pluginupdater.updater.VersionChecker;
@@ -19,6 +21,7 @@ public class PlatformRegistry {
     private final HashMap<String, Pair<Callable<VersionChecker>, PluginDataConstructor>> platforms = new HashMap<>();
 
     public PlatformRegistry() {
+        register("github", GithubVersionChecker::new, GithubPluginData::new);
         register("modrinth", ModrinthVersionChecker::new, ModrinthPluginData::new);
         register("spigot", SpigotVersionChecker::new, SpigotPluginData::new);
     }
