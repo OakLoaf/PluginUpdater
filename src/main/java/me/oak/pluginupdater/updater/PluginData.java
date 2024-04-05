@@ -4,10 +4,11 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.regex.Matcher;
+
 public abstract class PluginData {
     private final String pluginName;
     private final String platform;
-    private String downloadUrl;
     private final String currentVersion;
     private String latestVersion;
 
@@ -21,13 +22,22 @@ public abstract class PluginData {
         this.platform = platform;
 
         String pluginVersion = plugin.getDescription().getVersion();
-        this.currentVersion = pluginVersion.contains("-") ? pluginVersion.split("-")[0] : pluginVersion;
+        Matcher matcher = VersionChecker.VERSION_PATTERN.matcher(pluginVersion);
+        if (!matcher.find()) {
+            throw new IllegalStateException("Could not find valid version format for '" + pluginName + "'");
+        }
+        this.currentVersion = matcher.group();
     }
 
     public PluginData(String pluginName, String platform, String currentVersion) {
         this.pluginName = pluginName;
         this.platform = platform;
-        this.currentVersion = currentVersion;
+
+        Matcher matcher = VersionChecker.VERSION_PATTERN.matcher(currentVersion);
+        if (!matcher.find()) {
+            throw new IllegalStateException("Could not find valid version format for '" + pluginName + "'");
+        }
+        this.currentVersion = matcher.group();
     }
 
     public String getPluginName() {
@@ -36,14 +46,6 @@ public abstract class PluginData {
 
     public String getPlatform() {
         return platform;
-    }
-
-    public String getDownloadUrl() {
-        return downloadUrl;
-    }
-
-    public void setDownloadUrl(String downloadUrl) {
-        this.downloadUrl = downloadUrl;
     }
 
     public String getCurrentVersion() {

@@ -41,6 +41,15 @@ public class PluginUpdaterCommand implements CommandExecutor, TabCompleter {
                         ChatColorHandler.sendMessage(sender, "&#b7faa2Successfully reloaded PluginUpdater");
                         return true;
                     }
+                    case "runchecks" -> {
+                        AtomicInteger updateCount = new AtomicInteger(0);
+                        PluginUpdater.getInstance().getConfigManager().getPlugins().forEach(pluginName -> {
+                            PluginUpdater.getInstance().getUpdateHandler().queueUpdateCheck(pluginName);
+                            updateCount.incrementAndGet();
+                        });
+
+                        ChatColorHandler.sendMessage(sender, "&#b7faa2Successfully queued checks for " + updateCount.get() + " plugins");
+                    }
                 }
             }
             case 2 -> {
@@ -103,6 +112,7 @@ public class PluginUpdaterCommand implements CommandExecutor, TabCompleter {
                     tabComplete.add("update");
                 }
                 if (sender.hasPermission("pluginupdater.checkupdates")) {
+                    tabComplete.add("runchecks");
                     tabComplete.add("updates");
                 }
                 if (sender.hasPermission("pluginupdater.reload")) {

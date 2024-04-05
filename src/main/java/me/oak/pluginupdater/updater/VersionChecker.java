@@ -1,9 +1,13 @@
 package me.oak.pluginupdater.updater;
 
 import java.io.IOException;
+import java.util.regex.Pattern;
 
 public interface VersionChecker {
-    boolean hasUpdate(PluginData pluginData) throws IOException;
+    Pattern VERSION_PATTERN = Pattern.compile("(\\d+(\\.\\d+)+)");
+
+    String getLatestVersion(PluginData pluginData) throws IOException;
+    String getDownloadUrl(PluginData pluginData) throws IOException;
 
     static boolean isLatestVersion(String currentVersionRaw, String newVersionRaw) {
         String[] currVersionParts = currentVersionRaw.split("\\.");

@@ -14,15 +14,12 @@ import java.net.URL;
 public class SpigotUpdater implements VersionChecker {
 
     @Override
-    public boolean hasUpdate(PluginData pluginData) throws IOException {
-        if (!pluginData.isEnabled() || !(pluginData instanceof SpigotPluginData spigotData)) {
-            return false;
+    public String getLatestVersion(PluginData pluginData) throws IOException {
+        if (!(pluginData instanceof SpigotPluginData spigotData)) {
+            return null;
         }
 
-        String currentVersion = pluginData.getCurrentVersion();
-        String spigotResourceId = spigotData.getSpigotResourceId();
-
-        URL url = new URL("https://api.spiget.org/v2/resources/" + spigotResourceId + "/versions/latest");
+        URL url = new URL("https://api.spiget.org/v2/resources/" + spigotData.getSpigotResourceId() + "/versions/latest");
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.addRequestProperty("User-Agent", "PluginUpdater/" + PluginUpdater.getInstance().getDescription().getVersion());
 
@@ -44,13 +41,11 @@ public class SpigotUpdater implements VersionChecker {
             throw new IllegalStateException("Latest version is invalid!");
         }
 
-        if (!VersionChecker.isLatestVersion(currentVersion, latestVersion)) {
-            pluginData.setLatestVersion(latestVersion);
-            pluginData.setDownloadUrl("https://api.spiget.org/v2/resources/" + spigotResourceId + "/download");
-            pluginData.setUpdateAvailable(true);
-            return true;
-        }
+        return latestVersion;
+    }
 
-        return false;
+    @Override
+    public String getDownloadUrl(PluginData pluginData) {
+        return pluginData instanceof SpigotPluginData spigotData ? "https://api.spiget.org/v2/resources/" + spigotData.getSpigotResourceId() + "/download" : null;
     }
 }

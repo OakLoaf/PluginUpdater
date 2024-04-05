@@ -16,20 +16,17 @@ import java.net.URL;
 public class ModrinthUpdater implements VersionChecker {
 
     @Override
-    public boolean hasUpdate(PluginData pluginData) throws IOException {
-        if (!pluginData.isEnabled() || !(pluginData instanceof ModrinthPluginData modrinthData)) {
-            return false;
+    public String getLatestVersion(PluginData pluginData) throws IOException {
+        if (!(pluginData instanceof ModrinthPluginData modrinthData)) {
+            return null;
         }
 
-        String currentVersion = pluginData.getCurrentVersion();
-        String modrinthProjectSlug = modrinthData.getModrinthProjectSlug();
-
-        URL url = new URL("https://api.modrinth.com/v2/project/" + modrinthProjectSlug + "/version" + (modrinthData.includeFeaturedOnly() ? "?featured=true" : ""));
+        URL url = new URL("https://api.modrinth.com/v2/project/" + modrinthData.getModrinthProjectSlug() + "/version" + (modrinthData.includeFeaturedOnly() ? "?featured=true" : ""));
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.addRequestProperty("User-Agent", "PluginUpdater/" + PluginUpdater.getInstance().getDescription().getVersion());
 
         if (connection.getResponseCode() != 200) {
-            throw new IllegalStateException("Received invalid response code (" + connection.getResponseCode() + ") whilst checking '" + pluginData.getPluginName() + "' for updates.");
+            throw new IllegalStateException("Received invalid response code (" + connection.getResponseCode() + ") whilst getting the latest version for '" + pluginData.getPluginName() + "'.");
         }
 
         InputStream inputStream = connection.getInputStream();
@@ -47,13 +44,30 @@ public class ModrinthUpdater implements VersionChecker {
             throw new IllegalStateException("Latest version is invalid!");
         }
 
-        if (!VersionChecker.isLatestVersion(currentVersion, latestVersion)) {
-            pluginData.setLatestVersion(latestVersion);
-            pluginData.setDownloadUrl(currVersionJson.get("files").getAsJsonArray().get(0).getAsJsonObject().get("url").getAsString());
-            pluginData.setUpdateAvailable(true);
-            return true;
+        return latestVersion;
+    }
+
+    @Override
+    public String getDownloadUrl(PluginData pluginData) throws IOException {
+        if (!(pluginData instanceof ModrinthPluginData modrinthData)) {
+            return null;
         }
 
-        return false;
+        String modrinthProjectSlug = modrinthData.getModrinthProjectSlug();
+
+        URL url = new URL("https://api.modrinth.com/v2/project/" + modrinthProjectSlug + "/version" + (modrinthData.includeFeaturedOnly() ? "?featured=true" : ""));
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        connection.addRequestProperty("User-Agent", "PluginUpdater/" + PluginUpdater.getInstance().getDescription().getVersion());
+
+        if (connection.getResponseCode() != 200) {
+            throw new IllegalStateException("Received invalid response code (" + connection.getResponseCode() + ") whilst getting the download url for '" + pluginData.getPluginName() + "'.");
+        }
+
+        InputStream inputStream = connection.getInputStream();
+        InputStreamReader reader = new InputStreamReader(inputStream);
+
+        JsonArray versionsJson = JsonParser.parseReader(reader).getAsJsonArray();
+        JsonObject currVersionJson = versionsJson.get(0).getAsJsonObject();
+        return currVersionJson.get("files").getAsJsonArray().get(0).getAsJsonObject().get("url").getAsString();
     }
 }

@@ -9,6 +9,7 @@ import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 import java.util.concurrent.*;
+import java.util.regex.Matcher;
 
 public class UpdateHandler {
     private final ScheduledExecutorService threads = Executors.newScheduledThreadPool(1);
@@ -59,7 +60,21 @@ public class UpdateHandler {
                 }
 
                 try {
-                    processingData.getFuture().complete(versionChecker.hasUpdate(pluginData));
+                    String currentVersion = pluginData.getCurrentVersion();
+                    Matcher matcher = VersionChecker.VERSION_PATTERN.matcher(versionChecker.getLatestVersion(pluginData));
+                    if (!matcher.find()) {
+                        return;
+                    }
+                    String latestVersion = matcher.group();
+
+                    if (!VersionChecker.isLatestVersion(currentVersion, latestVersion)) {
+                        pluginData.setLatestVersion(latestVersion);
+                        pluginData.setUpdateAvailable(true);
+                        processingData.getFuture().complete(true);
+                    } else {
+                        processingData.getFuture().complete(false);
+                    }
+
                     pluginData.setCheckRan(true);
                 } catch (Exception e) {
                     if (e instanceof IllegalStateException) {
@@ -71,19 +86,25 @@ public class UpdateHandler {
             }
             else if (processingData.getState().equals(ProcessingData.State.DOWNLOAD)) {
                 PluginData pluginData = processingData.getPluginData();
+                String platform = pluginData.getPlatform();
                 if (!pluginData.isEnabled() || !pluginData.isUpdateAvailable() || pluginData.isAlreadyDownloaded()) {
                     return;
                 }
 
-                String pluginName = pluginData.getPluginName();
-                String downloadUrl = pluginData.getDownloadUrl();
-                String latestVersion = pluginData.getLatestVersion();
-
-                if (downloadUrl == null) {
+                VersionChecker versionChecker = PluginUpdater.getInstance().getUpdaterRegistry().getUpdater(platform);
+                if (versionChecker == null) {
                     return;
                 }
 
+                String pluginName = pluginData.getPluginName();
+                String latestVersion = pluginData.getLatestVersion();
+
                 try {
+                    String downloadUrl = versionChecker.getDownloadUrl(pluginData);
+                    if (downloadUrl == null) {
+                        return;
+                    }
+
                     URL url = new URL(downloadUrl);
                     HttpURLConnection connection = (HttpURLConnection) url.openConnection();
                     connection.addRequestProperty("User-Agent", "PluginUpdater/" + PluginUpdater.getInstance().getDescription().getVersion());
