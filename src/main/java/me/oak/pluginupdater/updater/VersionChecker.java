@@ -1,6 +1,15 @@
 package me.oak.pluginupdater.updater;
 
+import me.oak.pluginupdater.PluginUpdater;
+
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.nio.channels.Channels;
+import java.nio.channels.ReadableByteChannel;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public interface VersionChecker {
@@ -8,6 +17,53 @@ public interface VersionChecker {
 
     String getLatestVersion(PluginData pluginData) throws IOException;
     String getDownloadUrl(PluginData pluginData) throws IOException;
+
+    default boolean isUpdateAvailable(PluginData pluginData) throws IOException {
+        String currentVersion = pluginData.getCurrentVersion();
+        Matcher matcher = VersionChecker.VERSION_PATTERN.matcher(getLatestVersion(pluginData));
+        if (!matcher.find()) {
+            return false;
+        }
+        String latestVersion = matcher.group();
+
+        pluginData.setCheckRan(true);
+        if (!VersionChecker.isLatestVersion(currentVersion, latestVersion)) {
+            pluginData.setLatestVersion(latestVersion);
+            pluginData.setUpdateAvailable(true);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    default boolean download(PluginData pluginData) throws IOException {
+        String pluginName = pluginData.getPluginName();
+        String latestVersion = pluginData.getLatestVersion();
+        String downloadUrl = getDownloadUrl(pluginData);
+        if (downloadUrl == null) {
+            return false;
+        }
+
+        URL url = new URL(downloadUrl);
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        connection.addRequestProperty("User-Agent", "PluginUpdater/" + PluginUpdater.getInstance().getDescription().getVersion());
+        connection.setInstanceFollowRedirects(true);
+        HttpURLConnection.setFollowRedirects(true);
+
+        if (connection.getResponseCode() != 200) {
+            throw new IllegalStateException("Response code was " + connection.getResponseCode());
+        }
+
+        ReadableByteChannel rbc = Channels.newChannel(connection.getInputStream());
+        String fileName = pluginName + "-" + latestVersion + ".jar";
+        File out = new File(PluginUpdater.getInstance().getUpdateFolder(), fileName);
+        PluginUpdater.getInstance().getLogger().info("Saving '" + fileName + "' to '" + out.getAbsolutePath() + "'");
+        FileOutputStream fos = new FileOutputStream(out);
+        fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
+        fos.close();
+
+        return true;
+    }
 
     static boolean isLatestVersion(String currentVersionRaw, String newVersionRaw) {
         String[] currVersionParts = currentVersionRaw.split("\\.");

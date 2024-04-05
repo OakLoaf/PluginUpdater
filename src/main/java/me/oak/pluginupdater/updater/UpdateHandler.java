@@ -2,14 +2,7 @@ package me.oak.pluginupdater.updater;
 
 import me.oak.pluginupdater.PluginUpdater;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.nio.channels.Channels;
-import java.nio.channels.ReadableByteChannel;
 import java.util.concurrent.*;
-import java.util.regex.Matcher;
 
 public class UpdateHandler {
     private final ScheduledExecutorService threads = Executors.newScheduledThreadPool(1);
@@ -56,25 +49,12 @@ public class UpdateHandler {
 
                 VersionChecker versionChecker = PluginUpdater.getInstance().getPlatformRegistry().getVersionChecker(platform);
                 if (versionChecker == null) {
+                    processingData.getFuture().complete(false);
                     return;
                 }
 
                 try {
-                    String currentVersion = pluginData.getCurrentVersion();
-                    Matcher matcher = VersionChecker.VERSION_PATTERN.matcher(versionChecker.getLatestVersion(pluginData));
-                    if (!matcher.find()) {
-                        return;
-                    }
-                    String latestVersion = matcher.group();
-
-                    if (!VersionChecker.isLatestVersion(currentVersion, latestVersion)) {
-                        pluginData.setLatestVersion(latestVersion);
-                        pluginData.setUpdateAvailable(true);
-                        processingData.getFuture().complete(true);
-                    } else {
-                        processingData.getFuture().complete(false);
-                    }
-
+                    processingData.getFuture().complete(versionChecker.isUpdateAvailable(pluginData));
                     pluginData.setCheckRan(true);
                 } catch (Exception e) {
                     if (e instanceof IllegalStateException) {
@@ -88,44 +68,24 @@ public class UpdateHandler {
                 PluginData pluginData = processingData.getPluginData();
                 String platform = pluginData.getPlatform();
                 if (!pluginData.isEnabled() || !pluginData.isUpdateAvailable() || pluginData.isAlreadyDownloaded()) {
+                    processingData.getFuture().complete(false);
                     return;
                 }
 
                 VersionChecker versionChecker = PluginUpdater.getInstance().getPlatformRegistry().getVersionChecker(platform);
                 if (versionChecker == null) {
+                    processingData.getFuture().complete(false);
                     return;
                 }
 
-                String pluginName = pluginData.getPluginName();
-                String latestVersion = pluginData.getLatestVersion();
-
                 try {
-                    String downloadUrl = versionChecker.getDownloadUrl(pluginData);
-                    if (downloadUrl == null) {
-                        return;
+                    if (versionChecker.download(pluginData)) {
+                        pluginData.setUpdateAvailable(false);
+                        pluginData.setAlreadyDownloaded(true);
+                        processingData.getFuture().complete(true);
+                    } else {
+                        processingData.getFuture().complete(false);
                     }
-
-                    URL url = new URL(downloadUrl);
-                    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-                    connection.addRequestProperty("User-Agent", "PluginUpdater/" + PluginUpdater.getInstance().getDescription().getVersion());
-                    connection.setInstanceFollowRedirects(true);
-                    HttpURLConnection.setFollowRedirects(true);
-
-                    if (connection.getResponseCode() != 200) {
-                        throw new IllegalStateException("Response code was " + connection.getResponseCode());
-                    }
-
-                    ReadableByteChannel rbc = Channels.newChannel(connection.getInputStream());
-                    String fileName = pluginName + "-" + latestVersion + ".jar";
-                    File out = new File(PluginUpdater.getInstance().getUpdateFolder(), fileName);
-                    PluginUpdater.getInstance().getLogger().info("Saving '" + fileName + "' to '" + out.getAbsolutePath() + "'");
-                    FileOutputStream fos = new FileOutputStream(out);
-                    fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
-                    fos.close();
-
-                    pluginData.setUpdateAvailable(false);
-                    pluginData.setAlreadyDownloaded(true);
-                    processingData.getFuture().complete(true);
                 } catch (Exception e) {
                     processingData.getFuture().completeExceptionally(e);
                 }
