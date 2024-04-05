@@ -11,7 +11,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-public class SpigotUpdater implements VersionChecker {
+public class SpigotVersionChecker implements VersionChecker {
 
     @Override
     public String getLatestVersion(PluginData pluginData) throws IOException {

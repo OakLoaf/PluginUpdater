@@ -13,7 +13,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-public class ModrinthUpdater implements VersionChecker {
+public class ModrinthVersionChecker implements VersionChecker {
 
     @Override
     public String getLatestVersion(PluginData pluginData) throws IOException {

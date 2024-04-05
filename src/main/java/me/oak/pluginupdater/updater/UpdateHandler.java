@@ -54,7 +54,7 @@ public class UpdateHandler {
                 PluginData pluginData = processingData.getPluginData();
                 String platform = pluginData.getPlatform();
 
-                VersionChecker versionChecker = PluginUpdater.getInstance().getPlatformRegistry().getUpdater(platform);
+                VersionChecker versionChecker = PluginUpdater.getInstance().getPlatformRegistry().getVersionChecker(platform);
                 if (versionChecker == null) {
                     return;
                 }
@@ -91,7 +91,7 @@ public class UpdateHandler {
                     return;
                 }
 
-                VersionChecker versionChecker = PluginUpdater.getInstance().getPlatformRegistry().getUpdater(platform);
+                VersionChecker versionChecker = PluginUpdater.getInstance().getPlatformRegistry().getVersionChecker(platform);
                 if (versionChecker == null) {
                     return;
                 }
