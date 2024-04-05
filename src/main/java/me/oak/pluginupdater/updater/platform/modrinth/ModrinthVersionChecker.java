@@ -34,17 +34,7 @@ public class ModrinthVersionChecker implements VersionChecker {
 
         JsonArray versionsJson = JsonParser.parseReader(reader).getAsJsonArray();
         JsonObject currVersionJson = versionsJson.get(0).getAsJsonObject();
-        String latestVersion = currVersionJson.get("version_number").getAsString();
-
-        if (latestVersion.contains("-")) {
-            latestVersion = latestVersion.split("-")[0];
-        }
-
-        if (latestVersion.isEmpty()) {
-            throw new IllegalStateException("Latest version is invalid!");
-        }
-
-        return latestVersion;
+        return currVersionJson.get("version_number").getAsString();
     }
 
     @Override

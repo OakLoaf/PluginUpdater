@@ -31,17 +31,7 @@ public class SpigotVersionChecker implements VersionChecker {
         InputStreamReader reader = new InputStreamReader(inputStream);
 
         JsonObject pluginJson = JsonParser.parseReader(reader).getAsJsonObject();
-        String latestVersion = pluginJson.get("name").getAsString();
-
-        if (latestVersion.contains("-")) {
-            latestVersion = latestVersion.split("-")[0];
-        }
-
-        if (latestVersion.isEmpty()) {
-            throw new IllegalStateException("Latest version is invalid!");
-        }
-
-        return latestVersion;
+        return pluginJson.get("name").getAsString();
     }
 
     @Override
