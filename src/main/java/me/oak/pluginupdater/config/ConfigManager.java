@@ -52,7 +52,7 @@ public class ConfigManager {
                     return;
                 }
 
-                PluginData pluginData = PluginUpdater.getInstance().getUpdaterRegistry().getPluginData(currPlugin, platform, pluginSection);
+                PluginData pluginData = PluginUpdater.getInstance().getPlatformRegistry().getPluginData(currPlugin, platform, pluginSection);
                 if (pluginData != null) {
                     addPlugin(pluginName, pluginData);
                 }
@@ -82,7 +82,7 @@ public class ConfigManager {
                 else if (commonPluginsYml != null && commonPluginsYml.contains(pluginName)) {
                     ConfigurationSection pluginSection = commonPluginsYml.getConfigurationSection(pluginName);
                     if (pluginSection != null) {
-                        PluginData pluginData = PluginUpdater.getInstance().getUpdaterRegistry().getPluginData(plugin1, pluginSection.getString("platform"), pluginSection);
+                        PluginData pluginData = PluginUpdater.getInstance().getPlatformRegistry().getPluginData(plugin1, pluginSection.getString("platform"), pluginSection);
                         if (pluginData != null) {
                             addPlugin(pluginName, pluginData);
                         }

@@ -6,13 +6,9 @@ import me.oak.pluginupdater.config.ConfigManager;
 import me.oak.pluginupdater.updater.UpdateHandler;
 import me.oak.pluginupdater.updater.platform.PlatformRegistry;
 import org.bukkit.Bukkit;
-import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 
 public final class PluginUpdater extends JavaPlugin {
     private static PluginUpdater plugin;
@@ -50,7 +46,7 @@ public final class PluginUpdater extends JavaPlugin {
         plugin = null;
     }
 
-    public PlatformRegistry getUpdaterRegistry() {
+    public PlatformRegistry getPlatformRegistry() {
         return platformRegistry;
     }
 
