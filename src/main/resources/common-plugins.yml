@@ -16,6 +16,12 @@ CommandPanels:
 CoreProtect:
   platform: modrinth
   modrinth-project-slug: coreprotect
+CrazyCrates:
+  platform: modrinth
+  modrinth-project-slug: crazycrates
+DeluxeMenus:
+  platform: spigot
+  spigot-resource-id: 11734
 DiscordSRV:
   platform: modrinth
   modrinth-project-slug: discordsrv
@@ -25,6 +31,12 @@ Dynmap:
 EpicRename:
   platform: spigot
   spigot-resource-id: 4341
+EternalTags:
+  platform: spigot
+  spigot-resource-id: 91842
+ExcellentCrates:
+  platform: spigot
+  spigot-resource-id: 48732
 ExcellentEnchants:
   platform: spigot
   spigot-resource-id: 61693
@@ -34,6 +46,12 @@ FastAsyncWorldEdit:
 ForcePack:
   platform: spigot
   spigot-resource-id: 45439
+GPFlags:
+  platform: spigot
+  spigot-resource-id: 55773
+GriefPrevention:
+  platform: modrinth
+  modrinth-project-slug: griefprevention
 GSit:
   platform: spigot
   spigot-resource-id: 62325
@@ -61,6 +79,9 @@ Multiverse-SignPortals:
 NametagEdit:
   platform: spigot
   spigot-resource-id: 3836
+nightcore:
+  platform: github
+  github-repo: nulli0n/nightcore-spigot
 packetevents:
   platform: modrinth
   modrinth-project-slug: packetevents
