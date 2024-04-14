@@ -88,6 +88,9 @@ packetevents:
 PlaceholderAPI:
   platform: spigot
   spigot-resource-id: 6245
+Plan:
+  platform: spigot
+  spigot-resource-id: 32536
 PlayerParticles:
   platform: spigot
   spigot-resource-id: 40261
