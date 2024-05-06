@@ -21,7 +21,7 @@ public class ModrinthVersionChecker implements VersionChecker {
             return null;
         }
 
-        URL url = new URL("https://api.modrinth.com/v2/project/" + modrinthData.getModrinthProjectSlug() + "/version?loaders=[%22bukkit%22,%22spigot%22,%22paper%22,%22purpur%22,%22folia%22]" + (modrinthData.includeFeaturedOnly() ? "&featured=true" : ""));
+        URL url = new URL("https://api.modrinth.com/v2/project/" + modrinthData.getModrinthProjectId() + "/version?loaders=[%22bukkit%22,%22spigot%22,%22paper%22,%22purpur%22,%22folia%22]" + (modrinthData.includeFeaturedOnly() ? "&featured=true" : ""));
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.addRequestProperty("User-Agent", "PluginUpdater/" + PluginUpdater.getInstance().getDescription().getVersion());
 
@@ -43,7 +43,7 @@ public class ModrinthVersionChecker implements VersionChecker {
             return null;
         }
 
-        String modrinthProjectSlug = modrinthData.getModrinthProjectSlug();
+        String modrinthProjectSlug = modrinthData.getModrinthProjectId();
 
         URL url = new URL("https://api.modrinth.com/v2/project/" + modrinthProjectSlug + "/version?loaders=[%22bukkit%22,%22spigot%22,%22paper%22,%22purpur%22,%22folia%22]" + (modrinthData.includeFeaturedOnly() ? "?featured=true" : ""));
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();

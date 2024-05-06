@@ -71,8 +71,8 @@ public class ConfigManager {
             if (pluginInputStream != null) {
                 YamlConfiguration pluginYml = YamlConfiguration.loadConfiguration(new InputStreamReader(pluginInputStream));
 
-                if (pluginYml.contains("modrinth-project-slug")) {
-                    String modrinthSlug = pluginYml.getString("modrinth-project-slug");
+                if (pluginYml.contains("modrinth-project-id")) {
+                    String modrinthSlug = pluginYml.getString("modrinth-project-id");
                     addPlugin(pluginName, new ModrinthPluginData(pluginName, plugin1.getDescription().getVersion(), modrinthSlug, true));
                 }
                 else if (pluginYml.contains("spigot-resource-id")) {

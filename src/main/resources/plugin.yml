@@ -2,7 +2,7 @@ name: PluginUpdater
 version: '${version}'
 main: me.oak.pluginupdater.PluginUpdater
 api-version: '1.18'
-modrinth-project-slug: "plugin-updater"
+modrinth-project-id: "plugin-updater"
 commands:
   pluginupdater:
     description: PluginUpdater Main Command

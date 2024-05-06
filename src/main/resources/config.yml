@@ -5,7 +5,7 @@ plugins:
   PluginUpdater:
     platform: modrinth
     # A project slug is a plugin's identifier which can be found at the end of a Modrinth plugin link
-    modrinth-project-slug: "plugin-updater"
+    modrinth-project-id: "plugin-updater"
     # Some projects post all beta versions on Modrinth - disable this setting if you want to receive updates for all versions including beta versions
     featured-only: true
   ExamplePlugin:

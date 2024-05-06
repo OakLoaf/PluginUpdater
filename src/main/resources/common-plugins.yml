@@ -1,12 +1,12 @@
 BlueMap:
   platform: modrinth
-  modrinth-project-slug: bluemap
+  modrinth-project-id: swbUV1cr
 Chunky:
   platform: modrinth
-  modrinth-project-slug: chunky
+  modrinth-project-id: fALzjamp
 ChunkyBorder:
   platform: modrinth
-  modrinth-project-slug: chunkyborder
+  modrinth-project-id: s86X568j
 commandtimer:
   platform: github
   github-repo: titivermeesch/CommandTimer
@@ -15,19 +15,19 @@ CommandPanels:
   spigot-resource-id: 67788
 CoreProtect:
   platform: modrinth
-  modrinth-project-slug: coreprotect
+  modrinth-project-id: Lu3KuzdV
 CrazyCrates:
   platform: modrinth
-  modrinth-project-slug: crazycrates
+  modrinth-project-id: r3BBZyf3
 DeluxeMenus:
   platform: spigot
   spigot-resource-id: 11734
 DiscordSRV:
   platform: modrinth
-  modrinth-project-slug: discordsrv
+  modrinth-project-id: UmLGoGij
 Dynmap:
   platform: modrinth
-  modrinth-project-slug: dynmap
+  modrinth-project-id: fRQREgAc
 EpicRename:
   platform: spigot
   spigot-resource-id: 4341
@@ -42,7 +42,7 @@ ExcellentEnchants:
   spigot-resource-id: 61693
 FastAsyncWorldEdit:
   platform: modrinth
-  modrinth-project-slug: fastasyncworldedit
+  modrinth-project-id: z4HZZnLr
 ForcePack:
   platform: spigot
   spigot-resource-id: 45439
@@ -51,7 +51,7 @@ GPFlags:
   spigot-resource-id: 55773
 GriefPrevention:
   platform: modrinth
-  modrinth-project-slug: griefprevention
+  modrinth-project-id: O4o4mKaq
 GSit:
   platform: spigot
   spigot-resource-id: 62325
@@ -63,19 +63,19 @@ HuskHomes:
   spigot-resource-id: 83767
 Multiverse-Core:
   platform: modrinth
-  modrinth-project-slug: multiverse-core
+  modrinth-project-id: 3wmN97b8
 Multiverse-Inventories:
   platform: modrinth
-  modrinth-project-slug: multiverse-inventories
+  modrinth-project-id: qvdtDX3s
 Multiverse-NetherPortals:
   platform: modrinth
-  modrinth-project-slug: multiverse-netherportals
+  modrinth-project-id: vtawPsTo
 Multiverse-Portals:
   platform: modrinth
-  modrinth-project-slug: multiverse-portals
+  modrinth-project-id: 8VMk6P0I
 Multiverse-SignPortals:
   platform: modrinth
-  modrinth-project-slug: multiverse-signportals
+  modrinth-project-id: WuErDeI1
 NametagEdit:
   platform: spigot
   spigot-resource-id: 3836
@@ -84,7 +84,7 @@ nightcore:
   github-repo: nulli0n/nightcore-spigot
 packetevents:
   platform: modrinth
-  modrinth-project-slug: packetevents
+  modrinth-project-id: HYKaKraK
 PlaceholderAPI:
   platform: spigot
   spigot-resource-id: 6245
@@ -96,13 +96,13 @@ PlayerParticles:
   spigot-resource-id: 40261
 Pl3xMap:
   platform: modrinth
-  modrinth-project-slug: pl3xmap
+  modrinth-project-id: 34T8oVNY
 SimplePortals:
   platform: spigot
   spigot-resource-id: 56772
 SimpleVoiceChat:
   platform: modrinth
-  modrinth-project-slug: simple-voice-chat
+  modrinth-project-id: 9eGKb6K1
 SkinsRestorer:
   platform: spigot
   spigot-resource-id: 2124
@@ -111,16 +111,16 @@ Skulls:
   spigot-resource-id: 90098
 squaremap:
   platform: modrinth
-  modrinth-project-slug: squaremap
+  modrinth-project-id: PFb7ZqK6
 SunLight:
   platform: spigot
   spigot-resource-id: 67733
 TabTPS:
   platform: modrinth
-  modrinth-project-slug: tabtps
+  modrinth-project-id: cUhi3iB2
 Terra:
   platform: modrinth
-  modrinth-project-slug: terra
+  modrinth-project-id: FIlZB9L0
 Tweakin:
   platform: spigot
   spigot-resource-id: 93444
@@ -132,16 +132,16 @@ VentureChat:
   spigot-resource-id: 771
 ViaBackwards:
   platform: modrinth
-  modrinth-project-slug: viabackwards
+  modrinth-project-id: NpvuJQoq
 ViaRewind:
   platform: modrinth
-  modrinth-project-slug: viarewind
+  modrinth-project-id: TbHIxhx5
 ViaVersion:
   platform: modrinth
-  modrinth-project-slug: viaversion
+  modrinth-project-id: P1OZGk5p
 VillagerMarket:
   platform: spigot
   spigot-resource-id: 82965
 WorldEdit:
   platform: modrinth
-  modrinth-project-slug: worldedit
+  modrinth-project-id: 1u6JkXh5
