@@ -10,6 +10,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.lushplugins.pluginupdater.updater.VersionDifference;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,25 +50,37 @@ public class PluginUpdaterCommand implements CommandExecutor, TabCompleter {
                     }
                 }
             }
-            case 2 -> {
+            case 2, 3 -> {
                 if (args[0].equalsIgnoreCase("update")) {
-                    // TODO: Add warnings to major version changes, add confirm command, show version changes list before asking confirmation
                     if (sender.hasPermission("pluginupdater.downloadupdates")) {
                         if (args[1].equalsIgnoreCase("all")) {
                             UpdateHandler updateHandler = PluginUpdater.getInstance().getUpdateHandler();
                             AtomicInteger updateCount = new AtomicInteger(0);
+                            AtomicInteger majorUpdateCount = new AtomicInteger(0);
+
                             PluginUpdater.getInstance().getConfigManager().getAllPluginData().forEach(pluginData -> {
-                                if (!pluginData.isAlreadyDownloaded() && pluginData.isUpdateAvailable()) {
+                                if (!pluginData.isAlreadyDownloaded() && pluginData.isUpdateAvailable() && !pluginData.getVersionDifference().equals(VersionDifference.MAJOR)) {
+                                    if (pluginData.getVersionDifference().equals(VersionDifference.MAJOR) && !(args.length == 3 && args[2].equals("-f"))) {
+                                        majorUpdateCount.incrementAndGet();
+                                        return;
+                                    }
+
                                     updateHandler.queueDownload(pluginData.getPluginName());
                                     updateCount.incrementAndGet();
                                 }
                             });
 
                             int finalCount = updateCount.get();
-                            if (finalCount == 0) {
+                            int finalMajorCount = majorUpdateCount.get();
+
+                            if (finalCount == 0 && finalMajorCount == 0) {
                                 ChatColorHandler.sendMessage(sender, "&#ff6969No updates found");
-                            } else {
+                            } else if (finalCount > 0) {
                                 ChatColorHandler.sendMessage(sender, "&#b7faa2Successfully queued an update for " + finalCount + " plugins");
+                            }
+
+                            if (finalMajorCount > 0) {
+                                ChatColorHandler.sendMessage(sender, "&#e0c01b" + finalMajorCount + " &#ffe27aplugins require major updates, run &#e0c01b/updates update all -f &#ffe27ato force all possible updates");
                             }
 
                             return true;
