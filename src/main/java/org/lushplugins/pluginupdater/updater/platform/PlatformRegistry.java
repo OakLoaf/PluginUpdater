@@ -2,6 +2,8 @@ package org.lushplugins.pluginupdater.updater.platform;
 
 import org.lushplugins.pluginupdater.updater.platform.github.GithubPluginData;
 import org.lushplugins.pluginupdater.updater.platform.github.GithubVersionChecker;
+import org.lushplugins.pluginupdater.updater.platform.hangar.HangarPluginData;
+import org.lushplugins.pluginupdater.updater.platform.hangar.HangarVersionChecker;
 import org.lushplugins.pluginupdater.updater.platform.modrinth.ModrinthPluginData;
 import org.lushplugins.pluginupdater.updater.PluginData;
 import org.lushplugins.pluginupdater.updater.VersionChecker;
@@ -22,6 +24,7 @@ public class PlatformRegistry {
 
     public PlatformRegistry() {
         register("github", GithubVersionChecker::new, GithubPluginData::new);
+        register("hangar", HangarVersionChecker::new, HangarPluginData::new);
         register("modrinth", ModrinthVersionChecker::new, ModrinthPluginData::new);
         register("spigot", SpigotVersionChecker::new, SpigotPluginData::new);
     }
