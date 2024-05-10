@@ -82,6 +82,9 @@ NametagEdit:
 nightcore:
   platform: github
   github-repo: nulli0n/nightcore-spigot
+LuckPerms:
+  platform: spigot
+  spigot-resource-id: 28140
 packetevents:
   platform: modrinth
   modrinth-project-id: HYKaKraK
@@ -109,6 +112,9 @@ SkinsRestorer:
 Skulls:
   platform: spigot
   spigot-resource-id: 90098
+spark:
+  platform: spigot
+  spigot-resource-id: 57242
 squaremap:
   platform: modrinth
   modrinth-project-id: PFb7ZqK6
@@ -118,6 +124,9 @@ SunLight:
 TabTPS:
   platform: modrinth
   modrinth-project-id: cUhi3iB2
+Tebex:
+  platform: modrinth
+  modrinth-project-id: nRA0jiJt
 Terra:
   platform: modrinth
   modrinth-project-id: FIlZB9L0
