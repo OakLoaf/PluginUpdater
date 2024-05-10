@@ -3,6 +3,7 @@ package me.oak.pluginupdater.api.updater;
 import me.oak.pluginupdater.PluginUpdater;
 import me.oak.pluginupdater.updater.PluginData;
 import me.oak.pluginupdater.updater.VersionChecker;
+import me.oak.pluginupdater.updater.VersionDifference;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
@@ -36,7 +37,8 @@ public abstract class Updater {
                 String latestVersion = matcher.group();
 
                 pluginData.setCheckRan(true);
-                if (!VersionChecker.isLatestVersion(currentVersion, latestVersion)) {
+                VersionDifference versionDifference = VersionChecker.getVersionDifference(currentVersion, latestVersion);
+                if (!versionDifference.equals(VersionDifference.LATEST)) {
                     pluginData.setLatestVersion(latestVersion);
                     pluginData.setUpdateAvailable(true);
                     completableFuture.complete(true);

@@ -16,6 +16,7 @@ public interface VersionChecker {
     Pattern VERSION_PATTERN = Pattern.compile("(\\d+(\\.\\d+)+)");
 
     String getLatestVersion(PluginData pluginData) throws IOException;
+
     String getDownloadUrl(PluginData pluginData) throws IOException;
 
     default boolean isUpdateAvailable(PluginData pluginData) throws IOException {
@@ -27,7 +28,8 @@ public interface VersionChecker {
         String latestVersion = matcher.group();
 
         pluginData.setCheckRan(true);
-        if (!VersionChecker.isLatestVersion(currentVersion, latestVersion)) {
+        VersionDifference versionDifference = VersionChecker.getVersionDifference(currentVersion, latestVersion);
+        if (!versionDifference.equals(VersionDifference.LATEST)) {
             pluginData.setLatestVersion(latestVersion);
             pluginData.setUpdateAvailable(true);
             return true;
@@ -65,32 +67,34 @@ public interface VersionChecker {
         return true;
     }
 
-    static boolean isLatestVersion(String currentVersionRaw, String newVersionRaw) {
-        String[] currVersionParts = currentVersionRaw.split("\\.");
-        String[] versionParts = newVersionRaw.split("\\.");
+    static VersionDifference getVersionDifference(String localVersionRaw, String releaseVersionRaw) {
+        String[] localVersionParts = localVersionRaw.split("\\.");
+        String[] releaseVersionParts = releaseVersionRaw.split("\\.");
 
         int i = 0;
-        for (String versionPart : versionParts) {
-            if (i >= currVersionParts.length) {
+        for (String releaseVersionPart : releaseVersionParts) {
+            if (i >= localVersionParts.length) {
                 break;
             }
 
-            int newVersion = Integer.parseInt(versionPart);
-            int currVersion = Integer.parseInt(currVersionParts[i]);
-            if (newVersion > currVersion) {
+            int newVersion = Integer.parseInt(releaseVersionPart);
+            int localVersion = Integer.parseInt(localVersionParts[i]);
+            if (newVersion > localVersion) {
                 if (i != 0) {
-                    int newVersionLast = Integer.parseInt(versionParts[i-1]);
-                    int currVersionLast = Integer.parseInt(currVersionParts[i-1]);
-                    if (newVersionLast >= currVersionLast) {
-                        return false;
+                    int releaseVersionLast = Integer.parseInt(releaseVersionParts[i - 1]);
+                    int localVersionLast = Integer.parseInt(localVersionParts[i - 1]);
+                    if (releaseVersionLast >= localVersionLast) {
+                        return i == 1
+                            ? VersionDifference.MINOR : i == 2
+                            ? VersionDifference.BUG_FIXES : VersionDifference.BUILD;
                     }
                 } else {
-                    return false;
+                    return VersionDifference.MAJOR;
                 }
             }
             i++;
         }
 
-        return true;
+        return VersionDifference.LATEST;
     }
 }
