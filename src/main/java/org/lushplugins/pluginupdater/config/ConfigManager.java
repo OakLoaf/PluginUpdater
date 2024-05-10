@@ -79,6 +79,10 @@ public class ConfigManager {
                     String spigotResourceId = pluginYml.getString("spigot-resource-id");
                     addPlugin(pluginName, new SpigotPluginData(pluginName, plugin1.getDescription().getVersion(), spigotResourceId));
                 }
+                else if (pluginYml.contains("hangar-project-slug")) {
+                    String hangarSlug = pluginYml.getString("hangar-project-slug");
+                    addPlugin(pluginName, new SpigotPluginData(pluginName, plugin1.getDescription().getVersion(), hangarSlug));
+                }
                 else if (commonPluginsYml != null && commonPluginsYml.contains(pluginName)) {
                     ConfigurationSection pluginSection = commonPluginsYml.getConfigurationSection(pluginName);
                     if (pluginSection != null) {
