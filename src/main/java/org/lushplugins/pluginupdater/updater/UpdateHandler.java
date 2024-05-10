@@ -80,7 +80,7 @@ public class UpdateHandler {
 
                 try {
                     if (versionChecker.download(pluginData)) {
-                        pluginData.setUpdateAvailable(false);
+                        pluginData.setVersionDifference(VersionDifference.UNKNOWN);
                         pluginData.setAlreadyDownloaded(true);
                         processingData.getFuture().complete(true);
                     } else {

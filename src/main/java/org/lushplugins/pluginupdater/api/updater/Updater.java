@@ -40,7 +40,7 @@ public abstract class Updater {
                 VersionDifference versionDifference = VersionChecker.getVersionDifference(currentVersion, latestVersion);
                 if (!versionDifference.equals(VersionDifference.LATEST)) {
                     pluginData.setLatestVersion(latestVersion);
-                    pluginData.setUpdateAvailable(true);
+                    pluginData.setVersionDifference(versionDifference);
                     completableFuture.complete(true);
                 } else {
                     completableFuture.complete(false);
@@ -72,7 +72,7 @@ public abstract class Updater {
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
             try {
                 if (versionChecker.download(pluginData)) {
-                    pluginData.setUpdateAvailable(false);
+                    pluginData.setVersionDifference(VersionDifference.UNKNOWN);
                     pluginData.setAlreadyDownloaded(true);
                     completableFuture.complete(true);
                 } else {

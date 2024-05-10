@@ -5,5 +5,6 @@ public enum VersionDifference {
     MINOR,
     BUG_FIXES,
     BUILD,
-    LATEST // Using same version or later than release (usually beta/dev-build)
+    LATEST, // Using same version or later than release (usually beta/dev-build)
+    UNKNOWN
 }

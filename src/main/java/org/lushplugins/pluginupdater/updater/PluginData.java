@@ -13,7 +13,7 @@ public abstract class PluginData {
     private String latestVersion;
 
     private boolean enabled = true;
-    private boolean updateAvailable = false;
+    private VersionDifference versionDifference = VersionDifference.UNKNOWN;
     private boolean alreadyDownloaded = false;
     private boolean checkRan = false;
 
@@ -69,11 +69,11 @@ public abstract class PluginData {
     }
 
     public boolean isUpdateAvailable() {
-        return updateAvailable;
+        return !versionDifference.equals(VersionDifference.LATEST) && !versionDifference.equals(VersionDifference.UNKNOWN);
     }
 
-    public void setUpdateAvailable(boolean updateAvailable) {
-        this.updateAvailable = updateAvailable;
+    public void setVersionDifference(@NotNull VersionDifference versionDifference) {
+        this.versionDifference = versionDifference;
     }
 
     public boolean isAlreadyDownloaded() {

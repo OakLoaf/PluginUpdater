@@ -31,7 +31,7 @@ public interface VersionChecker {
         VersionDifference versionDifference = VersionChecker.getVersionDifference(currentVersion, latestVersion);
         if (!versionDifference.equals(VersionDifference.LATEST)) {
             pluginData.setLatestVersion(latestVersion);
-            pluginData.setUpdateAvailable(true);
+            pluginData.setVersionDifference(versionDifference);
             return true;
         } else {
             return false;
