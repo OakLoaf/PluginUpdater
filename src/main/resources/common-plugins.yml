@@ -127,9 +127,6 @@ TabTPS:
 Tebex:
   platform: modrinth
   modrinth-project-id: nRA0jiJt
-Terra:
-  platform: modrinth
-  modrinth-project-id: FIlZB9L0
 Tweakin:
   platform: spigot
   spigot-resource-id: 93444
