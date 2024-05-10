@@ -91,7 +91,10 @@ public interface VersionChecker {
                 } else {
                     return VersionDifference.MAJOR;
                 }
+            } else if (newVersion < localVersion) {
+                return VersionDifference.LATEST;
             }
+
             i++;
         }
 
