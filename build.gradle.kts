@@ -15,7 +15,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly("org.spigotmc:spigot:1.20.1-R0.1-SNAPSHOT")
+    compileOnly("org.spigotmc:spigot-api:1.20.6-R0.1-SNAPSHOT")
     implementation("org.jetbrains:annotations:24.0.0")
     implementation("me.dave:ChatColorHandler:v2.5.3")
 }

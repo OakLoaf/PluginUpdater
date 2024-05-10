@@ -1,6 +1,5 @@
 package org.lushplugins.pluginupdater.updater.platform;
 
-import com.mojang.datafixers.util.Pair;
 import org.lushplugins.pluginupdater.updater.platform.github.GithubPluginData;
 import org.lushplugins.pluginupdater.updater.platform.github.GithubVersionChecker;
 import org.lushplugins.pluginupdater.updater.platform.modrinth.ModrinthPluginData;
@@ -13,6 +12,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.lushplugins.pluginupdater.util.Pair;
 
 import java.util.HashMap;
 import java.util.concurrent.Callable;
@@ -29,7 +29,7 @@ public class PlatformRegistry {
     @Nullable
     public VersionChecker getVersionChecker(String platform) {
         try {
-            return platforms.containsKey(platform) ? platforms.get(platform).getFirst().call() : null;
+            return platforms.containsKey(platform) ? platforms.get(platform).first().call() : null;
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -39,7 +39,7 @@ public class PlatformRegistry {
     @Nullable
     public PluginData getPluginData(Plugin plugin, String platform, ConfigurationSection configurationSection) {
         try {
-            return platforms.containsKey(platform) ? platforms.get(platform).getSecond().apply(plugin, configurationSection) : null;
+            return platforms.containsKey(platform) ? platforms.get(platform).second().apply(plugin, configurationSection) : null;
         } catch (Exception e) {
             e.printStackTrace();
             return null;
