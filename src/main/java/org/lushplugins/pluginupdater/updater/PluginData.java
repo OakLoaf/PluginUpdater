@@ -72,6 +72,10 @@ public abstract class PluginData {
         return !versionDifference.equals(VersionDifference.LATEST) && !versionDifference.equals(VersionDifference.UNKNOWN);
     }
 
+    public VersionDifference getVersionDifference() {
+        return versionDifference;
+    }
+
     public void setVersionDifference(@NotNull VersionDifference versionDifference) {
         this.versionDifference = versionDifference;
     }

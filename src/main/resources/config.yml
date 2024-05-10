@@ -13,7 +13,8 @@ plugins:
 
 messages:
   unchecked-color: "&8"
-  outdated-color: "&#ff6969"
+  update-available-color: "&#ffda54"
+  major-update-available-color: "&#ff6969"
   update-prepared-color: "&#ffda54"
   latest-version-color: "&#b7faa2"
   updates-available: "&#e0c01b%amount% &#ffe27aupdates are available, type &#e0c01b'%updates_command%' &#ffe27afor more information!"
