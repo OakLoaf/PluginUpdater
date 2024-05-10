@@ -97,9 +97,6 @@ Plan:
 PlayerParticles:
   platform: spigot
   spigot-resource-id: 40261
-Pl3xMap:
-  platform: modrinth
-  modrinth-project-id: 34T8oVNY
 SimplePortals:
   platform: spigot
   spigot-resource-id: 56772
