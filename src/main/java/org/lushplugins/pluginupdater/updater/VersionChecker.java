@@ -2,13 +2,13 @@ package org.lushplugins.pluginupdater.updater;
 
 import org.lushplugins.pluginupdater.PluginUpdater;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -63,6 +63,14 @@ public interface VersionChecker {
         FileOutputStream fos = new FileOutputStream(out);
         fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
         fos.close();
+
+        try {
+            PrintWriter writer = new PrintWriter(new FileWriter(new File(PluginUpdater.getInstance().getDataFolder(), "downloads.log"), true));
+            writer.print("[" + LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME) + "] Downloaded " + pluginData.getPluginName() + ": " + pluginData.getCurrentVersion() + " -> " + pluginData.getLatestVersion() + "\n");
+            writer.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         return true;
     }
