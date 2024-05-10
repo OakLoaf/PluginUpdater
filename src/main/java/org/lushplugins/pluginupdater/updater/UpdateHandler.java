@@ -1,6 +1,6 @@
-package me.oak.pluginupdater.updater;
+package org.lushplugins.pluginupdater.updater;
 
-import me.oak.pluginupdater.PluginUpdater;
+import org.lushplugins.pluginupdater.PluginUpdater;
 
 import java.util.concurrent.*;
 

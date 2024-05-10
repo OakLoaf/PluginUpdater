@@ -1,6 +1,6 @@
 name: PluginUpdater
 version: '${version}'
-main: me.oak.pluginupdater.PluginUpdater
+main: org.lushplugins.pluginupdater.PluginUpdater
 api-version: '1.18'
 modrinth-project-id: "plugin-updater"
 commands:

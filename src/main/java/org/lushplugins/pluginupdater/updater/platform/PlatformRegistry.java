@@ -1,14 +1,14 @@
-package me.oak.pluginupdater.updater.platform;
+package org.lushplugins.pluginupdater.updater.platform;
 
 import com.mojang.datafixers.util.Pair;
-import me.oak.pluginupdater.updater.platform.github.GithubPluginData;
-import me.oak.pluginupdater.updater.platform.github.GithubVersionChecker;
-import me.oak.pluginupdater.updater.platform.modrinth.ModrinthPluginData;
-import me.oak.pluginupdater.updater.PluginData;
-import me.oak.pluginupdater.updater.VersionChecker;
-import me.oak.pluginupdater.updater.platform.modrinth.ModrinthVersionChecker;
-import me.oak.pluginupdater.updater.platform.spigot.SpigotPluginData;
-import me.oak.pluginupdater.updater.platform.spigot.SpigotVersionChecker;
+import org.lushplugins.pluginupdater.updater.platform.github.GithubPluginData;
+import org.lushplugins.pluginupdater.updater.platform.github.GithubVersionChecker;
+import org.lushplugins.pluginupdater.updater.platform.modrinth.ModrinthPluginData;
+import org.lushplugins.pluginupdater.updater.PluginData;
+import org.lushplugins.pluginupdater.updater.VersionChecker;
+import org.lushplugins.pluginupdater.updater.platform.modrinth.ModrinthVersionChecker;
+import org.lushplugins.pluginupdater.updater.platform.spigot.SpigotPluginData;
+import org.lushplugins.pluginupdater.updater.platform.spigot.SpigotVersionChecker;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;

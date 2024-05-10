@@ -1,6 +1,6 @@
-package me.oak.pluginupdater.updater.platform.spigot;
+package org.lushplugins.pluginupdater.updater.platform.spigot;
 
-import me.oak.pluginupdater.updater.PluginData;
+import org.lushplugins.pluginupdater.updater.PluginData;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;

@@ -1,7 +1,7 @@
-package me.oak.pluginupdater.api.updater;
+package org.lushplugins.pluginupdater.api.updater;
 
-import me.oak.pluginupdater.updater.platform.modrinth.ModrinthPluginData;
-import me.oak.pluginupdater.updater.platform.modrinth.ModrinthVersionChecker;
+import org.lushplugins.pluginupdater.updater.platform.modrinth.ModrinthPluginData;
+import org.lushplugins.pluginupdater.updater.platform.modrinth.ModrinthVersionChecker;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 

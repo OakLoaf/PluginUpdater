@@ -1,4 +1,4 @@
-package me.oak.pluginupdater.updater;
+package org.lushplugins.pluginupdater.updater;
 
 public enum VersionDifference {
     MAJOR,

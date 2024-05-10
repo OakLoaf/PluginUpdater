@@ -1,8 +1,8 @@
-package me.oak.pluginupdater.command;
+package org.lushplugins.pluginupdater.command;
 
 import me.dave.chatcolorhandler.ChatColorHandler;
-import me.oak.pluginupdater.PluginUpdater;
-import me.oak.pluginupdater.config.ConfigManager;
+import org.lushplugins.pluginupdater.PluginUpdater;
+import org.lushplugins.pluginupdater.config.ConfigManager;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;

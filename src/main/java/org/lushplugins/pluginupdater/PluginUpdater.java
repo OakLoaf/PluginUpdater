@@ -1,10 +1,10 @@
-package me.oak.pluginupdater;
+package org.lushplugins.pluginupdater;
 
-import me.oak.pluginupdater.command.PluginUpdaterCommand;
-import me.oak.pluginupdater.command.PluginUpdatesCommand;
-import me.oak.pluginupdater.config.ConfigManager;
-import me.oak.pluginupdater.updater.UpdateHandler;
-import me.oak.pluginupdater.updater.platform.PlatformRegistry;
+import org.lushplugins.pluginupdater.command.PluginUpdaterCommand;
+import org.lushplugins.pluginupdater.command.PluginUpdatesCommand;
+import org.lushplugins.pluginupdater.config.ConfigManager;
+import org.lushplugins.pluginupdater.updater.UpdateHandler;
+import org.lushplugins.pluginupdater.updater.platform.PlatformRegistry;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 

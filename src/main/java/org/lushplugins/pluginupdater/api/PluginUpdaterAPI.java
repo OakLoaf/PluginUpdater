@@ -1,9 +1,9 @@
-package me.oak.pluginupdater.api;
+package org.lushplugins.pluginupdater.api;
 
-import me.oak.pluginupdater.PluginUpdater;
-import me.oak.pluginupdater.updater.PluginData;
-import me.oak.pluginupdater.updater.VersionChecker;
-import me.oak.pluginupdater.updater.platform.PlatformRegistry;
+import org.lushplugins.pluginupdater.PluginUpdater;
+import org.lushplugins.pluginupdater.updater.PluginData;
+import org.lushplugins.pluginupdater.updater.VersionChecker;
+import org.lushplugins.pluginupdater.updater.platform.PlatformRegistry;
 import org.bukkit.plugin.Plugin;
 
 import java.util.concurrent.Callable;

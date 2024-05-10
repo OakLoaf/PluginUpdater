@@ -4,7 +4,7 @@ plugins {
     id("com.github.johnrengelman.shadow") version("8.1.1")
 }
 
-group = "me.oak"
+group = "org.lushplugins"
 version = "0.1.1"
 
 repositories {
@@ -32,7 +32,7 @@ tasks {
     }
 
     shadowJar {
-        relocate("me.dave.chatcolorhandler", "me.oak.pluginupdater.libraries.chatcolor")
+        relocate("me.dave.chatcolorhandler", "org.lushplugins.pluginupdater.libraries.chatcolor")
 
         minimize()
 

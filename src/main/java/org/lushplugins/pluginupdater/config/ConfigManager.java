@@ -1,9 +1,9 @@
-package me.oak.pluginupdater.config;
+package org.lushplugins.pluginupdater.config;
 
-import me.oak.pluginupdater.PluginUpdater;
-import me.oak.pluginupdater.updater.PluginData;
-import me.oak.pluginupdater.updater.platform.modrinth.ModrinthPluginData;
-import me.oak.pluginupdater.updater.platform.spigot.SpigotPluginData;
+import org.lushplugins.pluginupdater.PluginUpdater;
+import org.lushplugins.pluginupdater.updater.PluginData;
+import org.lushplugins.pluginupdater.updater.platform.modrinth.ModrinthPluginData;
+import org.lushplugins.pluginupdater.updater.platform.spigot.SpigotPluginData;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;

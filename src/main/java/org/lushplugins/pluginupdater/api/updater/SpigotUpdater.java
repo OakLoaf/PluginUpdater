@@ -1,7 +1,7 @@
-package me.oak.pluginupdater.api.updater;
+package org.lushplugins.pluginupdater.api.updater;
 
-import me.oak.pluginupdater.updater.platform.spigot.SpigotPluginData;
-import me.oak.pluginupdater.updater.platform.spigot.SpigotVersionChecker;
+import org.lushplugins.pluginupdater.updater.platform.spigot.SpigotPluginData;
+import org.lushplugins.pluginupdater.updater.platform.spigot.SpigotVersionChecker;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 

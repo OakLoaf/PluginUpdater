@@ -1,9 +1,9 @@
-package me.oak.pluginupdater.api.updater;
+package org.lushplugins.pluginupdater.api.updater;
 
-import me.oak.pluginupdater.PluginUpdater;
-import me.oak.pluginupdater.updater.PluginData;
-import me.oak.pluginupdater.updater.VersionChecker;
-import me.oak.pluginupdater.updater.VersionDifference;
+import org.lushplugins.pluginupdater.PluginUpdater;
+import org.lushplugins.pluginupdater.updater.PluginData;
+import org.lushplugins.pluginupdater.updater.VersionChecker;
+import org.lushplugins.pluginupdater.updater.VersionDifference;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;

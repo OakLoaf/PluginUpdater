@@ -1,4 +1,4 @@
-package me.oak.pluginupdater.updater;
+package org.lushplugins.pluginupdater.updater;
 
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.Plugin;

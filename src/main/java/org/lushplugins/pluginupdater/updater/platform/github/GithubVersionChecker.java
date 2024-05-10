@@ -1,11 +1,11 @@
-package me.oak.pluginupdater.updater.platform.github;
+package org.lushplugins.pluginupdater.updater.platform.github;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import me.oak.pluginupdater.PluginUpdater;
-import me.oak.pluginupdater.updater.PluginData;
-import me.oak.pluginupdater.updater.VersionChecker;
+import org.lushplugins.pluginupdater.PluginUpdater;
+import org.lushplugins.pluginupdater.updater.PluginData;
+import org.lushplugins.pluginupdater.updater.VersionChecker;
 
 import java.io.IOException;
 import java.io.InputStream;
