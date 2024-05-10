@@ -1,152 +1,68 @@
 package org.lushplugins.pluginupdater.command;
 
 import me.dave.chatcolorhandler.ChatColorHandler;
+import org.lushplugins.lushlib.command.Command;
+import org.lushplugins.lushlib.command.SubCommand;
 import org.lushplugins.pluginupdater.PluginUpdater;
-import org.lushplugins.pluginupdater.updater.PluginData;
-import org.lushplugins.pluginupdater.updater.UpdateHandler;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabCompleter;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import org.lushplugins.pluginupdater.updater.VersionDifference;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class PluginUpdaterCommand implements CommandExecutor, TabCompleter {
+public class PluginUpdaterCommand extends Command {
+
+    public PluginUpdaterCommand() {
+        super("pluginupdater");
+        addSubCommand(new PluginUpdatesCommand());
+        addSubCommand(new ReloadSubCommand());
+        addSubCommand(new RunChecksSubCommand());
+        addSubCommand(new UpdateSubCommand());
+    }
 
     @Override
-    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-        switch (args.length) {
-            case 1 -> {
-                switch (args[0].toLowerCase()) {
-                    case "update" -> {
-                        ChatColorHandler.sendMessage(sender, "&#ff6969Incorrect formatting, try /updater update <plugin>");
-                        return true;
-                    }
-                    case "reload" -> {
-                        try {
-                            PluginUpdater.getInstance().getConfigManager().reloadConfig();
-                        } catch (Throwable e) {
-                            ChatColorHandler.sendMessage(sender, "&#ff6969Something went wrong whilst reloading the plugin, check the console for errors");
-                            e.printStackTrace();
-                            return true;
-                        }
-
-                        ChatColorHandler.sendMessage(sender, "&#b7faa2Successfully reloaded PluginUpdater");
-                        return true;
-                    }
-                    case "runchecks" -> {
-                        AtomicInteger updateCount = new AtomicInteger(0);
-                        PluginUpdater.getInstance().getConfigManager().getPlugins().forEach(pluginName -> {
-                            PluginUpdater.getInstance().getUpdateHandler().queueUpdateCheck(pluginName);
-                            updateCount.incrementAndGet();
-                        });
-
-                        ChatColorHandler.sendMessage(sender, "&#b7faa2Successfully queued checks for " + updateCount.get() + " plugins");
-                    }
-                }
-            }
-            case 2, 3 -> {
-                if (args[0].equalsIgnoreCase("update")) {
-                    if (sender.hasPermission("pluginupdater.downloadupdates")) {
-                        if (args[1].equalsIgnoreCase("all")) {
-                            UpdateHandler updateHandler = PluginUpdater.getInstance().getUpdateHandler();
-                            AtomicInteger updateCount = new AtomicInteger(0);
-                            AtomicInteger majorUpdateCount = new AtomicInteger(0);
-
-                            PluginUpdater.getInstance().getConfigManager().getAllPluginData().forEach(pluginData -> {
-                                if (!pluginData.isAlreadyDownloaded() && pluginData.isUpdateAvailable() && !pluginData.getVersionDifference().equals(VersionDifference.MAJOR)) {
-                                    if (pluginData.getVersionDifference().equals(VersionDifference.MAJOR) && !(args.length == 3 && args[2].equals("-f"))) {
-                                        majorUpdateCount.incrementAndGet();
-                                        return;
-                                    }
-
-                                    updateHandler.queueDownload(pluginData.getPluginName());
-                                    updateCount.incrementAndGet();
-                                }
-                            });
-
-                            int finalCount = updateCount.get();
-                            int finalMajorCount = majorUpdateCount.get();
-
-                            if (finalCount == 0 && finalMajorCount == 0) {
-                                ChatColorHandler.sendMessage(sender, "&#ff6969No updates found");
-                            } else if (finalCount > 0) {
-                                ChatColorHandler.sendMessage(sender, "&#b7faa2Successfully queued an update for " + finalCount + " plugins");
-                            }
-
-                            if (finalMajorCount > 0) {
-                                ChatColorHandler.sendMessage(sender, "&#e0c01b" + finalMajorCount + " &#ffe27aplugins require major updates, run &#e0c01b/updates update all -f &#ffe27ato force all possible updates");
-                            }
-
-                            return true;
-                        }
-
-                        PluginData pluginData = PluginUpdater.getInstance().getConfigManager().getPluginData(args[1]);
-                        if (pluginData == null) {
-                            ChatColorHandler.sendMessage(sender, "&#ff6969That plugin is not registered");
-                        }
-                        else if (pluginData.isAlreadyDownloaded()) {
-                            ChatColorHandler.sendMessage(sender, "&#ffda54You have already downloaded an update for this plugin - please restart your server");
-                        }
-                        else if (!pluginData.isUpdateAvailable()) {
-                            ChatColorHandler.sendMessage(sender, "&#ff6969No update has been found for this plugin");
-                        }
-                        else {
-                            PluginUpdater.getInstance().getUpdateHandler().queueDownload(pluginData.getPluginName());
-                            ChatColorHandler.sendMessage(sender, "&#b7faa2Successfully queued an update for '" + pluginData.getPluginName() + "'");
-                        }
-
-                        return true;
-                    }
-                }
-            }
-        }
-
+    public boolean execute(@NotNull CommandSender sender, org.bukkit.command.@NotNull Command command, @NotNull String label, @NotNull String[] args, @NotNull String[] fullArgs) {
         return true;
     }
 
-    @Nullable
-    @Override
-    public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-        List<String> tabComplete = new ArrayList<>();
-        List<String> wordCompletion = new ArrayList<>();
-        boolean wordCompletionSuccess = false;
+    private static class ReloadSubCommand extends SubCommand {
 
-        switch (args.length) {
-            case 1 -> {
-                if (sender.hasPermission("pluginupdater.downloadupdates")) {
-                    tabComplete.add("update");
-                }
-                if (sender.hasPermission("pluginupdater.checkupdates")) {
-                    tabComplete.add("runchecks");
-                }
-                if (sender.hasPermission("pluginupdater.reload")) {
-                    tabComplete.add("reload");
-                }
-            }
-            case 2 -> {
-                if (args[0].equalsIgnoreCase("update")) {
-                    if (sender.hasPermission("pluginupdater.downloadupdates")) {
-                        tabComplete.add("all");
-                        tabComplete.addAll(PluginUpdater.getInstance().getConfigManager().getPlugins());
-                    }
-                }
-            }
+        public ReloadSubCommand() {
+            super("reload");
+            addRequiredPermission("pluginupdater.reload");
         }
 
-        for (String currTab : tabComplete) {
-            int currArg = args.length - 1;
-            if (currTab.startsWith(args[currArg])) {
-                wordCompletion.add(currTab);
-                wordCompletionSuccess = true;
+        @Override
+        public boolean execute(@NotNull CommandSender sender, org.bukkit.command.@NotNull Command command, @NotNull String label, @NotNull String[] args, @NotNull String[] fullArgs) {
+            try {
+                PluginUpdater.getInstance().getConfigManager().reloadConfig();
+            } catch (Throwable e) {
+                ChatColorHandler.sendMessage(sender, "&#ff6969Something went wrong whilst reloading the plugin, check the console for errors");
+                e.printStackTrace();
+                return true;
             }
+
+            ChatColorHandler.sendMessage(sender, "&#b7faa2Successfully reloaded PluginUpdater");
+            return true;
+        }
+    }
+
+    private static class RunChecksSubCommand extends SubCommand {
+
+        public RunChecksSubCommand() {
+            super("runchecks");
+            addRequiredPermission("pluginupdater.checkupdates");
         }
 
-        return wordCompletionSuccess ? wordCompletion : tabComplete;
+        @Override
+        public boolean execute(@NotNull CommandSender sender, org.bukkit.command.@NotNull Command command, @NotNull String label, @NotNull String[] args, @NotNull String[] fullArgs) {
+            AtomicInteger updateCount = new AtomicInteger(0);
+            PluginUpdater.getInstance().getConfigManager().getPlugins().forEach(pluginName -> {
+                PluginUpdater.getInstance().getUpdateHandler().queueUpdateCheck(pluginName);
+                updateCount.incrementAndGet();
+            });
+
+            ChatColorHandler.sendMessage(sender, "&#b7faa2Successfully queued checks for " + updateCount.get() + " plugins");
+            return true;
+        }
     }
 }

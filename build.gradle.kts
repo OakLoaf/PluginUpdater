@@ -11,13 +11,12 @@ repositories {
     mavenCentral()
     mavenLocal()
     maven { url = uri("https://hub.spigotmc.org/nexus/content/repositories/snapshots/") } // Spigot
-    maven { url = uri("https://repo.smrt-1.com/releases") } // ChatColorHandler
+    maven { url = uri("https://repo.smrt-1.com/snapshots") } // LushLib
 }
 
 dependencies {
     compileOnly("org.spigotmc:spigot-api:1.20.6-R0.1-SNAPSHOT")
-    implementation("org.jetbrains:annotations:24.0.0")
-    implementation("me.dave:ChatColorHandler:v2.5.3")
+    implementation("org.lushplugins:LushLib:0.1.7.7")
 }
 
 java {

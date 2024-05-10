@@ -1,5 +1,7 @@
 package org.lushplugins.pluginupdater;
 
+import org.bukkit.command.CommandExecutor;
+import org.lushplugins.lushlib.command.Command;
 import org.lushplugins.pluginupdater.command.PluginUpdaterCommand;
 import org.lushplugins.pluginupdater.command.PluginUpdatesCommand;
 import org.lushplugins.pluginupdater.config.ConfigManager;
@@ -30,8 +32,8 @@ public final class PluginUpdater extends JavaPlugin {
             configManager.getPlugins().forEach(pluginName -> updateHandler.queueUpdateCheck(pluginName));
         }
 
-        getCommand("pluginupdater").setExecutor(new PluginUpdaterCommand());
-        getCommand("pluginupdates").setExecutor(new PluginUpdatesCommand());
+        registerCommand(new PluginUpdaterCommand());
+        registerCommand(new PluginUpdatesCommand());
     }
 
     @Override
@@ -44,6 +46,19 @@ public final class PluginUpdater extends JavaPlugin {
         platformRegistry = null;
         configManager = null;
         plugin = null;
+    }
+
+    public void registerCommand(Command command) {
+        registerCommand(command.getName(), command);
+    }
+
+    public void registerCommand(String command, CommandExecutor executor) {
+        try {
+            getCommand(command).setExecutor(executor);
+        } catch (NullPointerException e) {
+            getLogger().severe("Failed to register command '" + command + "', make sure the command has been defined in the plugin.yml");
+            e.printStackTrace();
+        }
     }
 
     public PlatformRegistry getPlatformRegistry() {

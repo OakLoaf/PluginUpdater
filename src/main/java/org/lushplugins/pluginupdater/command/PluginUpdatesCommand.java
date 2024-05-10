@@ -1,29 +1,27 @@
 package org.lushplugins.pluginupdater.command;
 
 import me.dave.chatcolorhandler.ChatColorHandler;
+import org.lushplugins.lushlib.command.Command;
 import org.lushplugins.pluginupdater.PluginUpdater;
 import org.lushplugins.pluginupdater.config.ConfigManager;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabCompleter;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.lushplugins.pluginupdater.updater.VersionDifference;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class PluginUpdatesCommand implements CommandExecutor, TabCompleter {
+public class PluginUpdatesCommand extends Command {
+
+    public PluginUpdatesCommand() {
+        super("updates");
+        addRequiredPermission("pluginupdater.checkupdates");
+        addSubCommand(new UpdatesListSubCommand());
+    }
 
     @Override
-    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
+    public boolean execute(@NotNull CommandSender sender, @NotNull org.bukkit.command.Command command, @NotNull String label, @NotNull String[] args, @NotNull String[] fullArgs) {
         ConfigManager configManager = PluginUpdater.getInstance().getConfigManager();
-        if (!sender.hasPermission("pluginupdater.checkupdates")) {
-            ChatColorHandler.sendMessage(sender, configManager.getMessage("insufficient-permissions", "&#ff6969You don't have the sufficient permissions for this command"));
-            return true;
-        }
-
         String uncheckedColor = configManager.getMessage("unchecked-color", "&8");
         String updateAvailableColor = configManager.getMessage("update-available-color", "&#ffda54");
         String majorUpdateAvailableColor = configManager.getMessage("major-update-available-color", "&#ff6969");
@@ -56,11 +54,5 @@ public class PluginUpdatesCommand implements CommandExecutor, TabCompleter {
         }
 
         return true;
-    }
-
-    @Nullable
-    @Override
-    public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-        return null;
     }
 }
