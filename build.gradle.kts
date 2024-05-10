@@ -11,6 +11,7 @@ repositories {
     mavenCentral()
     mavenLocal()
     maven { url = uri("https://hub.spigotmc.org/nexus/content/repositories/snapshots/") } // Spigot
+    maven { url = uri("https://repo.smrt-1.com/releases") } // LushLib
     maven { url = uri("https://repo.smrt-1.com/snapshots") } // LushLib
 }
 
