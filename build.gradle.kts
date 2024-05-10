@@ -32,7 +32,7 @@ tasks {
     }
 
     shadowJar {
-        relocate("me.dave.chatcolorhandler", "org.lushplugins.pluginupdater.libraries.chatcolor")
+        relocate("org.lushplugins.lushlib", "org.lushplugins.pluginupdater.libraries.lushlib")
 
         minimize()
 

@@ -1,10 +1,10 @@
 package org.lushplugins.pluginupdater.command;
 
-import me.dave.chatcolorhandler.ChatColorHandler;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 import org.lushplugins.lushlib.command.SubCommand;
+import org.lushplugins.lushlib.libraries.chatcolor.ChatColorHandler;
 import org.lushplugins.pluginupdater.PluginUpdater;
 import org.lushplugins.pluginupdater.updater.PluginData;
 import org.lushplugins.pluginupdater.updater.UpdateHandler;
