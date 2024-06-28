@@ -11,7 +11,7 @@ By default PluginUpdater comes with support for 50+ commonly used plugins, you c
 - PluginUpdater only downloads plugins to the update folder and **does not** modify any plugin jars. If you have an issue with an update report this to the developer of the plugin!
 
 **Is there an API?**
-- Adding PluginUpdater support to your plugin is super easy and does not require an API. You can follow [these instructions](make.link.work) to make your plugin compatible!
+- Adding PluginUpdater support to your plugin is super easy and does not require an API. You can follow [these instructions](https://github.com/OakLoaf/PluginUpdater/blob/master/README.md#adding-support-for-pluginupdater) to make your plugin compatible!
 - A shadeable updater and version checker will be made available in the future.
 
 <br>
