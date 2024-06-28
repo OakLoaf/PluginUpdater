@@ -32,6 +32,13 @@ public class ConfigManager {
 
         checkOnStartup = config.getBoolean("check-updates-on-start");
 
+        Collection<PluginData> dataSnapshot = plugins.values();
+        for (PluginData snapshot : dataSnapshot) {
+            if (!snapshot.isAlreadyDownloaded()) {
+                plugins.remove(snapshot.getPluginName());
+            }
+        }
+
         List<String> disabledPlugins = new ArrayList<>();
         ConfigurationSection pluginsSection = config.getConfigurationSection("plugins");
         if (pluginsSection != null) {
