@@ -69,10 +69,10 @@ Adding new plugins is really easy! Each plugin requires the plugin name to be de
 <br>
 
 ## Adding support for PluginUpdater
-Making your plugin appear in PluginUpdater is super easy, just add any of the following lines into your `plugin.yml`:
+Making your plugin appear in PluginUpdater is super easy, just add any of the following lines into your `plugin.yml` with the correct information for your plugin. For information regarding finding the ids reference the [Configuring PluginUpdater](https://github.com/OakLoaf/PluginUpdater/blob/master/README.md#configuring-pluginupdater) section.
 
 ```yml
-modrinth-project-id: "plugin-updater"
+modrinth-project-id: "djC8I9ui"
 spigot-resource-id: 107545
 hangar-project-slug: "FancyHolograms"
 github-repo: "OakLoaf/LushRewards"
