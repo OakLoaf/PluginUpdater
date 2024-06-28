@@ -8,7 +8,7 @@ By default PluginUpdater comes with support for 50+ commonly used plugins, you c
 - Plugins with major version updates _(according to [semver](https://semver.org/))_ will appear red in `/updates` and will not be updated when running `/updater update all`, this is to encourage server admins to take time to read changelogs. You can bypass this by either running `/updater update all -f` or `/updater update <plugin>`
 
 **X plugin broke when I updated!**
-- PluginUpdater only downloads plugins to the update folder and **does not** modify any plugin jars. If you have an issue with an update report this to the developer of the plugin!
+- PluginUpdater only downloads plugins to the update folder and **does not** modify any plugin jars. If you have an issue with an update report this to the developer of the plugin with the issue!
 
 **Is there an API?**
 - Adding PluginUpdater support to your plugin is super easy and does not require an API. You can follow [these instructions](https://github.com/OakLoaf/PluginUpdater/blob/master/README.md#adding-support-for-pluginupdater) to make your plugin compatible!
