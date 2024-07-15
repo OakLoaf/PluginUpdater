@@ -40,8 +40,8 @@ tasks {
 publishing {
     publications {
         create<MavenPublication>("maven") {
-            groupId = rootProject.group.toString()
-            artifactId = rootProject.name + "-api"
+            groupId = rootProject.group.toString() + ".pluginupdater"
+            artifactId = rootProject.name + "-API"
             version = rootProject.version.toString()
             from(project.components["java"])
         }

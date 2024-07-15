@@ -8,7 +8,7 @@ allprojects {
     apply(plugin = "maven-publish")
 
     group = "org.lushplugins"
-    version = "0.3.2"
+    version = "0.3.3"
 
     repositories {
         mavenCentral()
@@ -85,7 +85,7 @@ tasks {
 publishing {
     publications {
         create<MavenPublication>("maven") {
-            groupId = rootProject.group.toString()
+            groupId = rootProject.group.toString() + ".pluginupdater"
             artifactId = rootProject.name
             version = rootProject.version.toString()
             from(project.components["java"])
