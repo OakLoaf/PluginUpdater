@@ -2,26 +2,27 @@ package org.lushplugins.pluginupdater;
 
 import org.bukkit.command.CommandExecutor;
 import org.lushplugins.lushlib.command.Command;
+import org.lushplugins.pluginupdater.api.util.DownloadLogger;
+import org.lushplugins.pluginupdater.api.util.UpdaterConstants;
 import org.lushplugins.pluginupdater.command.PluginUpdaterCommand;
 import org.lushplugins.pluginupdater.command.PluginUpdatesCommand;
 import org.lushplugins.pluginupdater.config.ConfigManager;
 import org.lushplugins.pluginupdater.updater.UpdateHandler;
-import org.lushplugins.pluginupdater.updater.platform.PlatformRegistry;
-import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 
 public final class PluginUpdater extends JavaPlugin {
     private static PluginUpdater plugin;
-    private PlatformRegistry platformRegistry;
+
     private UpdateHandler updateHandler;
     private ConfigManager configManager;
 
     @Override
     public void onEnable() {
         plugin = this;
-        platformRegistry = new PlatformRegistry();
+
+        DownloadLogger.setLogFile(new File(plugin.getDataFolder(), "downloads.log"));
 
         updateHandler = new UpdateHandler();
         updateHandler.enable();
@@ -43,7 +44,6 @@ public final class PluginUpdater extends JavaPlugin {
             updateHandler = null;
         }
 
-        platformRegistry = null;
         configManager = null;
         plugin = null;
     }
@@ -61,26 +61,12 @@ public final class PluginUpdater extends JavaPlugin {
         }
     }
 
-    public PlatformRegistry getPlatformRegistry() {
-        return platformRegistry;
-    }
-
     public UpdateHandler getUpdateHandler() {
         return updateHandler;
     }
 
     public ConfigManager getConfigManager() {
         return configManager;
-    }
-
-    public File getUpdateFolder() {
-        File updateDir = new File(PluginUpdater.getInstance().getDataFolder().getParentFile(), Bukkit.getUpdateFolder());
-
-        if (!updateDir.exists()) {
-            updateDir.mkdir();
-        }
-
-        return updateDir;
     }
 
     public static PluginUpdater getInstance() {

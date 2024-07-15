@@ -6,9 +6,9 @@ import org.jetbrains.annotations.NotNull;
 import org.lushplugins.lushlib.command.SubCommand;
 import org.lushplugins.lushlib.libraries.chatcolor.ChatColorHandler;
 import org.lushplugins.pluginupdater.PluginUpdater;
-import org.lushplugins.pluginupdater.updater.PluginData;
+import org.lushplugins.pluginupdater.api.updater.PluginData;
 import org.lushplugins.pluginupdater.updater.UpdateHandler;
-import org.lushplugins.pluginupdater.updater.VersionDifference;
+import org.lushplugins.pluginupdater.api.version.VersionDifference;
 
 import java.util.ArrayList;
 import java.util.List;

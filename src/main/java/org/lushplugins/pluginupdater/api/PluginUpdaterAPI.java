@@ -1,9 +1,9 @@
 package org.lushplugins.pluginupdater.api;
 
 import org.lushplugins.pluginupdater.PluginUpdater;
-import org.lushplugins.pluginupdater.updater.PluginData;
-import org.lushplugins.pluginupdater.updater.VersionChecker;
-import org.lushplugins.pluginupdater.updater.platform.PlatformRegistry;
+import org.lushplugins.pluginupdater.api.updater.PluginData;
+import org.lushplugins.pluginupdater.api.version.VersionChecker;
+import org.lushplugins.pluginupdater.api.platform.PlatformRegistry;
 import org.bukkit.plugin.Plugin;
 
 import java.util.concurrent.Callable;
@@ -51,8 +51,8 @@ public class PluginUpdaterAPI {
      * @param platformUpdater Constructor for updater
      * @param dataConstructor Constructor for platform data
      */
-    public static void registerPlatform(String platform, Callable<VersionChecker> platformUpdater, PlatformRegistry.PluginDataConstructor dataConstructor) {
-        PluginUpdater.getInstance().getPlatformRegistry().register(platform, platformUpdater, dataConstructor);
+    public static void registerPlatform(String platform, Callable<VersionChecker> platformUpdater, PlatformRegistry.PlatformDataConstructor dataConstructor) {
+        PlatformRegistry.register(platform, platformUpdater, dataConstructor);
     }
 
     /**
@@ -60,6 +60,6 @@ public class PluginUpdaterAPI {
      * @param platform Name of platform
      */
     public static void unregisterPlatform(String platform) {
-        PluginUpdater.getInstance().getPlatformRegistry().unregister(platform);
+        PlatformRegistry.unregister(platform);
     }
 }

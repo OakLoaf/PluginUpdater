@@ -1,14 +1,17 @@
-package org.lushplugins.pluginupdater.updater;
+package org.lushplugins.pluginupdater.api.updater;
 
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
+import org.lushplugins.pluginupdater.api.platform.PlatformData;
+import org.lushplugins.pluginupdater.api.version.VersionChecker;
+import org.lushplugins.pluginupdater.api.version.VersionDifference;
 
+import java.util.List;
 import java.util.regex.Matcher;
 
-public abstract class PluginData {
+public class PluginData {
     private final String pluginName;
-    private final String platform;
+    private final List<PlatformData> platformData;
     private final String currentVersion;
     private String latestVersion;
 
@@ -17,9 +20,13 @@ public abstract class PluginData {
     private boolean alreadyDownloaded = false;
     private boolean checkRan = false;
 
-    public PluginData(@NotNull Plugin plugin, String platform, ConfigurationSection configurationSection) {
+    public PluginData(@NotNull Plugin plugin, @NotNull PlatformData platformData) {
+        this(plugin, List.of(platformData));
+    }
+
+    public PluginData(@NotNull Plugin plugin, @NotNull List<PlatformData> platformData) {
         this.pluginName = plugin.getName();
-        this.platform = platform;
+        this.platformData = platformData;
 
         String pluginVersion = plugin.getDescription().getVersion();
         Matcher matcher = VersionChecker.VERSION_PATTERN.matcher(pluginVersion);
@@ -29,9 +36,13 @@ public abstract class PluginData {
         this.currentVersion = matcher.group();
     }
 
-    public PluginData(String pluginName, String platform, String currentVersion) {
+    public PluginData(@NotNull String pluginName, @NotNull PlatformData platformData, @NotNull String currentVersion) {
+        this(pluginName, List.of(platformData), currentVersion);
+    }
+
+    public PluginData(@NotNull String pluginName, @NotNull List<PlatformData> platformData, @NotNull String currentVersion) {
         this.pluginName = pluginName;
-        this.platform = platform;
+        this.platformData = platformData;
 
         Matcher matcher = VersionChecker.VERSION_PATTERN.matcher(currentVersion);
         if (!matcher.find()) {
@@ -44,8 +55,12 @@ public abstract class PluginData {
         return pluginName;
     }
 
-    public String getPlatform() {
-        return platform;
+    public List<PlatformData> getPlatformData() {
+        return platformData;
+    }
+
+    public void addPlatform(PlatformData platformData) {
+        this.platformData.add(platformData);
     }
 
     public String getCurrentVersion() {

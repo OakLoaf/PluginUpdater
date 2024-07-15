@@ -1,28 +1,26 @@
-package org.lushplugins.pluginupdater.updater.platform.modrinth;
+package org.lushplugins.pluginupdater.api.platform.modrinth;
 
-import org.lushplugins.pluginupdater.updater.PluginData;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.plugin.Plugin;
-import org.jetbrains.annotations.NotNull;
+import org.lushplugins.pluginupdater.api.platform.PlatformData;
 
-public class ModrinthPluginData extends PluginData {
+public class ModrinthData extends PlatformData {
+    private static final String NAME = "modrinth";
+
     private final String modrinthProjectId;
     private final boolean featuredOnly;
 
-    public ModrinthPluginData(@NotNull Plugin plugin, ConfigurationSection configurationSection) {
-        super(plugin, "modrinth", configurationSection);
+    public ModrinthData(ConfigurationSection configurationSection) {
+        super(NAME);
         this.modrinthProjectId = configurationSection.getString("modrinth-project-id");
         this.featuredOnly = configurationSection.getBoolean("featured-only");
     }
 
     /**
-     * @param pluginName Name of the plugin
-     * @param currentVersion Current Version of the plugin (Format: 0.0.0)
      * @param modrinthProjectId Your Modrinth Project Slug
      * @param featuredOnly Whether to filter updates by Featured only
      */
-    public ModrinthPluginData(String pluginName, String currentVersion, String modrinthProjectId, boolean featuredOnly) {
-        super(pluginName, "modrinth", currentVersion);
+    public ModrinthData(String modrinthProjectId, boolean featuredOnly) {
+        super(NAME);
         this.modrinthProjectId = modrinthProjectId;
         this.featuredOnly = featuredOnly;
     }

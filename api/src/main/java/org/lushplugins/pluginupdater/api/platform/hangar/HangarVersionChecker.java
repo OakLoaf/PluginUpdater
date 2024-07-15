@@ -1,12 +1,10 @@
-package org.lushplugins.pluginupdater.updater.platform.hangar;
+package org.lushplugins.pluginupdater.api.platform.hangar;
 
 import com.google.common.io.CharStreams;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import org.lushplugins.pluginupdater.PluginUpdater;
-import org.lushplugins.pluginupdater.updater.PluginData;
-import org.lushplugins.pluginupdater.updater.VersionChecker;
+import org.lushplugins.pluginupdater.api.platform.PlatformData;
+import org.lushplugins.pluginupdater.api.util.UpdaterConstants;
+import org.lushplugins.pluginupdater.api.version.VersionChecker;
+import org.lushplugins.pluginupdater.api.updater.PluginData;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -17,14 +15,14 @@ import java.net.URL;
 public class HangarVersionChecker implements VersionChecker {
 
     @Override
-    public String getLatestVersion(PluginData pluginData) throws IOException {
-        if (!(pluginData instanceof HangarPluginData hangarData)) {
+    public String getLatestVersion(PluginData pluginData, PlatformData platformData) throws IOException {
+        if (!(platformData instanceof HangarData hangarData)) {
             return null;
         }
 
         URL url = new URL("https://hangar.papermc.io/api/v1/projects/" + hangarData.getHangarProjectSlug() + "/latestrelease");
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-        connection.addRequestProperty("User-Agent", "PluginUpdater/" + PluginUpdater.getInstance().getDescription().getVersion());
+        connection.addRequestProperty("User-Agent", "PluginUpdater/" + UpdaterConstants.VERSION);
 
         if (connection.getResponseCode() != 200) {
             throw new IllegalStateException("Received invalid response code (" + connection.getResponseCode() + ") whilst getting the latest version for '" + pluginData.getPluginName() + "'.");
@@ -36,7 +34,7 @@ public class HangarVersionChecker implements VersionChecker {
     }
 
     @Override
-    public String getDownloadUrl(PluginData pluginData) {
-        return pluginData instanceof HangarPluginData hangarData ? "https://hangar.papermc.io/api/v1/projects/" + hangarData.getHangarProjectSlug() + "/versions/" + hangarData.getLatestVersion() + "/PAPER/download" : null;
+    public String getDownloadUrl(PluginData pluginData, PlatformData platformData) {
+        return platformData instanceof HangarData hangarData ? "https://hangar.papermc.io/api/v1/projects/" + hangarData.getHangarProjectSlug() + "/versions/" + pluginData.getLatestVersion() + "/PAPER/download" : null;
     }
 }

@@ -1,7 +1,6 @@
-package org.lushplugins.pluginupdater.util;
+package org.lushplugins.pluginupdater.api.util;
 
-import org.lushplugins.pluginupdater.PluginUpdater;
-import org.lushplugins.pluginupdater.updater.PluginData;
+import org.lushplugins.pluginupdater.api.updater.PluginData;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -14,7 +13,6 @@ import java.time.format.DateTimeFormatterBuilder;
 import static java.time.temporal.ChronoField.*;
 
 public class DownloadLogger {
-    private static final File LOG_FILE = new File(PluginUpdater.getInstance().getDataFolder(), "downloads.log");
     private static final DateTimeFormatter DATE_TIME_FORMATTER = new DateTimeFormatterBuilder()
         .append(DateTimeFormatter.ISO_LOCAL_DATE)
         .appendLiteral(' ')
@@ -25,10 +23,16 @@ public class DownloadLogger {
         .appendLiteral(':')
         .appendValue(SECOND_OF_MINUTE, 2)
         .toFormatter();
+    private static File logFile;
+
+
+    public static void setLogFile(File file) {
+        logFile = file;
+    }
 
     public static void logDownload(PluginData pluginData) {
         try {
-            PrintWriter writer = new PrintWriter(new FileWriter(LOG_FILE, true));
+            PrintWriter writer = new PrintWriter(new FileWriter(logFile, true));
             writer.print("[" + LocalDateTime.now().format(DATE_TIME_FORMATTER) + "] Downloaded " + pluginData.getPluginName() + ": " + pluginData.getCurrentVersion() + " -> " + pluginData.getLatestVersion() + "\n");
             writer.close();
         } catch (IOException e) {

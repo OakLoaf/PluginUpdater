@@ -4,19 +4,50 @@ plugins {
     id("com.github.johnrengelman.shadow") version("8.1.1")
 }
 
-group = "org.lushplugins"
-version = "0.2.3"
+allprojects {
+    apply(plugin = "maven-publish")
 
-repositories {
-    mavenCentral()
-    mavenLocal()
-    maven { url = uri("https://hub.spigotmc.org/nexus/content/repositories/snapshots/") } // Spigot
-    maven { url = uri("https://repo.smrt-1.com/releases") } // LushLib
-    maven { url = uri("https://repo.smrt-1.com/snapshots") } // LushLib
+    group = "org.lushplugins"
+    version = "0.3.0"
+
+    repositories {
+        mavenCentral()
+        mavenLocal()
+        maven("https://hub.spigotmc.org/nexus/content/repositories/snapshots/") // Spigot
+        maven("https://repo.lushplugins.org/releases") // LushLib
+        maven("https://repo.lushplugins.org/snapshots") // LushLib
+    }
+
+    publishing {
+        repositories {
+            maven {
+                name = "lushReleases"
+                url = uri("https://repo.lushplugins.org/releases")
+                credentials(PasswordCredentials::class)
+                authentication {
+                    isAllowInsecureProtocol = true
+                    create<BasicAuthentication>("basic")
+                }
+            }
+
+            maven {
+                name = "lushSnapshots"
+                url = uri("https://repo.lushplugins.org/snapshots")
+                credentials(PasswordCredentials::class)
+                authentication {
+                    isAllowInsecureProtocol = true
+                    create<BasicAuthentication>("basic")
+                }
+            }
+        }
+    }
 }
 
 dependencies {
     compileOnly("org.spigotmc:spigot-api:1.20.6-R0.1-SNAPSHOT")
+
+    implementation(project(":api"))
+
     implementation("org.lushplugins:LushLib:0.1.7.7")
 }
 
@@ -52,28 +83,6 @@ tasks {
 }
 
 publishing {
-    repositories {
-        maven {
-            name = "smrt1Releases"
-            url = uri("https://repo.smrt-1.com/releases")
-            credentials(PasswordCredentials::class)
-            authentication {
-                isAllowInsecureProtocol = true
-                create<BasicAuthentication>("basic")
-            }
-        }
-
-        maven {
-            name = "smrt1Snapshots"
-            url = uri("https://repo.smrt-1.com/snapshots")
-            credentials(PasswordCredentials::class)
-            authentication {
-                isAllowInsecureProtocol = true
-                create<BasicAuthentication>("basic")
-            }
-        }
-    }
-
     publications {
         create<MavenPublication>("maven") {
             groupId = rootProject.group.toString()

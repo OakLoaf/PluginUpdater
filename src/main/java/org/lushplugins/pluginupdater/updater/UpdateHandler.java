@@ -1,7 +1,12 @@
 package org.lushplugins.pluginupdater.updater;
 
 import org.lushplugins.pluginupdater.PluginUpdater;
+import org.lushplugins.pluginupdater.api.platform.PlatformData;
+import org.lushplugins.pluginupdater.api.updater.PluginData;
+import org.lushplugins.pluginupdater.api.version.VersionChecker;
+import org.lushplugins.pluginupdater.api.version.VersionDifference;
 
+import java.io.IOException;
 import java.util.concurrent.*;
 
 public class UpdateHandler {
@@ -45,41 +50,27 @@ public class UpdateHandler {
             ProcessingData processingData = queue.take();
             if (processingData.getState().equals(ProcessingData.State.UPDATE_CHECK)) {
                 PluginData pluginData = processingData.getPluginData();
-                String platform = pluginData.getPlatform();
-
-                VersionChecker versionChecker = PluginUpdater.getInstance().getPlatformRegistry().getVersionChecker(platform);
-                if (versionChecker == null) {
-                    processingData.getFuture().complete(false);
-                    return;
-                }
 
                 try {
-                    processingData.getFuture().complete(versionChecker.isUpdateAvailable(pluginData));
+                    processingData.getFuture().complete(VersionChecker.isUpdateAvailable(pluginData));
                     pluginData.setCheckRan(true);
+                    return;
                 } catch (Exception e) {
-                    if (e instanceof IllegalStateException) {
-                        PluginUpdater.getInstance().getLogger().severe(e.getMessage());
-                    } else {
-                        processingData.getFuture().completeExceptionally(e);
-                    }
+                    PluginUpdater.getInstance().getLogger().severe(e.getMessage());
                 }
+
+                String platformNames = String.join(", ", pluginData.getPlatformData().stream().map(PlatformData::getName).toList());
+                processingData.getFuture().completeExceptionally(new IOException("Failed to run check for plugin '" + pluginData.getPluginName() + "' using defined platforms: '" + platformNames + "'"));
             }
             else if (processingData.getState().equals(ProcessingData.State.DOWNLOAD)) {
                 PluginData pluginData = processingData.getPluginData();
-                String platform = pluginData.getPlatform();
                 if (!pluginData.isEnabled() || !pluginData.isUpdateAvailable() || pluginData.isAlreadyDownloaded()) {
                     processingData.getFuture().complete(false);
                     return;
                 }
 
-                VersionChecker versionChecker = PluginUpdater.getInstance().getPlatformRegistry().getVersionChecker(platform);
-                if (versionChecker == null) {
-                    processingData.getFuture().complete(false);
-                    return;
-                }
-
                 try {
-                    if (versionChecker.download(pluginData)) {
+                    if (VersionChecker.download(pluginData)) {
                         pluginData.setVersionDifference(VersionDifference.UNKNOWN);
                         pluginData.setAlreadyDownloaded(true);
                         processingData.getFuture().complete(true);
@@ -89,6 +80,9 @@ public class UpdateHandler {
                 } catch (Exception e) {
                     processingData.getFuture().completeExceptionally(e);
                 }
+
+                String platformNames = String.join(", ", pluginData.getPlatformData().stream().map(PlatformData::getName).toList());
+                processingData.getFuture().completeExceptionally(new IOException("Failed to download update for plugin '" + pluginData.getPluginName() + "' using defined platforms: '" + platformNames + "'"));
             }
         } catch (InterruptedException e) {
             e.printStackTrace();

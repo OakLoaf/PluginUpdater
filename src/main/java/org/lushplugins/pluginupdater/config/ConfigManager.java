@@ -1,9 +1,12 @@
 package org.lushplugins.pluginupdater.config;
 
 import org.lushplugins.pluginupdater.PluginUpdater;
-import org.lushplugins.pluginupdater.updater.PluginData;
-import org.lushplugins.pluginupdater.updater.platform.modrinth.ModrinthPluginData;
-import org.lushplugins.pluginupdater.updater.platform.spigot.SpigotPluginData;
+import org.lushplugins.pluginupdater.api.platform.PlatformData;
+import org.lushplugins.pluginupdater.api.platform.PlatformRegistry;
+import org.lushplugins.pluginupdater.api.platform.hangar.HangarData;
+import org.lushplugins.pluginupdater.api.platform.modrinth.ModrinthData;
+import org.lushplugins.pluginupdater.api.platform.spigot.SpigotData;
+import org.lushplugins.pluginupdater.api.updater.PluginData;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -59,9 +62,9 @@ public class ConfigManager {
                     return;
                 }
 
-                PluginData pluginData = PluginUpdater.getInstance().getPlatformRegistry().getPluginData(currPlugin, platform, pluginSection);
-                if (pluginData != null) {
-                    addPlugin(pluginName, pluginData);
+                PlatformData platformData = PlatformRegistry.getPlatformData(platform, pluginSection);
+                if (platformData != null) {
+                    addPlugin(pluginName, new PluginData(currPlugin, platformData));
                 }
             });
         }
@@ -78,26 +81,33 @@ public class ConfigManager {
             if (pluginInputStream != null) {
                 YamlConfiguration pluginYml = YamlConfiguration.loadConfiguration(new InputStreamReader(pluginInputStream));
 
+                PlatformData platformData = null;
                 if (pluginYml.contains("modrinth-project-id")) {
-                    String modrinthSlug = pluginYml.getString("modrinth-project-id");
-                    addPlugin(pluginName, new ModrinthPluginData(pluginName, plugin1.getDescription().getVersion(), modrinthSlug, true));
+                    platformData = new ModrinthData(
+                        pluginYml.getString("modrinth-project-id"),
+                        true
+                    );
                 }
                 else if (pluginYml.contains("spigot-resource-id")) {
-                    String spigotResourceId = pluginYml.getString("spigot-resource-id");
-                    addPlugin(pluginName, new SpigotPluginData(pluginName, plugin1.getDescription().getVersion(), spigotResourceId));
+                    platformData = new SpigotData(
+                        pluginYml.getString("spigot-resource-id")
+                    );
                 }
                 else if (pluginYml.contains("hangar-project-slug")) {
-                    String hangarSlug = pluginYml.getString("hangar-project-slug");
-                    addPlugin(pluginName, new SpigotPluginData(pluginName, plugin1.getDescription().getVersion(), hangarSlug));
+                    platformData = new HangarData(
+                        pluginYml.getString("hangar-project-slug")
+                    );
                 }
                 else if (commonPluginsYml != null && commonPluginsYml.contains(pluginName)) {
                     ConfigurationSection pluginSection = commonPluginsYml.getConfigurationSection(pluginName);
                     if (pluginSection != null) {
-                        PluginData pluginData = PluginUpdater.getInstance().getPlatformRegistry().getPluginData(plugin1, pluginSection.getString("platform"), pluginSection);
-                        if (pluginData != null) {
-                            addPlugin(pluginName, pluginData);
-                        }
+                        platformData = PlatformRegistry.getPlatformData(pluginSection.getString("platform"), pluginSection);
                     }
+                }
+
+                if (platformData != null) {
+                    PluginData pluginData = new PluginData(plugin1, platformData);
+                    addPlugin(pluginName, pluginData);
                 }
             }
         }
