@@ -79,4 +79,4 @@ github-repo: "OakLoaf/LushRewards"
 ```
 
 ## Getting support
-If you need help setting up the plugin or have any questions feel free to join the [LushPlugins discord server](https://discord.gg/mbPxvAxP3m)
+If you need help setting up the plugin or have any questions, feel free to join the [LushPlugins discord server](https://discord.gg/mbPxvAxP3m)
