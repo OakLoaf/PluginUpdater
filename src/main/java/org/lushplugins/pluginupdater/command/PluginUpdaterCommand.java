@@ -16,6 +16,7 @@ public class PluginUpdaterCommand extends Command {
         addSubCommand(new PluginUpdatesCommand());
         addSubCommand(new ReloadSubCommand());
         addSubCommand(new RunChecksSubCommand());
+        addSubCommand(new UnregisteredPluginsSubCommand());
         addSubCommand(new UpdateSubCommand());
     }
 
