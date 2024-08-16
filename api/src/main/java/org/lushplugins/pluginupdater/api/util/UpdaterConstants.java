@@ -1,10 +1,8 @@
 package org.lushplugins.pluginupdater.api.util;
 
-import org.bukkit.configuration.file.YamlConfiguration;
-
-import java.io.File;
-import java.net.URISyntaxException;
-import java.net.URL;
+import java.io.*;
+import java.util.Properties;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class UpdaterConstants {
@@ -12,20 +10,13 @@ public class UpdaterConstants {
     public static final Logger LOGGER = Logger.getLogger("PluginUpdater");
 
     static {
-        ClassLoader classloader = Thread.currentThread().getContextClassLoader();
-        URL resource = classloader.getResource("properties.yml");
-
-        if (resource != null) {
-            YamlConfiguration propertiesConfig;
-            try {
-                propertiesConfig = YamlConfiguration.loadConfiguration(new File(resource.toURI()));
-            } catch (URISyntaxException e) {
-                throw new RuntimeException(e);
-            }
-
-            VERSION = propertiesConfig.getString("version");
-        } else {
-            throw new IllegalStateException("Failed to access 'properties.yml' resource.");
+        Properties properties = new Properties();
+        try (InputStream inputStream = UpdaterConstants.class.getClassLoader().getResourceAsStream("settings.properties")) {
+            properties.load(inputStream);
+            VERSION = properties.getProperty("version");
+        } catch (IOException e) {
+            LOGGER.log(Level.WARNING, "Failed to access properties file");
+            throw new IllegalStateException("Failed to access 'settings.properties' resource.");
         }
     }
 }

@@ -31,7 +31,7 @@ tasks {
         expand(project.properties)
 
         inputs.property("version", rootProject.version)
-        filesMatching("properties.yml") {
+        filesMatching("settings.properties") {
             expand("version" to rootProject.version)
         }
     }
