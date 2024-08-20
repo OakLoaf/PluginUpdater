@@ -4,12 +4,11 @@ plugins {
     id("com.github.johnrengelman.shadow") version("8.1.1")
 }
 
-// Test Commit
 allprojects {
     apply(plugin = "maven-publish")
 
     group = "org.lushplugins"
-    version = "0.3.4"
+    version = "0.3.5"
 
     repositories {
         mavenCentral()
