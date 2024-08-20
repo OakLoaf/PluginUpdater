@@ -22,6 +22,12 @@ jobs:
         run: |
           echo "VERSION_NAME=$(./gradlew -q printVersionName)" >> $GITHUB_ENV
 
+      - name: Ensure previous_version.txt exists
+        run: |
+          if [ ! -f previous_version.txt ]; then
+            echo "0.0.0" > previous_version.txt
+          fi
+
       - name: Compare version numbers
         id: compare
         run: |
