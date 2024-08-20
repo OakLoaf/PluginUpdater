@@ -37,15 +37,13 @@ jobs:
                 repo: context.repo.repo,
               });
               const tagExists = tags.some(t => t.name === tag);
-              const fs = require('fs');
-              fs.appendFileSync(process.env.GITHUB_ENV, `TAG_EXISTS=${tagExists}\n`);
+              core.setOutput('tag_exists', tagExists);
             } catch (error) {
-              const fs = require('fs');
-              fs.appendFileSync(process.env.GITHUB_ENV, `TAG_EXISTS=false\n`);
+              core.setOutput('tag_exists', false);
             }
 
       - name: Create GitHub Release
-        if: env.TAG_EXISTS == 'false'
+        if: steps.check_tag.outputs.tag_exists == 'false'
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.REPO_TOKEN }}
