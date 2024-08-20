@@ -53,6 +53,8 @@ jobs:
           draft: false
           prerelease: false
 
+
+      # TODO: Make this upload jar to release instead of uploading as artifact
       - name: Upload Release Asset
         if: env.TAG_EXISTS == 'false'
         uses: actions/upload-artifact@v4
