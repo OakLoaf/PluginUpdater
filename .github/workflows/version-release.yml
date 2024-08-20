@@ -1,9 +1,9 @@
-name: Detect Version Change and Create Release
+name: Detect Gradle Version Change and Create Release
 
 on:
   push:
-    paths:
-      - 'build.gradle.kts'
+#    paths:
+#      - 'build.gradle.kts'
 
 jobs:
   detect-version-change:
@@ -36,6 +36,10 @@ jobs:
           else
             echo "::set-output name=version_changed::false"
           fi
+
+      - name: Debugging step - Print tag_name
+        run: |
+          echo "Tag name is: ${{ env.VERSION_NAME }}"
 
       - name: Create GitHub Release
         if: steps.compare.outputs.version_changed == 'true'
