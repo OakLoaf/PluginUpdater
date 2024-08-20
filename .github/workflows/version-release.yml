@@ -36,10 +36,10 @@ jobs:
               repo: context.repo.repo,
             });
             const tagExists = tags.some(t => t.name === tag);
-            return { tagExists };
+            core.setOutput('tag_exists', tagExists);
 
       - name: Create GitHub Release
-        if: steps.check_tag.outputs.tagExists == 'false'
+        if: steps.check_tag.outputs.tag_exists == 'false'
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.REPO_TOKEN }}
