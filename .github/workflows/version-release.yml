@@ -2,8 +2,8 @@ name: Create Release on Version Update
 
 on:
   push:
-    paths:
-      - 'build.gradle.kts'
+#    paths:
+#      - 'build.gradle.kts'
 
 jobs:
   create_release:
@@ -17,7 +17,7 @@ jobs:
         uses: actions/setup-java@v3
         with:
           distribution: 'adopt'
-          java-version: '17'
+          java-version: '11'
 
       - name: Extract version from build.gradle.kts
         id: get_version
@@ -27,14 +27,19 @@ jobs:
 
       - name: Check if tag exists
         id: check_tag
-        run: |
-          if git rev-parse "v${{ env.VERSION }}" >/dev/null 2>&1; then
-            echo "Tag v${{ env.VERSION }} already exists."
-            exit 0
-          fi
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const tag = `v${{ env.VERSION }}`;
+            const { data: tags } = await github.repos.listTags({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+            });
+            const tagExists = tags.some(t => t.name === tag);
+            return { tagExists };
 
       - name: Create GitHub Release
-        if: steps.check_tag.outputs.tag_exists == 'false'
+        if: steps.check_tag.outputs.tagExists == 'false'
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.REPO_TOKEN }}
