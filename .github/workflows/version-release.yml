@@ -37,7 +37,7 @@ jobs:
           fi
 
       - name: Create GitHub Release
-        if: env.TAG_EXISTS == 'true'
+        if: env.TAG_EXISTS == 'false'
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.REPO_TOKEN }}
