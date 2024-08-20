@@ -2,8 +2,8 @@ name: Create Release on Version Update
 
 on:
   push:
-#    paths:
-#      - 'build.gradle.kts'
+    paths:
+      - 'build.gradle.kts'
 
 jobs:
   create_release:
@@ -37,13 +37,15 @@ jobs:
                 repo: context.repo.repo,
               });
               const tagExists = tags.some(t => t.name === tag);
-              core.setOutput('tag_exists', tagExists);
+              const fs = require('fs');
+              fs.appendFileSync(process.env.GITHUB_ENV, `TAG_EXISTS=${tagExists}\n`);
             } catch (error) {
-              core.setOutput('tag_exists', false);
+              const fs = require('fs');
+              fs.appendFileSync(process.env.GITHUB_ENV, `TAG_EXISTS=false\n`);
             }
 
       - name: Create GitHub Release
-        if: steps.check_tag.outputs.tag_exists == 'false'
+        if: env.TAG_EXISTS == 'false'
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.REPO_TOKEN }}
