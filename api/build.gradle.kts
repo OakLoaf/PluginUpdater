@@ -3,6 +3,7 @@ plugins {
     id("com.github.johnrengelman.shadow") version("8.1.1")
 }
 
+// Test Commit
 dependencies {
     compileOnly("org.spigotmc:spigot-api:1.20.6-R0.1-SNAPSHOT")
 
