@@ -20,7 +20,9 @@ jobs:
 
       - name: Retrieve Gradle version
         run: |
-          echo "VERSION_NAME=$(./gradlew -q printVersionName)" >> $GITHUB_ENV
+          VERSION_NAME=$(./gradlew -q printVersionName)
+          echo "VERSION_NAME=$VERSION_NAME"
+          echo "VERSION_NAME=$VERSION_NAME" >> $GITHUB_ENV
 
       - name: Ensure previous_version.txt exists
         run: |
