@@ -25,7 +25,16 @@ jobs:
           VERSION=$(grep -oP 'version = "\K[0-9]+\.[0-9]+\.[0-9]+' build.gradle.kts)
           echo "VERSION=$VERSION" >> $GITHUB_ENV
 
+      - name: Check if tag exists
+        id: check_tag
+        run: |
+          if git rev-parse "v${{ env.VERSION }}" >/dev/null 2>&1; then
+            echo "Tag v${{ env.VERSION }} already exists."
+            exit 0
+          fi
+
       - name: Create GitHub Release
+        if: steps.check_tag.outputs.tag_exists == 'false'
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.REPO_TOKEN }}
