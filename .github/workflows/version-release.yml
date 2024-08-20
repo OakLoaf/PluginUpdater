@@ -38,7 +38,9 @@ jobs:
 
       - name: Build with Gradle
         if: env.TAG_EXISTS == 'false'
-        run: ./gradlew shadowJar
+        run: |
+          chmod +x ./gradlew
+          ./gradlew shadowJar
 
       - name: Upload JAR file
         if: env.TAG_EXISTS == 'false'
