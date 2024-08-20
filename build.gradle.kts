@@ -62,6 +62,13 @@ tasks {
         options.encoding = "UTF-8"
     }
 
+    register("printVersionName") {
+        doLast {
+            println(project.version)
+        }
+    }
+
+
     shadowJar {
         relocate("org.lushplugins.lushlib", "org.lushplugins.pluginupdater.libraries.lushlib")
 

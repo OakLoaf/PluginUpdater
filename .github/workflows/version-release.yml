@@ -3,7 +3,7 @@ name: Detect Gradle Version Change and Create Release
 on:
   push:
     paths:
-      - 'build.gradle'
+      - 'build.gradle.kts'
 
 jobs:
   detect-version-change:
