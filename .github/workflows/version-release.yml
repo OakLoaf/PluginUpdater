@@ -2,8 +2,8 @@ name: Create Release on Version Update
 
 on:
   push:
-#    paths:
-#      - 'build.gradle.kts'
+    paths:
+      - 'build.gradle.kts'
 
 jobs:
   create_release:
@@ -31,12 +31,16 @@ jobs:
         with:
           script: |
             const tag = `v${{ env.VERSION }}`;
-            const { data: tags } = await github.repos.listTags({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-            });
-            const tagExists = tags.some(t => t.name === tag);
-            core.setOutput('tag_exists', tagExists);
+            try {
+              const { data: tags } = await github.repos.listTags({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+              });
+              const tagExists = tags.some(t => t.name === tag);
+              core.setOutput('tag_exists', tagExists);
+            } catch (error) {
+              core.setOutput('tag_exists', false);
+            }
 
       - name: Create GitHub Release
         if: steps.check_tag.outputs.tag_exists == 'false'
