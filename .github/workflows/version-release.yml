@@ -2,8 +2,8 @@ name: Create Release on Version Update
 
 on:
   push:
-#    paths:
-#      - 'build.gradle.kts'
+    paths:
+      - 'build.gradle.kts'
 
 jobs:
   create_release:
