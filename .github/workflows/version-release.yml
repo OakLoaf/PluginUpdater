@@ -36,6 +36,17 @@ jobs:
             echo "TAG_EXISTS=false" >> $GITHUB_ENV
           fi
 
+      - name: Build with Gradle
+        if: env.TAG_EXISTS == 'false'
+        run: ./gradlew shadowJar
+
+      - name: Upload JAR file
+        if: env.TAG_EXISTS == 'false'
+        uses: actions/upload-artifact@v2
+        with:
+          name: shadow-jar
+          path: build/libs/*.jar
+
       - name: Create GitHub Release
         if: env.TAG_EXISTS == 'false'
         uses: actions/create-release@v1
@@ -46,3 +57,14 @@ jobs:
           release_name: Release ${{ env.VERSION }}
           draft: false
           prerelease: false
+
+      - name: Upload Release Asset
+        if: env.TAG_EXISTS == 'false'
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.REPO_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: build/libs/*.jar
+          asset_name: shadow-jar-${{ env.VERSION }}.jar
+          asset_content_type: application/java-archive
