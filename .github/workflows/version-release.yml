@@ -29,14 +29,12 @@ jobs:
 
       - name: Check if tag exists
         id: check_tag
-        uses: actions/github-script@v6
-        with:
-          script: |
-            const tag = `v${{ env.VERSION }}`;
-            if git show-ref --tags --verify --quiet "refs/tags/${TAG}"; then
-              echo "TAG_EXISTS=true" >> $GITHUB_ENV
-            else
-              echo "TAG_EXISTS=false" >> $GITHUB_ENV
+        run: |
+          TAG=`v${{ env.VERSION }}`;
+          if git show-ref --tags --verify --quiet "refs/tags/${TAG}"; then
+            echo "TAG_EXISTS=true" >> $GITHUB_ENV
+          else
+            echo "TAG_EXISTS=false" >> $GITHUB_ENV
 
       - name: Create GitHub Release
         if: env.TAG_EXISTS == 'true'
