@@ -1,4 +1,4 @@
-name: Detect Gradle Version Change and Create Release
+name: Detect Version Change and Create Release
 
 on:
   push:
