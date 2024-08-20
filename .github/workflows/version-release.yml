@@ -1,0 +1,49 @@
+name: Detect Gradle Version Change and Create Release
+
+on:
+  push:
+    paths:
+      - 'build.gradle'
+
+jobs:
+  detect-version-change:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up JDK
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'temurin'
+          java-version: '11'
+
+      - name: Retrieve Gradle version
+        run: |
+          echo "VERSION_NAME=$(./gradlew -q printVersionName)" >> $GITHUB_ENV
+
+      - name: Compare version numbers
+        id: compare
+        run: |
+          if [ "$VERSION_NAME" != "$(cat previous_version.txt)" ]; then
+            echo "::set-output name=version_changed::true"
+          else
+            echo "::set-output name=version_changed::false"
+          fi
+
+      - name: Create GitHub Release
+        if: steps.compare.outputs.version_changed == 'true'
+        uses: actions/create-release@v1
+        with:
+          tag_name: ${{ env.VERSION_NAME }}
+          release_name: Release ${{ env.VERSION_NAME }}
+          body: |
+            New release for version ${{ env.VERSION_NAME }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Update stored version
+        if: steps.compare.outputs.version_changed == 'true'
+        run: echo $VERSION_NAME > previous_version.txt
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
