@@ -42,22 +42,32 @@ jobs:
           chmod +x ./gradlew
           ./gradlew shadowJar
 
-      - name: Create GitHub Release
+#      - name: Create GitHub Release
+#        if: env.TAG_EXISTS == 'false'
+#        uses: actions/create-release@v1
+#        env:
+#          GITHUB_TOKEN: ${{ secrets.REPO_TOKEN }}
+#        with:
+#          tag_name: v${{ env.VERSION }}
+#          release_name: Release ${{ env.VERSION }}
+#          draft: false
+#          prerelease: false
+
+      - name: Upload binaries to release
+        uses: svenstaro/upload-release-action@v2
         if: env.TAG_EXISTS == 'false'
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.REPO_TOKEN }}
         with:
-          tag_name: v${{ env.VERSION }}
-          release_name: Release ${{ env.VERSION }}
-          draft: false
-          prerelease: false
+          repo_token: ${{ secrets.REPO_TOKEN }}
+          file: build/libs/*.jar
+          asset_name: PluginUpdater-${{ env.VERSION }}
+          tag: v${{ env.VERSION }}
+          overwrite: false
 
 
       # TODO: Make this upload jar to release instead of uploading as artifact
-      - name: Upload Release Asset
-        if: env.TAG_EXISTS == 'false'
-        uses: actions/upload-artifact@v4
-        with:
-          name: output
-          path: build/libs/PluginUpdater-${{ env.VERSION }}.jar
+#      - name: Upload Release Asset
+#        if: env.TAG_EXISTS == 'false'
+#        uses: actions/upload-artifact@v4
+#        with:
+#          name: output
+#          path: build/libs/PluginUpdater-${{ env.VERSION }}.jar
