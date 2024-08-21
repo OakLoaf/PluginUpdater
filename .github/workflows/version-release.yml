@@ -30,7 +30,7 @@ jobs:
           VERSION=$(grep -oP 'version = "\K[0-9]+\.[0-9]+\.[0-9]+' build.gradle.kts)
           echo "VERSION=$VERSION" >> $GITHUB_ENV
 
-      - name: Check if tag exists
+      - name: Verify tag change
         id: check_tag
         run: |
           if git show-ref --tags --verify --quiet "refs/tags/v${{ env.VERSION }}"; then
@@ -45,18 +45,7 @@ jobs:
           chmod +x ./gradlew
           ./gradlew shadowJar
 
-#      - name: Create GitHub Release
-#        if: env.TAG_EXISTS == 'false'
-#        uses: actions/create-release@v1
-#        env:
-#          GITHUB_TOKEN: ${{ secrets.REPO_TOKEN }}
-#        with:
-#          tag_name: v${{ env.VERSION }}
-#          release_name: Release ${{ env.VERSION }}
-#          draft: false
-#          prerelease: false
-
-      - name: Upload binaries to release
+      - name: Post GitHub Release
         uses: svenstaro/upload-release-action@v2
         if: env.TAG_EXISTS == 'false'
         with:
@@ -66,12 +55,3 @@ jobs:
           asset_name: PluginUpdater-${{ env.VERSION }}
           tag: v${{ env.VERSION }}
           overwrite: false
-
-
-      # TODO: Make this upload jar to release instead of uploading as artifact
-#      - name: Upload Release Asset
-#        if: env.TAG_EXISTS == 'false'
-#        uses: actions/upload-artifact@v4
-#        with:
-#          name: output
-#          path: build/libs/PluginUpdater-${{ env.VERSION }}.jar
