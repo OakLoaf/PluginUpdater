@@ -61,7 +61,8 @@ jobs:
         if: env.TAG_EXISTS == 'false'
         with:
           repo_token: ${{ secrets.REPO_TOKEN }}
-          file: build/libs/
+          file: build/libs/*.jar
+          file_glob: true
           asset_name: PluginUpdater-${{ env.VERSION }}
           tag: v${{ env.VERSION }}
           overwrite: false
