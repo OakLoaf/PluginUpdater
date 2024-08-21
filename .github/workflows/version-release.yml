@@ -2,6 +2,9 @@ name: Create Release on Version Update
 
 on:
   push:
+    branches:
+      - main
+      - master
 #    paths:
 #      - 'build.gradle.kts'
 
