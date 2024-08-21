@@ -5,8 +5,8 @@ on:
     branches:
       - main
       - master
-#    paths:
-#      - 'build.gradle.kts'
+    paths:
+      - 'build.gradle.kts'
 
 jobs:
   create_release:
