@@ -32,7 +32,7 @@ Adding new plugins is really easy! Each plugin requires the plugin name to be de
 ```
 
 <details><summary><b>Finding the Project ID</b></summary>
-  <img src="https://i.imgur.com/bmD3jlx.png"/>
+  <img src="https://imgur.com/xWnjjud.png"/>
 </details>
 
 ### Spigot
