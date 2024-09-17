@@ -61,12 +61,17 @@ public interface VersionChecker {
             throw new IllegalStateException("Response code was " + connection.getResponseCode());
         }
 
+        // Get file name or default to PluginName-Version.jar
+        String fileName = url.getFile();
+        if (fileName.isEmpty()) {
+            fileName = pluginName + "-" + latestVersion + ".jar";
+        }
+
         // Ensures update folder exists
         Bukkit.getUpdateFolderFile().mkdirs();
 
         // Downloads file from url
         ReadableByteChannel rbc = Channels.newChannel(connection.getInputStream());
-        String fileName = pluginName + "-" + latestVersion + ".jar";
         File out = new File(Bukkit.getUpdateFolderFile(), fileName);
         UpdaterConstants.LOGGER.info("Saving '" + fileName + "' to '" + out.getAbsolutePath() + "'");
         FileOutputStream fos = new FileOutputStream(out);
