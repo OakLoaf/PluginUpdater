@@ -45,6 +45,20 @@ public class Updater {
     }
 
     /**
+     * @return Whether an update is available (Returns false if version has not been checked)
+     */
+    public boolean isUpdateAvailable() {
+        return pluginData.isUpdateAvailable();
+    }
+
+    /**
+     * @return Whether an update has already been downloaded
+     */
+    public boolean isAlreadyDownloaded() {
+        return pluginData.isAlreadyDownloaded();
+    }
+
+    /**
      * Checks if an update for the plugin is available.
      * @return A future containing whether an update is available.
      */
