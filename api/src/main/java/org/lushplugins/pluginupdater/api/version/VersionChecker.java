@@ -61,6 +61,10 @@ public interface VersionChecker {
             throw new IllegalStateException("Response code was " + connection.getResponseCode());
         }
 
+        // Ensures update folder exists
+        Bukkit.getUpdateFolderFile().mkdirs();
+
+        // Downloads file from url
         ReadableByteChannel rbc = Channels.newChannel(connection.getInputStream());
         String fileName = pluginName + "-" + latestVersion + ".jar";
         File out = new File(Bukkit.getUpdateFolderFile(), fileName);
