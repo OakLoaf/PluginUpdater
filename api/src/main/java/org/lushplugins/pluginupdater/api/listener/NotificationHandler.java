@@ -18,6 +18,8 @@ public class NotificationHandler implements Listener {
         this.updater = updater;
         this.notificationPermission = notificationPermission;
         this.notificationMessage = notificationMessage;
+
+        updater.getPlugin().getServer().getPluginManager().registerEvents(this, updater.getPlugin());
     }
 
     @EventHandler
