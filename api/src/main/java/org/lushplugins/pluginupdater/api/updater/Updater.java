@@ -138,6 +138,7 @@ public class Updater {
     public static class Builder {
         private final Plugin plugin;
         private final PluginData pluginData;
+        private long checkFrequency = 600;
         private boolean notify = true;
         private String notificationPermission = null;
         private String notificationMessage = "&#ffe27aA new &#e0c01b%plugin% &#ffe27aupdate is now available! &#e0c01b%current_version% &#ffe27a-> &#e0c01b%latest_version%";
@@ -195,6 +196,15 @@ public class Updater {
         }
 
         /**
+         * Sets whether a version check should be run upon building
+         * @param seconds Number of seconds between checks (Default: 600 seconds. Set to -1 to disable)
+         */
+        public Builder checkSchedule(long seconds) {
+            this.checkFrequency = seconds;
+            return this;
+        }
+
+        /**
          * Sets whether notifications should be sent for this
          * @param shouldSend Whether notifications should be sent.
          */
@@ -241,7 +251,13 @@ public class Updater {
             }
 
             DownloadLogger.setLogFile(downloadLogFile);
-            return new Updater(plugin, pluginData, notify, notificationPermission, notificationMessage);
+            Updater updater = new Updater(plugin, pluginData, notify, notificationPermission, notificationMessage);
+
+            if (checkFrequency > 0) {
+                Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, updater::checkForUpdate, 0, checkFrequency);
+            }
+
+            return updater;
         }
     }
 }
