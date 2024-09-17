@@ -128,6 +128,7 @@ public class Updater {
                     completableFuture.complete(false);
                 }
             } catch (Exception e) {
+                e.printStackTrace();
                 completableFuture.completeExceptionally(e);
             }
         });
