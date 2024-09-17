@@ -141,7 +141,7 @@ public class Updater {
         private final PluginData pluginData;
         private long checkFrequency = 600;
         private boolean notify = true;
-        private String notificationPermission = null;
+        private String notificationPermission = "pluginupdater.notifications";
         private String notificationMessage = "&#ffe27aA new &#e0c01b%plugin% &#ffe27aupdate is now available! &#e0c01b%current_version% &#ffe27a-> &#e0c01b%latest_version%";
         private File downloadLogFile;
 
