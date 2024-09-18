@@ -111,6 +111,7 @@ modrinth {
         versionNumber.set(rootProject.version.toString())
     } else {
         versionNumber.set(rootProject.version.toString() + "-" + getCurrentCommitHash())
+        print(rootProject.version.toString() + "-" + getCurrentCommitHash())
     }
     uploadFile.set(file("build/libs/${project.name}-${project.version}.jar"))
     versionType.set(if (System.getenv("TAG_EXISTS") == "false") "release" else "alpha")
