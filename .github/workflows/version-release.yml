@@ -4,12 +4,15 @@ on:
   push:
     branches:
       - main
-    paths:
-      - 'build.gradle.kts'
+#    paths:
+#      - 'build.gradle.kts'
 
 jobs:
   create_release:
     runs-on: ubuntu-latest
+
+    env:
+      MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
 
     steps:
       - name: Checkout repository
@@ -59,4 +62,4 @@ jobs:
         if: env.TAG_EXISTS == 'false'
         run: |
           chmod +x ./gradlew
-          MODRINTH_TOKEN=${{ secrets.MODRINTH_TOKEN }} ./gradlew modrinth
+          ./gradlew modrinth
