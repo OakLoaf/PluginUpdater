@@ -2,6 +2,7 @@ plugins {
     `java-library`
     `maven-publish`
     id("com.github.johnrengelman.shadow") version("8.1.1")
+    id("com.modrinth.minotaur") version("2.+")
 }
 
 allprojects {
@@ -98,4 +99,20 @@ publishing {
             from(project.components["java"])
         }
     }
+}
+
+modrinth {
+    token.set(System.getenv("MODRINTH_TOKEN"))
+    projectId.set("IBSpJfbm")
+    versionNumber.set(rootProject.version.toString())
+    uploadFile.set(file("build/libs/${project.name}-${project.version}.jar"))
+    versionType.set("release")
+    gameVersions.addAll(
+        "1.18", "1.18.1", "1.18.2",
+        "1.19", "1.19.1", "1.19.2", "1.19.3", "1.19.4",
+        "1.20", "1.20.1", "1.20.2", "1.20.3", "1.20.4", "1.20.5", "1.20.6",
+        "1.21", "1.21.1"
+    )
+    loaders.addAll("spigot", "paper", "purpur")
+    syncBodyFrom.set(rootProject.file("README.md").readText())
 }

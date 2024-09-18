@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - master
     paths:
       - 'build.gradle.kts'
 
@@ -55,3 +54,9 @@ jobs:
           asset_name: PluginUpdater-${{ env.VERSION }}
           tag: v${{ env.VERSION }}
           overwrite: false
+
+      - name: Post Modrinth Release
+        if: env.TAG_EXISTS == 'false'
+        run: |
+          chmod +x ./gradlew
+          ./gradlew modrinth
