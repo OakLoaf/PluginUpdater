@@ -1,8 +1,11 @@
+import java.io.BufferedReader
+import java.io.InputStreamReader
+
 plugins {
     `java-library`
     `maven-publish`
-    id("com.github.johnrengelman.shadow") version("8.1.1")
-    id("com.modrinth.minotaur") version("2.+")
+    id("com.github.johnrengelman.shadow") version ("8.1.1")
+    id("com.modrinth.minotaur") version ("2.+")
 }
 
 allprojects {
@@ -80,7 +83,7 @@ tasks {
         archiveFileName.set("${project.name}-${project.version}.jar")
     }
 
-    processResources{
+    processResources {
         expand(project.properties)
 
         inputs.property("version", rootProject.version)
@@ -104,9 +107,15 @@ publishing {
 modrinth {
     token.set(System.getenv("MODRINTH_TOKEN"))
     projectId.set("IBSpJfbm")
-    versionNumber.set(rootProject.version.toString())
+    versionNumber.set(
+        if (System.getenv("TAG_EXISTS") == "false") {
+            rootProject.version.toString()
+        } else {
+            rootProject.version.toString() + "-" + getCurrentCommitHash()
+        }
+    )
     uploadFile.set(file("build/libs/${project.name}-${project.version}.jar"))
-    versionType.set("release")
+    versionType.set(if (System.getenv("TAG_EXISTS") == "false") "release" else "false")
     gameVersions.addAll(
         "1.18", "1.18.1", "1.18.2",
         "1.19", "1.19.1", "1.19.2", "1.19.3", "1.19.4",
@@ -115,4 +124,17 @@ modrinth {
     )
     loaders.addAll("spigot", "paper", "purpur")
     syncBodyFrom.set(rootProject.file("README.md").readText())
+}
+
+fun getCurrentCommitHash(): String {
+    val process = ProcessBuilder("git", "rev-parse", "HEAD").start()
+    val reader = BufferedReader(InputStreamReader(process.inputStream))
+    val commitHash = reader.readLine()
+    reader.close()
+    process.waitFor()
+    if (process.exitValue() == 0) {
+        return commitHash ?: ""
+    } else {
+        throw IllegalStateException("Failed to retrieve the commit hash.")
+    }
 }
