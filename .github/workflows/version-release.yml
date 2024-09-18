@@ -44,16 +44,16 @@ jobs:
           chmod +x ./gradlew
           ./gradlew shadowJar
 
-      - name: Post GitHub Release
-        uses: svenstaro/upload-release-action@v2
-        if: env.TAG_EXISTS == 'false'
-        with:
-          repo_token: ${{ secrets.REPO_TOKEN }}
-          file: build/libs/*.jar
-          file_glob: true
-          asset_name: PluginUpdater-${{ env.VERSION }}
-          tag: v${{ env.VERSION }}
-          overwrite: false
+#      - name: Post GitHub Release
+#        uses: svenstaro/upload-release-action@v2
+#        if: env.TAG_EXISTS == 'false'
+#        with:
+#          repo_token: ${{ secrets.REPO_TOKEN }}
+#          file: build/libs/*.jar
+#          file_glob: true
+#          asset_name: PluginUpdater-${{ env.VERSION }}
+#          tag: v${{ env.VERSION }}
+#          overwrite: false
 
       - name: Post Modrinth Release
         if: env.TAG_EXISTS == 'false'
