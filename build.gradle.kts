@@ -116,3 +116,4 @@ modrinth {
     loaders.addAll("spigot", "paper", "purpur")
     syncBodyFrom.set(rootProject.file("README.md").readText())
 }
+//
