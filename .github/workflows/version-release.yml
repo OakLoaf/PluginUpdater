@@ -59,4 +59,4 @@ jobs:
         if: env.TAG_EXISTS == 'false'
         run: |
           chmod +x ./gradlew
-          ./gradlew modrinth
+          ./gradlew modrinth -DMODRINTH_TOKEN=${{ secrets.MODRINTH_TOKEN }}
