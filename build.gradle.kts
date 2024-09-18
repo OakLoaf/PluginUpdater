@@ -126,7 +126,7 @@ modrinth {
 }
 
 fun getCurrentCommitHash(): String {
-    val process = ProcessBuilder("git", "rev-parse", "HEAD").start()
+    val process = ProcessBuilder("git", "rev-parse", "--short", "HEAD").start()
     val reader = BufferedReader(InputStreamReader(process.inputStream))
     val commitHash = reader.readLine()
     reader.close()
