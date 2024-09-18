@@ -115,7 +115,7 @@ modrinth {
         }
     )
     uploadFile.set(file("build/libs/${project.name}-${project.version}.jar"))
-    versionType.set(if (System.getenv("TAG_EXISTS") == "false") "release" else "false")
+    versionType.set(if (System.getenv("TAG_EXISTS") == "false") "release" else "alpha")
     gameVersions.addAll(
         "1.18", "1.18.1", "1.18.2",
         "1.19", "1.19.1", "1.19.2", "1.19.3", "1.19.4",
