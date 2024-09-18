@@ -4,8 +4,6 @@ on:
   push:
     branches:
       - main
-#    paths:
-#      - 'build.gradle.kts'
 
 jobs:
   create_release:
@@ -42,7 +40,6 @@ jobs:
           fi
 
       - name: Build with Gradle
-        if: env.TAG_EXISTS == 'false'
         run: |
           chmod +x ./gradlew
           ./gradlew shadowJar
