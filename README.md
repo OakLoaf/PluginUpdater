@@ -1,5 +1,5 @@
 # PluginUpdater
-PluginUpdater is a simple plugin to handle checking versions and automatically downloading plugin files from Modrinth, Spigot, Hangar and GitHub Releases. All updates and checks are ran asynchronously at a rate of 1 check/download per second.
+PluginUpdater is a simple plugin and shadeable API that handles checking versions and automatically downloading plugin files from Modrinth, Spigot, Hangar and GitHub Releases. All updates and checks are ran asynchronously at a rate of 1 check/download per second to respect rate limits.
 
 By default PluginUpdater comes with support for 50+ commonly used plugins, you can easily configure any other plugins you use that are hosted on supported sites.
 
