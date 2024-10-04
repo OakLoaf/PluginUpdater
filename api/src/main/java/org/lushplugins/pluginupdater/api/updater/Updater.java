@@ -255,7 +255,7 @@ public class Updater {
             Updater updater = new Updater(plugin, pluginData, notify, notificationPermission, notificationMessage);
 
             if (checkFrequency > 0) {
-                Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, updater::checkForUpdate, 0, checkFrequency);
+                Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, updater::checkForUpdate, 0, checkFrequency * 20);
             }
 
             return updater;
