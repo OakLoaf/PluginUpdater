@@ -24,7 +24,7 @@ tasks {
     shadowJar {
         minimize()
 
-        archiveFileName.set("${project.name}-${project.version}-api.jar")
+        archiveFileName.set("${project.name}-${project.version}.jar")
     }
 
     processResources{
