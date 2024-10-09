@@ -34,6 +34,11 @@ public class UpdateSubCommand extends SubCommand {
             return true;
         }
 
+        if (args.length == 0) {
+            ChatColorHandler.sendMessage(sender, "&#ff6969Invalid command format, try: /updater update <plugin>");
+            return true;
+        }
+
         if (args[0].equalsIgnoreCase("all")) {
             UpdateHandler updateHandler = PluginUpdater.getInstance().getUpdateHandler();
             AtomicInteger updateCount = new AtomicInteger(0);
