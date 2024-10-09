@@ -72,14 +72,13 @@ tasks {
         }
     }
 
-
     shadowJar {
         relocate("org.lushplugins.lushlib", "org.lushplugins.pluginupdater.libraries.lushlib")
 
         minimize()
 
-//        val folder = System.getenv("pluginFolder")
-//        if (folder != null) destinationDirectory.set(file(folder))
+        val folder = System.getenv("pluginFolder")
+        if (folder != null) destinationDirectory.set(file(folder))
         archiveFileName.set("${project.name}-${project.version}.jar")
     }
 
@@ -123,6 +122,11 @@ modrinth {
     )
     loaders.addAll("spigot", "paper", "purpur")
     syncBodyFrom.set(rootProject.file("README.md").readText())
+}
+
+tasks.modrinth {
+    dependsOn("shadowJar")
+    dependsOn(tasks.modrinthSyncBody)
 }
 
 fun getCurrentCommitHash(): String {
