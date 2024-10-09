@@ -29,6 +29,11 @@ public class UpdateSubCommand extends SubCommand {
 
     @Override
     public boolean execute(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args, @NotNull String[] fullArgs) {
+        if (!PluginUpdater.getInstance().getConfigManager().shouldAllowDownloads()) {
+            ChatColorHandler.sendMessage(sender, "&#ff6969Update downloads have been disabled in the config");
+            return true;
+        }
+
         if (args[0].equalsIgnoreCase("all")) {
             UpdateHandler updateHandler = PluginUpdater.getInstance().getUpdateHandler();
             AtomicInteger updateCount = new AtomicInteger(0);

@@ -17,7 +17,10 @@ public class PluginUpdaterCommand extends Command {
         addSubCommand(new ReloadSubCommand());
         addSubCommand(new RunChecksSubCommand());
         addSubCommand(new UnregisteredPluginsSubCommand());
-        addSubCommand(new UpdateSubCommand());
+
+        if (PluginUpdater.getInstance().getConfigManager().shouldAllowDownloads()) {
+            addSubCommand(new UpdateSubCommand());
+        }
     }
 
     @Override

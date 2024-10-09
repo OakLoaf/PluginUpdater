@@ -1,5 +1,7 @@
 # Whether to check for updates on server startup
 check-updates-on-start: true
+# Set to 'false' to disable all download features of PluginUpdater
+allow-downloads: true
 
 # To learn how to configure plugins that are on different platforms check out the wiki: https://github.com/OakLoaf/PluginUpdater/wiki/PluginUpdater-Plugin
 plugins:

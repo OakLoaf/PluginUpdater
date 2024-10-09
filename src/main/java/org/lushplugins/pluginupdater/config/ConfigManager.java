@@ -21,6 +21,7 @@ import java.util.*;
 
 public class ConfigManager {
     private boolean checkOnStartup;
+    private boolean allowDownloads;
     private final Map<String, PluginData> plugins = new TreeMap<>();
     private final HashMap<String, String> messages = new HashMap<>();
 
@@ -33,7 +34,8 @@ public class ConfigManager {
         plugin.reloadConfig();
         FileConfiguration config = plugin.getConfig();
 
-        checkOnStartup = config.getBoolean("check-updates-on-start");
+        checkOnStartup = config.getBoolean("check-updates-on-start", true);
+        allowDownloads = config.getBoolean("allow-downloads", true);
 
         Collection<PluginData> dataSnapshot = new ArrayList<>(plugins.values());
         for (PluginData snapshot : dataSnapshot) {
@@ -125,6 +127,10 @@ public class ConfigManager {
 
     public boolean shouldCheckOnStartup() {
         return checkOnStartup;
+    }
+
+    public boolean shouldAllowDownloads() {
+        return allowDownloads;
     }
 
     public Set<String> getPlugins() {
