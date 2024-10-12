@@ -3,7 +3,9 @@ name: Run PR Tests
 on:
   pull_request:
     types:
+      - opened
       - synchronize
+      - reopened
 
 jobs:
   build-project:
