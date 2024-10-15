@@ -12,7 +12,7 @@ allprojects {
     apply(plugin = "maven-publish")
 
     group = "org.lushplugins"
-    version = "1.0.3"
+    version = "1.0.3-beta1"
 
     repositories {
         mavenCentral()
@@ -106,7 +106,7 @@ publishing {
 modrinth {
     token.set(System.getenv("MODRINTH_TOKEN"))
     projectId.set("IBSpJfbm")
-    if (System.getenv("TAG_EXISTS") == "false") {
+    if (System.getenv("RELEASE_TYPE") == "release") {
         versionNumber.set(rootProject.version.toString())
     } else {
         versionNumber.set(rootProject.version.toString() + "-" + getCurrentCommitHash())
