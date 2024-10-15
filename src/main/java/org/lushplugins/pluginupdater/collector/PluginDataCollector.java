@@ -10,7 +10,7 @@ import org.lushplugins.pluginupdater.config.ConfigManager;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public interface PluginCollector {
+public interface PluginDataCollector {
 
     List<PluginData> collectPlugins(Collection<JavaPlugin> unknownPlugins);
 
@@ -26,14 +26,14 @@ public interface PluginCollector {
         }
 
         List<PluginData> foundPluginDataList = new ArrayList<>();
-        List<PluginCollector> collectors = List.of(
+        List<PluginDataCollector> collectors = List.of(
             new CommonPluginCollector(),
             new PluginYamlCollector(),
             new ModrinthCollector(),
             new SpigotCollector()
         );
 
-        for (PluginCollector collector : collectors) {
+        for (PluginDataCollector collector : collectors) {
             List<PluginData> pluginDataList = collector.collectPlugins(unknownPlugins.values());
 
             for (PluginData pluginData : pluginDataList) {

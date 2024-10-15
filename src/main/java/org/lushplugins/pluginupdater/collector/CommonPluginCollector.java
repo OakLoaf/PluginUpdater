@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public class CommonPluginCollector implements PluginCollector {
+public class CommonPluginCollector implements PluginDataCollector {
 
     @Override
     public List<PluginData> collectPlugins(Collection<JavaPlugin> unknownPlugins) {

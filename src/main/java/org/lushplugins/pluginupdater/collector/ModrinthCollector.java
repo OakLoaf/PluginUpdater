@@ -21,7 +21,7 @@ import java.net.http.HttpResponse;
 import java.util.*;
 import java.util.logging.Level;
 
-public class ModrinthCollector implements PluginCollector {
+public class ModrinthCollector implements PluginDataCollector {
 
     @Override
     public List<PluginData> collectPlugins(Collection<JavaPlugin> unknownPlugins) {

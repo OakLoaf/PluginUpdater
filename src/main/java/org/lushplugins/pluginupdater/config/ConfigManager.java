@@ -10,7 +10,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.lushplugins.pluginupdater.collector.PluginCollector;
+import org.lushplugins.pluginupdater.collector.PluginDataCollector;
 import org.lushplugins.pluginupdater.updater.UpdateHandler;
 
 import java.util.*;
@@ -80,7 +80,7 @@ public class ConfigManager {
             });
         }
 
-        List<PluginData> collectedPluginData = PluginCollector.collectUnknownPlugins();
+        List<PluginData> collectedPluginData = PluginDataCollector.collectUnknownPlugins();
         for (PluginData pluginData : collectedPluginData) {
             addPlugin(pluginData);
         }

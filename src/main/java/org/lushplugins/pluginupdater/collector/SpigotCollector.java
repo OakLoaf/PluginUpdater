@@ -18,7 +18,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.logging.Level;
 
-public class SpigotCollector implements PluginCollector {
+public class SpigotCollector implements PluginDataCollector {
 
     @Override
     public List<PluginData> collectPlugins(Collection<JavaPlugin> unknownPlugins) {

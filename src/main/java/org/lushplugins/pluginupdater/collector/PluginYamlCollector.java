@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public class PluginYamlCollector implements PluginCollector {
+public class PluginYamlCollector implements PluginDataCollector {
 
     @Override
     public List<PluginData> collectPlugins(Collection<JavaPlugin> unknownPlugins) {
