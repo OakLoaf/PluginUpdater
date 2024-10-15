@@ -5,6 +5,7 @@ plugins {
     `java-library`
     `maven-publish`
     id("com.github.johnrengelman.shadow") version ("8.1.1")
+    id("xyz.jpenilla.run-paper") version("2.3.1")
     id("com.modrinth.minotaur") version ("2.+")
 }
 
@@ -84,6 +85,30 @@ tasks {
             expand("version" to rootProject.version)
         }
     }
+
+    runServer {
+        minecraftVersion("1.21")
+
+        downloadPlugins {
+            modrinth("viaversion", "5.0.3")
+            modrinth("viabackwards", "5.0.3")
+            // The following plugins are intentionally outdated
+            modrinth("djC8I9ui", "3.2.0") // LushRewards
+            modrinth("discordsrv", "1.27.0")
+            modrinth("coreprotect", "22.3")
+            modrinth("fancynpcs", "2.2.2")
+            modrinth("fancyholograms", "2.3.1")
+        }
+    }
+}
+
+tasks.withType(xyz.jpenilla.runtask.task.AbstractRun::class) {
+    javaLauncher = javaToolchains.launcherFor {
+        vendor = JvmVendorSpec.JETBRAINS
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+
+    jvmArgs("-XX:+AllowEnhancedClassRedefinition")
 }
 
 publishing {
