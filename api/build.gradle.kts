@@ -7,7 +7,7 @@ dependencies {
     compileOnly("org.spigotmc:spigot-api:1.21.1-R0.1-SNAPSHOT")
 
     implementation("org.lushplugins:ChatColorHandler:5.1.0")
-    implementation("org.jetbrains:annotations:26.0.0")
+    implementation("org.jetbrains:annotations:26.0.1")
 }
 
 java {
