@@ -12,7 +12,7 @@ allprojects {
     apply(plugin = "maven-publish")
 
     group = "org.lushplugins"
-    version = "1.0.3-beta1"
+    version = "1.0.4-alpha1"
 
     repositories {
         mavenCentral()
