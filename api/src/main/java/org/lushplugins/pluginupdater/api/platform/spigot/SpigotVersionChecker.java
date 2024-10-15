@@ -3,41 +3,36 @@ package org.lushplugins.pluginupdater.api.platform.spigot;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import org.lushplugins.pluginupdater.api.updater.PluginData;
+import org.lushplugins.pluginupdater.api.util.HttpUtil;
 import org.lushplugins.pluginupdater.api.util.UpdaterConstants;
 import org.lushplugins.pluginupdater.api.version.VersionChecker;
 import org.lushplugins.pluginupdater.api.platform.PlatformData;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
+import java.net.http.HttpResponse;
 
 public class SpigotVersionChecker implements VersionChecker {
 
     @Override
-    public String getLatestVersion(PluginData pluginData, PlatformData platformData) throws IOException {
+    public String getLatestVersion(PluginData pluginData, PlatformData platformData) throws IOException, InterruptedException {
         if (!(platformData instanceof SpigotData spigotData)) {
             return null;
         }
 
-        URL url = new URL("https://api.spiget.org/v2/resources/" + spigotData.getSpigotResourceId() + "/versions/latest");
-        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-        connection.addRequestProperty("User-Agent", "PluginUpdater/" + UpdaterConstants.VERSION);
+        HttpResponse<String> response = HttpUtil.sendRequest(String.format("%s/resources/%s/versions/latest", UpdaterConstants.APIs.SPIGET, spigotData.getSpigotResourceId()));
 
-        if (connection.getResponseCode() != 200) {
-            throw new IllegalStateException("Received invalid response code (" + connection.getResponseCode() + ") whilst checking '" + pluginData.getPluginName() + "' for updates.");
+        if (response.statusCode() != 200) {
+            throw new IllegalStateException("Received invalid response code (" + response.statusCode() + ") whilst checking '" + pluginData.getPluginName() + "' for updates.");
         }
 
-        InputStream inputStream = connection.getInputStream();
-        InputStreamReader reader = new InputStreamReader(inputStream);
-
-        JsonObject pluginJson = JsonParser.parseReader(reader).getAsJsonObject();
+        JsonObject pluginJson = JsonParser.parseString(response.body()).getAsJsonObject();
         return pluginJson.get("name").getAsString();
     }
 
     @Override
     public String getDownloadUrl(PluginData pluginData, PlatformData platformData) {
-        return platformData instanceof SpigotData spigotData ? "https://api.spiget.org/v2/resources/" + spigotData.getSpigotResourceId() + "/download" : null;
+        return platformData instanceof SpigotData spigotData ?
+            String.format("%s/resources/%s/download", UpdaterConstants.APIs.SPIGET, spigotData.getSpigotResourceId()) :
+            null;
     }
 }

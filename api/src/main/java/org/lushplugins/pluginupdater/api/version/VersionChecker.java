@@ -19,11 +19,11 @@ import java.util.regex.Pattern;
 public interface VersionChecker {
     Pattern VERSION_PATTERN = Pattern.compile("(\\d+(\\.\\d+)+)");
 
-    String getLatestVersion(PluginData pluginData, PlatformData platformData) throws IOException;
+    String getLatestVersion(PluginData pluginData, PlatformData platformData) throws IOException, InterruptedException;
 
-    String getDownloadUrl(PluginData pluginData, PlatformData platformData) throws IOException;
+    String getDownloadUrl(PluginData pluginData, PlatformData platformData) throws IOException, InterruptedException;
 
-    default boolean isUpdateAvailable(PluginData pluginData, PlatformData platformData) throws IOException {
+    default boolean isUpdateAvailable(PluginData pluginData, PlatformData platformData) throws IOException, InterruptedException {
         String currentVersion = pluginData.getCurrentVersion();
 
         Matcher matcher = VersionChecker.VERSION_PATTERN.matcher(getLatestVersion(pluginData, platformData));
@@ -43,7 +43,7 @@ public interface VersionChecker {
         }
     }
 
-    default boolean download(PluginData pluginData, PlatformData platformData) throws IOException {
+    default boolean download(PluginData pluginData, PlatformData platformData) throws IOException, InterruptedException {
         String pluginName = pluginData.getPluginName();
         String latestVersion = pluginData.getLatestVersion();
         String downloadUrl = getDownloadUrl(pluginData, platformData);
@@ -132,16 +132,16 @@ public interface VersionChecker {
 
             try {
                 return callable.call(versionChecker, platformData);
-            } catch (IOException e) {
+            } catch (IOException | InterruptedException e) {
                 UpdaterConstants.LOGGER.severe(e.getMessage());
             }
         }
 
-        throw new IOException("Failed to all attempts on all available platforms for plugin '" + pluginData.getPluginName() + "'.");
+        throw new IOException("Failed attempts on all available platforms for plugin '" + pluginData.getPluginName() + "'.");
     }
 
     @FunctionalInterface
     interface VersionCheckerCallable<T> {
-        T call(VersionChecker versionChecker, PlatformData platformData) throws IOException;
+        T call(VersionChecker versionChecker, PlatformData platformData) throws IOException, InterruptedException;
     }
 }

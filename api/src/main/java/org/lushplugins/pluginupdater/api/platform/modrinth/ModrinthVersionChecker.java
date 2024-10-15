@@ -3,62 +3,55 @@ package org.lushplugins.pluginupdater.api.platform.modrinth;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import org.lushplugins.pluginupdater.api.util.HttpUtil;
 import org.lushplugins.pluginupdater.api.util.UpdaterConstants;
 import org.lushplugins.pluginupdater.api.version.VersionChecker;
 import org.lushplugins.pluginupdater.api.updater.PluginData;
 import org.lushplugins.pluginupdater.api.platform.PlatformData;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
+import java.net.http.HttpResponse;
 
 public class ModrinthVersionChecker implements VersionChecker {
 
     @Override
-    public String getLatestVersion(PluginData pluginData, PlatformData platformData) throws IOException {
+    public String getLatestVersion(PluginData pluginData, PlatformData platformData) throws IOException, InterruptedException {
         if (!(platformData instanceof ModrinthData modrinthData)) {
             return null;
         }
 
-        URL url = new URL("https://api.modrinth.com/v2/project/" + modrinthData.getModrinthProjectId() + "/version?loaders=[%22bukkit%22,%22spigot%22,%22paper%22,%22purpur%22,%22folia%22]" + (modrinthData.includeFeaturedOnly() ? "&featured=true" : ""));
-        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-        connection.addRequestProperty("User-Agent", "PluginUpdater/" + UpdaterConstants.VERSION);
-
-        if (connection.getResponseCode() != 200) {
-            throw new IllegalStateException("Received invalid response code (" + connection.getResponseCode() + ") whilst getting the latest version for '" + pluginData.getPluginName() + "'.");
-        }
-
-        InputStream inputStream = connection.getInputStream();
-        InputStreamReader reader = new InputStreamReader(inputStream);
-
-        JsonArray versionsJson = JsonParser.parseReader(reader).getAsJsonArray();
-        JsonObject currVersionJson = versionsJson.get(0).getAsJsonObject();
+        JsonObject currVersionJson = getLatestVersion(pluginData, modrinthData);
         return currVersionJson.get("version_number").getAsString();
     }
 
     @Override
-    public String getDownloadUrl(PluginData pluginData, PlatformData platformData) throws IOException {
+    public String getDownloadUrl(PluginData pluginData, PlatformData platformData) throws IOException, InterruptedException {
         if (!(platformData instanceof ModrinthData modrinthData)) {
             return null;
         }
 
-        String modrinthProjectSlug = modrinthData.getModrinthProjectId();
+        JsonObject currVersionJson = getLatestVersion(pluginData, modrinthData);
+        return currVersionJson.get("files").getAsJsonArray().get(0).getAsJsonObject().get("url").getAsString();
+    }
 
-        URL url = new URL("https://api.modrinth.com/v2/project/" + modrinthProjectSlug + "/version?loaders=[%22bukkit%22,%22spigot%22,%22paper%22,%22purpur%22,%22folia%22]" + (modrinthData.includeFeaturedOnly() ? "?featured=true" : ""));
-        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-        connection.addRequestProperty("User-Agent", "PluginUpdater/" + UpdaterConstants.VERSION);
+    private JsonArray getVersions(PluginData pluginData, ModrinthData modrinthData) throws IOException, InterruptedException {
+        StringBuilder uriBuilder = new StringBuilder(String.format("%s/project/%s/version", UpdaterConstants.APIs.MODRINTH, modrinthData.getModrinthProjectId()))
+            .append("?loaders=[%22bukkit%22,%22spigot%22,%22paper%22,%22purpur%22,%22folia%22]");
 
-        if (connection.getResponseCode() != 200) {
-            throw new IllegalStateException("Received invalid response code (" + connection.getResponseCode() + ") whilst getting the download url for '" + pluginData.getPluginName() + "'.");
+        if (modrinthData.includeFeaturedOnly()) {
+            uriBuilder.append("&featured=true");
         }
 
-        InputStream inputStream = connection.getInputStream();
-        InputStreamReader reader = new InputStreamReader(inputStream);
+        HttpResponse<String> response = HttpUtil.sendRequest(uriBuilder.toString());
 
-        JsonArray versionsJson = JsonParser.parseReader(reader).getAsJsonArray();
-        JsonObject currVersionJson = versionsJson.get(0).getAsJsonObject();
-        return currVersionJson.get("files").getAsJsonArray().get(0).getAsJsonObject().get("url").getAsString();
+        if (response.statusCode() != 200) {
+            throw new IllegalStateException("Received invalid response code (" + response.statusCode() + ") whilst checking '" + pluginData.getPluginName() + "' for updates.");
+        }
+
+        return JsonParser.parseString(response.body()).getAsJsonArray();
+    }
+
+    private JsonObject getLatestVersion(PluginData pluginData, ModrinthData modrinthData) throws IOException, InterruptedException {
+        return getVersions(pluginData, modrinthData).get(0).getAsJsonObject();
     }
 }
