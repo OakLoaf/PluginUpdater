@@ -36,8 +36,8 @@ public interface PluginDataCollector {
         for (PluginDataCollector collector : collectors) {
             List<PluginData> pluginDataList = collector.collectPlugins(unknownPlugins.values());
 
+            foundPluginDataList.addAll(pluginDataList);
             for (PluginData pluginData : pluginDataList) {
-                pluginDataList.add(pluginData);
                 unknownPlugins.remove(pluginData.getPluginName());
             }
         }
