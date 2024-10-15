@@ -3,7 +3,6 @@ package org.lushplugins.pluginupdater;
 import org.bukkit.command.CommandExecutor;
 import org.lushplugins.lushlib.command.Command;
 import org.lushplugins.pluginupdater.api.util.DownloadLogger;
-import org.lushplugins.pluginupdater.api.util.UpdaterConstants;
 import org.lushplugins.pluginupdater.command.PluginUpdaterCommand;
 import org.lushplugins.pluginupdater.command.PluginUpdatesCommand;
 import org.lushplugins.pluginupdater.config.ConfigManager;
@@ -29,6 +28,7 @@ public final class PluginUpdater extends JavaPlugin {
 
         configManager = new ConfigManager();
         configManager.reloadConfig();
+
         if (configManager.shouldCheckOnStartup()) {
             configManager.getPlugins().forEach(pluginName -> updateHandler.queueUpdateCheck(pluginName));
         }
