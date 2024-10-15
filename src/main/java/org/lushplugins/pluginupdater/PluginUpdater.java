@@ -29,10 +29,6 @@ public final class PluginUpdater extends JavaPlugin {
         configManager = new ConfigManager();
         configManager.reloadConfig();
 
-        if (configManager.shouldCheckOnStartup()) {
-            configManager.getPlugins().forEach(pluginName -> updateHandler.queueUpdateCheck(pluginName));
-        }
-
         registerCommand(new PluginUpdaterCommand());
         registerCommand(new PluginUpdatesCommand());
     }

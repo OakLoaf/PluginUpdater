@@ -11,12 +11,12 @@ import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.lushplugins.pluginupdater.collector.PluginCollector;
+import org.lushplugins.pluginupdater.updater.UpdateHandler;
 
 import java.util.*;
 import java.util.logging.Level;
 
 public class ConfigManager {
-    private boolean checkOnStartup;
     private boolean allowDownloads;
     private final Map<String, PluginData> plugins = new TreeMap<>();
     private final HashSet<String> disabledPlugins = new HashSet<>();
@@ -31,11 +31,11 @@ public class ConfigManager {
         plugin.reloadConfig();
         FileConfiguration config = plugin.getConfig();
 
-        checkOnStartup = config.getBoolean("check-updates-on-reload", true);
+        boolean checkOnReload = config.getBoolean("check-updates-on-reload", true);
         allowDownloads = config.getBoolean("allow-downloads", true);
 
         if (config.contains("check-updates-on-start")) {
-            checkOnStartup = config.getBoolean("check-updates-on-start", true);
+            checkOnReload = config.getBoolean("check-updates-on-start", true);
             PluginUpdater.getInstance().getLogger().log(Level.WARNING, "Deprecated: The config section 'check-updates-on-start' has been renamed to 'check-updates-on-reload'");
         }
 
@@ -84,10 +84,11 @@ public class ConfigManager {
         for (PluginData pluginData : collectedPluginData) {
             addPlugin(pluginData);
         }
-    }
 
-    public boolean shouldCheckOnStartup() {
-        return checkOnStartup;
+        if (checkOnReload) {
+            UpdateHandler updateHandler = PluginUpdater.getInstance().getUpdateHandler();
+            getPlugins().forEach(pluginName -> updateHandler.queueUpdateCheck(pluginName));
+        }
     }
 
     public boolean shouldAllowDownloads() {

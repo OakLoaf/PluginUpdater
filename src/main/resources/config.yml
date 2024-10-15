@@ -1,5 +1,5 @@
-# Whether to check for updates on server startup
-check-updates-on-start: true
+# Whether to check for updates on reload and server startup
+check-updates-on-reload: true
 # Set to 'false' to disable all download features of PluginUpdater
 allow-downloads: true
 
