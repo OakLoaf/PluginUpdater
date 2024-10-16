@@ -83,7 +83,7 @@ public class UpdateSubCommand extends SubCommand {
             ChatColorHandler.sendMessage(sender, "&#ff6969That plugin is not registered");
         }
         else if (!pluginData.areDownloadsAllowed()) {
-            ChatColorHandler.sendMessage(sender, "&#ffda54Downloads are disabled for that plugin, to allow downloads for this plugin manually add it to your config");
+            ChatColorHandler.sendMessage(sender, "&#ff6969Downloads are disabled for that plugin, to allow downloads manually add it to your config");
         }
         else if (pluginData.isAlreadyDownloaded()) {
             ChatColorHandler.sendMessage(sender, "&#ffda54You have already downloaded an update for this plugin - please restart your server");
