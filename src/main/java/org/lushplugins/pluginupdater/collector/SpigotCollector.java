@@ -53,6 +53,9 @@ public class SpigotCollector implements PluginDataCollector {
         }
 
         JsonObject resultJson = resultsJson.get(0).getAsJsonObject();
-        return new PluginData(unknownPlugin, new SpigotData(resultJson.get("id").getAsString()));
+        return new PluginData(
+            unknownPlugin,
+            new SpigotData(resultJson.get("id").getAsString()),
+            false);
     }
 }

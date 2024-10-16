@@ -9,6 +9,7 @@ import org.lushplugins.pluginupdater.api.version.VersionDifference;
 import java.util.List;
 import java.util.regex.Matcher;
 
+// TODO: Move from constructors to Builder class
 public class PluginData {
     private final String pluginName;
     private final List<PlatformData> platformData;
@@ -17,16 +18,26 @@ public class PluginData {
 
     private boolean enabled = true;
     private VersionDifference versionDifference = VersionDifference.UNKNOWN;
+    private final boolean allowDownloads;
     private boolean alreadyDownloaded = false;
     private boolean checkRan = false;
 
     public PluginData(@NotNull Plugin plugin, @NotNull PlatformData platformData) {
-        this(plugin, List.of(platformData));
+        this(plugin, List.of(platformData), true);
+    }
+
+    public PluginData(@NotNull Plugin plugin, @NotNull PlatformData platformData, boolean allowDownloads) {
+        this(plugin, List.of(platformData), allowDownloads);
     }
 
     public PluginData(@NotNull Plugin plugin, @NotNull List<PlatformData> platformData) {
+        this(plugin, platformData, true);
+    }
+
+    public PluginData(@NotNull Plugin plugin, @NotNull List<PlatformData> platformData, boolean allowDownloads) {
         this.pluginName = plugin.getName();
         this.platformData = platformData;
+        this.allowDownloads = allowDownloads;
 
         String pluginVersion = plugin.getDescription().getVersion();
         Matcher matcher = VersionChecker.VERSION_PATTERN.matcher(pluginVersion);
@@ -37,12 +48,21 @@ public class PluginData {
     }
 
     public PluginData(@NotNull String pluginName, @NotNull PlatformData platformData, @NotNull String currentVersion) {
-        this(pluginName, List.of(platformData), currentVersion);
+        this(pluginName, List.of(platformData), currentVersion, true);
+    }
+
+    public PluginData(@NotNull String pluginName, @NotNull PlatformData platformData, @NotNull String currentVersion, boolean allowDownloads) {
+        this(pluginName, List.of(platformData), currentVersion, allowDownloads);
     }
 
     public PluginData(@NotNull String pluginName, @NotNull List<PlatformData> platformData, @NotNull String currentVersion) {
+        this(pluginName, platformData, currentVersion, true);
+    }
+
+    public PluginData(@NotNull String pluginName, @NotNull List<PlatformData> platformData, @NotNull String currentVersion, boolean allowDownloads) {
         this.pluginName = pluginName;
         this.platformData = platformData;
+        this.allowDownloads = allowDownloads;
 
         Matcher matcher = VersionChecker.VERSION_PATTERN.matcher(currentVersion);
         if (!matcher.find()) {
@@ -93,6 +113,10 @@ public class PluginData {
 
     public void setVersionDifference(@NotNull VersionDifference versionDifference) {
         this.versionDifference = versionDifference;
+    }
+
+    public boolean areDownloadsAllowed() {
+        return allowDownloads;
     }
 
     public boolean isAlreadyDownloaded() {
