@@ -2,14 +2,14 @@ package org.lushplugins.pluginupdater.listener;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.lushplugins.lushlib.libraries.chatcolor.ChatColorHandler;
-import org.lushplugins.lushlib.listener.EventListener;
 import org.lushplugins.pluginupdater.PluginUpdater;
 import org.lushplugins.pluginupdater.api.updater.PluginData;
 import org.lushplugins.pluginupdater.config.ConfigManager;
 
-public class PlayerListener implements EventListener {
+public class PlayerListener implements Listener {
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {

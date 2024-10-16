@@ -1,6 +1,7 @@
 package org.lushplugins.pluginupdater;
 
 import org.bukkit.command.CommandExecutor;
+import org.lushplugins.lushlib.LushLib;
 import org.lushplugins.lushlib.command.Command;
 import org.lushplugins.pluginupdater.api.util.DownloadLogger;
 import org.lushplugins.pluginupdater.command.PluginUpdaterCommand;
@@ -30,7 +31,7 @@ public final class PluginUpdater extends JavaPlugin {
         configManager = new ConfigManager();
         configManager.reloadConfig();
 
-        new PlayerListener().registerListeners();
+        getServer().getPluginManager().registerEvents(new PlayerListener(), this);
 
         registerCommand(new PluginUpdaterCommand());
         registerCommand(new PluginUpdatesCommand());
