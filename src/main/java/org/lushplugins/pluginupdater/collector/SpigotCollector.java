@@ -38,12 +38,16 @@ public class SpigotCollector implements PluginDataCollector {
         try {
             response = HttpUtil.sendRequest(String.format("%s/search/resources/%s", UpdaterConstants.APIs.SPIGET, unknownPlugin.getName()));
         } catch (IOException | InterruptedException e) {
-            PluginUpdater.getInstance().getLogger().log(Level.WARNING, "Caught error whilst getting project data from hashes: ", e);
+            PluginUpdater.getInstance().getLogger().log(Level.WARNING, "Caught error whilst searching for project on spiget: ", e);
+            return null;
+        }
+
+        if (response.statusCode() == 404) {
             return null;
         }
 
         if (response.statusCode() != 200) {
-            PluginUpdater.getInstance().getLogger().log(Level.WARNING, "Received invalid response code (" + response.statusCode() + ") whilst getting project data from hashes.");
+            PluginUpdater.getInstance().getLogger().log(Level.WARNING, "Received invalid response code (" + response.statusCode() + ") whilst searching for project on spiget (" + response.uri() + ")");
             return null;
         }
 
