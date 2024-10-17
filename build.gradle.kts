@@ -125,7 +125,7 @@ publishing {
 modrinth {
     token.set(System.getenv("MODRINTH_TOKEN"))
     projectId.set("IBSpJfbm")
-    if (System.getenv("RELEASE_TYPE").equals("release")) {
+    if (System.getenv("RELEASE_TYPE") == "release") {
         versionNumber.set(rootProject.version.toString())
     } else {
         versionNumber.set(rootProject.version.toString() + "-" + getCurrentCommitHash())
