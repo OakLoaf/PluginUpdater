@@ -125,14 +125,14 @@ publishing {
 modrinth {
     token.set(System.getenv("MODRINTH_TOKEN"))
     projectId.set("IBSpJfbm")
-    if (System.getenv("RELEASE_TYPE") == "release") {
+    if (System.getenv("RELEASE_TYPE").equals("release")) {
         versionNumber.set(rootProject.version.toString())
     } else {
         versionNumber.set(rootProject.version.toString() + "-" + getCurrentCommitHash())
         print(rootProject.version.toString() + "-" + getCurrentCommitHash())
     }
     uploadFile.set(file("build/libs/${project.name}-${project.version}.jar"))
-    versionType.set(if (System.getenv("TAG_EXISTS") == "false") "release" else "alpha")
+    versionType.set(System.getenv("RELEASE_TYPE"))
     gameVersions.addAll(
         "1.18", "1.18.1", "1.18.2",
         "1.19", "1.19.1", "1.19.2", "1.19.3", "1.19.4",
