@@ -41,7 +41,11 @@ jobs:
       - name: Set project release type
         if: ${{ steps.regex-match.outputs.match == '' }}
         run: |
-          echo "RELEASE_TYPE=release" >> $GITHUB_ENV
+          if git show-ref --tags --verify --quiet "refs/tags/v${{ env.VERSION }}"; then
+            echo "RELEASE_TYPE=alpha" >> $GITHUB_ENV
+          else
+            echo "RELEASE_TYPE=release" >> $GITHUB_ENV
+          fi
 
       - name: Set project release type
         if: ${{ steps.regex-match.outputs.match != '' }}
