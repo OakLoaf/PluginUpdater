@@ -31,13 +31,15 @@ public class ConfigManager {
         plugin.reloadConfig();
         FileConfiguration config = plugin.getConfig();
 
-        boolean checkOnReload = config.getBoolean("check-updates-on-reload", true);
-        allowDownloads = config.getBoolean("allow-downloads", true);
-
+        boolean checkOnReload;
         if (config.contains("check-updates-on-start")) {
             checkOnReload = config.getBoolean("check-updates-on-start", true);
             PluginUpdater.getInstance().getLogger().log(Level.WARNING, "Deprecated: The config section 'check-updates-on-start' has been renamed to 'check-updates-on-reload'");
+        } else {
+            checkOnReload = config.getBoolean("check-updates-on-reload", true);
         }
+
+        allowDownloads = config.getBoolean("allow-downloads", true);
 
         ConfigurationSection messagesSection = config.getConfigurationSection("messages");
         if (messagesSection != null) {
@@ -80,15 +82,16 @@ public class ConfigManager {
             });
         }
 
-        List<PluginData> collectedPluginData = PluginDataCollector.collectUnknownPlugins();
-        for (PluginData pluginData : collectedPluginData) {
-            addPlugin(pluginData);
-        }
+        PluginDataCollector.collectUnknownPlugins().thenAccept(collectedPluginData -> {
+            for (PluginData pluginData : collectedPluginData) {
+                addPlugin(pluginData);
+            }
 
-        if (checkOnReload) {
-            UpdateHandler updateHandler = PluginUpdater.getInstance().getUpdateHandler();
-            getPlugins().forEach(pluginName -> updateHandler.queueUpdateCheck(pluginName));
-        }
+            if (checkOnReload) {
+                UpdateHandler updateHandler = PluginUpdater.getInstance().getUpdateHandler();
+                getPlugins().forEach(pluginName -> updateHandler.queueUpdateCheck(pluginName));
+            }
+        });
     }
 
     public boolean shouldAllowDownloads() {

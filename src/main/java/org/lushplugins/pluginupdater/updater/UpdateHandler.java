@@ -13,6 +13,10 @@ public class UpdateHandler {
     private final ScheduledExecutorService threads = Executors.newScheduledThreadPool(1);
     private final LinkedBlockingQueue<ProcessingData> queue = new LinkedBlockingQueue<>();
 
+    public ScheduledExecutorService getThreads() {
+        return threads;
+    }
+
     public void enable() {
         threads.submit(() -> Thread.currentThread().setName("PluginUpdater Update Thread"));
         threads.scheduleAtFixedRate(this::processQueue, 15, 1, TimeUnit.SECONDS);
