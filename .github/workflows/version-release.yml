@@ -35,16 +35,18 @@ jobs:
         id: regex-match
         with:
           text: ${{ env.VERSION }}
-          regex: '[-a-zA-Z]'
+          regex: '[a-zA-Z]'
           flags: gm
 
       - name: Set project release type
+        if: ${{ steps.regex-match.outputs.match == '' }}
         run: |
-          if [ "${{ steps.regex-match.outputs.match }}" == "" ]; then
-            echo "RELEASE_TYPE=alpha" >> $GITHUB_ENV
-          else
-            echo "RELEASE_TYPE=release" >> $GITHUB_ENV
-          fi
+          echo "RELEASE_TYPE=release" >> $GITHUB_ENV
+
+      - name: Set project release type
+        if: ${{ steps.regex-match.outputs.match != '' }}
+        run: |
+          echo "RELEASE_TYPE=alpha" >> $GITHUB_ENV
 
       - name: Build with Gradle
         run: |
