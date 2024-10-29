@@ -63,7 +63,7 @@ public interface VersionChecker {
 
         // Get file name or default to PluginName-Version.jar
         String fileName = url.getFile();
-        if (fileName.isEmpty()) {
+        if (fileName.isEmpty() || fileName.contains("/") || fileName.contains("\\")) {
             fileName = pluginName + "-" + latestVersion + ".jar";
         }
 
