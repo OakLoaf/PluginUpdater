@@ -53,7 +53,7 @@ dependencies {
 
     implementation(project(":api"))
 
-    implementation("org.lushplugins:LushLib:0.10.4")
+    implementation("org.lushplugins:LushLib:0.10.11")
 }
 
 java {
