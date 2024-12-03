@@ -61,6 +61,7 @@ public class ConfigManager {
             getConfigurationSections(pluginsSection).forEach(pluginSection -> {
                 String pluginName = pluginSection.getName();
                 boolean enabled = pluginSection.getBoolean("enabled", true);
+                boolean allowDownloads = pluginSection.getBoolean("allow-downloads", true);
                 String platform = pluginSection.getString("platform");
 
                 if (!enabled) {
@@ -77,7 +78,7 @@ public class ConfigManager {
 
                 PlatformData platformData = PlatformRegistry.getPlatformData(platform, pluginSection);
                 if (platformData != null) {
-                    addPlugin(pluginName, new PluginData(currPlugin, platformData));
+                    addPlugin(pluginName, new PluginData(currPlugin, platformData, allowDownloads));
                 }
             });
         }
