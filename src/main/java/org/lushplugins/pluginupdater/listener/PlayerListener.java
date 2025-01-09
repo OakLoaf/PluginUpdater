@@ -1,5 +1,6 @@
 package org.lushplugins.pluginupdater.listener;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -15,20 +16,22 @@ public class PlayerListener implements Listener {
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
         if (player.hasPermission("pluginupdater.notify")) {
-            ConfigManager configManager = PluginUpdater.getInstance().getConfigManager();
+            Bukkit.getScheduler().runTaskLaterAsynchronously(PluginUpdater.getInstance(), () -> {
+                ConfigManager configManager = PluginUpdater.getInstance().getConfigManager();
 
-            int updatesAvailable = 0;
-            for (PluginData pluginData : configManager.getAllPluginData()) {
-                if (pluginData.isUpdateAvailable() && !pluginData.isAlreadyDownloaded()) {
-                    updatesAvailable++;
+                int updatesAvailable = 0;
+                for (PluginData pluginData : configManager.getAllPluginData()) {
+                    if (pluginData.isUpdateAvailable() && !pluginData.isAlreadyDownloaded()) {
+                        updatesAvailable++;
+                    }
                 }
-            }
 
-            if (updatesAvailable > 0) {
-                ChatColorHandler.sendMessage(player, configManager.getMessage("updates-available", "&#e0c01b%amount% &#ffe27aupdates are available, type &#e0c01b'%updates_command%' &#ffe27afor more information!")
-                    .replace("%amount%", String.valueOf(updatesAvailable))
-                    .replace("%updates_command%", "/updates list"));
-            }
+                if (updatesAvailable > 0) {
+                    ChatColorHandler.sendMessage(player, configManager.getMessage("updates-available", "&#e0c01b%amount% &#ffe27aupdates are available, type &#e0c01b'%updates_command%' &#ffe27afor more information!")
+                        .replace("%amount%", String.valueOf(updatesAvailable))
+                        .replace("%updates_command%", "/updates list"));
+                }
+            }, 100);
         }
     }
 }
