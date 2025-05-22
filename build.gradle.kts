@@ -13,7 +13,7 @@ allprojects {
     apply(plugin = "maven-publish")
 
     group = "org.lushplugins"
-    version = "1.0.10"
+    version = "1.0.11"
 
     repositories {
         mavenCentral()
@@ -137,7 +137,7 @@ modrinth {
         "1.18", "1.18.1", "1.18.2",
         "1.19", "1.19.1", "1.19.2", "1.19.3", "1.19.4",
         "1.20", "1.20.1", "1.20.2", "1.20.3", "1.20.4", "1.20.5", "1.20.6",
-        "1.21", "1.21.1", "1.21.2", "1.21.3", "1.21.4"
+        "1.21", "1.21.1", "1.21.2", "1.21.3", "1.21.4", "1.21.5"
     )
     loaders.addAll("spigot", "paper", "purpur")
     syncBodyFrom.set(rootProject.file("README.md").readText())
