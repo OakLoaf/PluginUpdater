@@ -76,9 +76,13 @@ public class ConfigManager {
                     return;
                 }
 
-                PlatformData platformData = PlatformRegistry.getPlatformData(platform, pluginSection);
-                if (platformData != null) {
-                    addPlugin(pluginName, new PluginData(currPlugin, platformData, allowDownloads));
+                try {
+                    PlatformData platformData = PlatformRegistry.getPlatformData(platform, pluginSection);
+                    if (platformData != null) {
+                        addPlugin(pluginName, new PluginData(currPlugin, platformData, allowDownloads));
+                    }
+                } catch (Exception e) {
+                    plugin.getLogger().log(Level.SEVERE, "Caught error whilst collecting data for '%s'".formatted(pluginName), e);
                 }
             });
         }
