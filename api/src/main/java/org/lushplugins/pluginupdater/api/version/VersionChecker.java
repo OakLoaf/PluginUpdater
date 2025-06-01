@@ -12,6 +12,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
+import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -133,7 +134,7 @@ public interface VersionChecker {
             try {
                 return callable.call(versionChecker, platformData);
             } catch (IOException | InterruptedException e) {
-                UpdaterConstants.LOGGER.severe(e.getMessage());
+                UpdaterConstants.LOGGER.log(Level.SEVERE, e.getMessage(), e);
             }
         }
 
