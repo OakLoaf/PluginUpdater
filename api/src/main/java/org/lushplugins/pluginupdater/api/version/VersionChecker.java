@@ -12,12 +12,13 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
+import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @SuppressWarnings("CodeBlock2Expr")
 public interface VersionChecker {
-    Pattern VERSION_PATTERN = Pattern.compile("(\\d+(\\.\\d+)+)");
+    Pattern VERSION_PATTERN = Pattern.compile("(\\d+(\\.\\d+)*)");
 
     String getLatestVersion(PluginData pluginData, PlatformData platformData) throws IOException, InterruptedException;
 
@@ -63,7 +64,7 @@ public interface VersionChecker {
 
         // Get file name or default to PluginName-Version.jar
         String fileName = url.getFile();
-        if (fileName.isEmpty()) {
+        if (fileName.isEmpty() || fileName.contains("/") || fileName.contains("\\")) {
             fileName = pluginName + "-" + latestVersion + ".jar";
         }
 
@@ -133,7 +134,7 @@ public interface VersionChecker {
             try {
                 return callable.call(versionChecker, platformData);
             } catch (IOException | InterruptedException e) {
-                UpdaterConstants.LOGGER.severe(e.getMessage());
+                UpdaterConstants.LOGGER.log(Level.SEVERE, e.getMessage(), e);
             }
         }
 

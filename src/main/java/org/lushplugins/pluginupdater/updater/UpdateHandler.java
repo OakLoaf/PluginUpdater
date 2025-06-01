@@ -8,10 +8,15 @@ import org.lushplugins.pluginupdater.api.version.VersionDifference;
 
 import java.io.IOException;
 import java.util.concurrent.*;
+import java.util.logging.Level;
 
 public class UpdateHandler {
     private final ScheduledExecutorService threads = Executors.newScheduledThreadPool(1);
     private final LinkedBlockingQueue<ProcessingData> queue = new LinkedBlockingQueue<>();
+
+    public ScheduledExecutorService getThreads() {
+        return threads;
+    }
 
     public void enable() {
         threads.submit(() -> Thread.currentThread().setName("PluginUpdater Update Thread"));
@@ -56,7 +61,7 @@ public class UpdateHandler {
                     pluginData.setCheckRan(true);
                     return;
                 } catch (Exception e) {
-                    PluginUpdater.getInstance().getLogger().severe(e.getMessage());
+                    PluginUpdater.getInstance().getLogger().log(Level.SEVERE, e.getMessage(), e);
                 }
 
                 String platformNames = String.join(", ", pluginData.getPlatformData().stream().map(PlatformData::getName).toList());

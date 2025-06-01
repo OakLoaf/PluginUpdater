@@ -27,6 +27,9 @@ jobs:
       - name: Extract version from build.gradle.kts
         id: get_version
         run: |
+          FULL_VERSION=$(grep -oP 'version = "\K[0-9]+\.[0-9]+\.[0-9]+(?:-\w*)?' build.gradle.kts)
+          echo "FULL_VERSION=$FULL_VERSION" >> $GITHUB_ENV
+          
           VERSION=$(grep -oP 'version = "\K[0-9]+\.[0-9]+\.[0-9]+' build.gradle.kts)
           echo "VERSION=$VERSION" >> $GITHUB_ENV
 
@@ -34,17 +37,23 @@ jobs:
         uses: actions-ecosystem/action-regex-match@v2
         id: regex-match
         with:
-          text: ${{ env.VERSION }}
-          regex: '[-a-zA-Z]'
+          text: ${{ env.FULL_VERSION }}
+          regex: '[a-zA-Z]'
           flags: gm
 
       - name: Set project release type
+        if: ${{ steps.regex-match.outputs.match == '' }}
         run: |
-          if [ "${{ steps.regex-match.outputs.match }}" == "" ]; then
+          if git show-ref --tags --verify --quiet "refs/tags/v${{ env.VERSION }}"; then
             echo "RELEASE_TYPE=alpha" >> $GITHUB_ENV
           else
             echo "RELEASE_TYPE=release" >> $GITHUB_ENV
           fi
+
+      - name: Set project release type
+        if: ${{ steps.regex-match.outputs.match != '' }}
+        run: |
+          echo "RELEASE_TYPE=alpha" >> $GITHUB_ENV
 
       - name: Build with Gradle
         run: |

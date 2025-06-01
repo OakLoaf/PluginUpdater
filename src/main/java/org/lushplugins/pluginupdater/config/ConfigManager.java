@@ -31,13 +31,15 @@ public class ConfigManager {
         plugin.reloadConfig();
         FileConfiguration config = plugin.getConfig();
 
-        boolean checkOnReload = config.getBoolean("check-updates-on-reload", true);
-        allowDownloads = config.getBoolean("allow-downloads", true);
-
+        boolean checkOnReload;
         if (config.contains("check-updates-on-start")) {
             checkOnReload = config.getBoolean("check-updates-on-start", true);
             PluginUpdater.getInstance().getLogger().log(Level.WARNING, "Deprecated: The config section 'check-updates-on-start' has been renamed to 'check-updates-on-reload'");
+        } else {
+            checkOnReload = config.getBoolean("check-updates-on-reload", true);
         }
+
+        allowDownloads = config.getBoolean("allow-downloads", true);
 
         ConfigurationSection messagesSection = config.getConfigurationSection("messages");
         if (messagesSection != null) {
@@ -59,6 +61,7 @@ public class ConfigManager {
             getConfigurationSections(pluginsSection).forEach(pluginSection -> {
                 String pluginName = pluginSection.getName();
                 boolean enabled = pluginSection.getBoolean("enabled", true);
+                boolean allowDownloads = pluginSection.getBoolean("allow-downloads", true);
                 String platform = pluginSection.getString("platform");
 
                 if (!enabled) {
@@ -73,22 +76,27 @@ public class ConfigManager {
                     return;
                 }
 
-                PlatformData platformData = PlatformRegistry.getPlatformData(platform, pluginSection);
-                if (platformData != null) {
-                    addPlugin(pluginName, new PluginData(currPlugin, platformData));
+                try {
+                    PlatformData platformData = PlatformRegistry.getPlatformData(platform, pluginSection);
+                    if (platformData != null) {
+                        addPlugin(pluginName, new PluginData(currPlugin, platformData, allowDownloads));
+                    }
+                } catch (Exception e) {
+                    plugin.getLogger().log(Level.SEVERE, "Caught error whilst collecting data for '%s'".formatted(pluginName), e);
                 }
             });
         }
 
-        List<PluginData> collectedPluginData = PluginDataCollector.collectUnknownPlugins();
-        for (PluginData pluginData : collectedPluginData) {
-            addPlugin(pluginData);
-        }
+        PluginDataCollector.collectUnknownPlugins().thenAccept(collectedPluginData -> {
+            for (PluginData pluginData : collectedPluginData) {
+                addPlugin(pluginData);
+            }
 
-        if (checkOnReload) {
-            UpdateHandler updateHandler = PluginUpdater.getInstance().getUpdateHandler();
-            getPlugins().forEach(pluginName -> updateHandler.queueUpdateCheck(pluginName));
-        }
+            if (checkOnReload) {
+                UpdateHandler updateHandler = PluginUpdater.getInstance().getUpdateHandler();
+                getPlugins().forEach(pluginName -> updateHandler.queueUpdateCheck(pluginName));
+            }
+        });
     }
 
     public boolean shouldAllowDownloads() {

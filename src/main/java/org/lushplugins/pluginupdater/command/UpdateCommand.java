@@ -34,6 +34,8 @@ public class UpdateCommand {
         PluginData pluginData = PluginUpdater.getInstance().getConfigManager().getPluginData(pluginName);
         if (pluginData == null) {
             return "&#ff6969That plugin is not registered";
+        } else if (!pluginData.areDownloadsAllowed()) {
+            return "&#ff6969Downloads are disabled for that plugin, to allow downloads manually add it to your config";
         } else if (pluginData.isAlreadyDownloaded()) {
             return "&#ffda54You have already downloaded an update for this plugin - please restart your server";
         } else if (!pluginData.isUpdateAvailable()) {
@@ -50,15 +52,21 @@ public class UpdateCommand {
         AtomicInteger majorUpdateCount = new AtomicInteger(0);
 
         PluginUpdater.getInstance().getConfigManager().getAllPluginData().forEach(pluginData -> {
-            if (!pluginData.isAlreadyDownloaded() && pluginData.isUpdateAvailable()) {
-                if (pluginData.getVersionDifference().equals(VersionDifference.MAJOR) && !force) {
-                    majorUpdateCount.incrementAndGet();
-                    return;
-                }
-
-                updateHandler.queueDownload(pluginData.getPluginName());
-                updateCount.incrementAndGet();
+            if (!pluginData.areDownloadsAllowed()) {
+                return;
             }
+
+            if (pluginData.isAlreadyDownloaded() || !pluginData.isUpdateAvailable()) {
+                return;
+            }
+
+            if (pluginData.getVersionDifference().equals(VersionDifference.MAJOR) && !force) {
+                majorUpdateCount.incrementAndGet();
+                return;
+            }
+
+            updateHandler.queueDownload(pluginData.getPluginName());
+            updateCount.incrementAndGet();
         });
 
         int finalCount = updateCount.get();

@@ -18,6 +18,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.concurrent.CompletableFuture;
+import java.util.logging.Level;
 import java.util.regex.Matcher;
 
 @SuppressWarnings("unused")
@@ -85,7 +86,7 @@ public class Updater {
                     completableFuture.complete(false);
                 }
             } catch (IOException | IllegalStateException e) {
-                plugin.getLogger().severe(e.getMessage());
+                plugin.getLogger().log(Level.SEVERE, e.getMessage(), e);
                 completableFuture.complete(false);
             }
         });
