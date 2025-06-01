@@ -3,13 +3,21 @@ package org.lushplugins.pluginupdater;
 import org.bukkit.command.CommandExecutor;
 import org.lushplugins.lushlib.command.Command;
 import org.lushplugins.pluginupdater.api.util.DownloadLogger;
-import org.lushplugins.pluginupdater.command.PluginUpdaterCommand;
-import org.lushplugins.pluginupdater.command.PluginUpdatesCommand;
+import org.lushplugins.pluginupdater.command.UpdateCommand;
+import org.lushplugins.pluginupdater.command.UpdaterCommand;
+import org.lushplugins.pluginupdater.command.UpdatesCommand;
 import org.lushplugins.pluginupdater.config.ConfigManager;
 import org.lushplugins.pluginupdater.updater.UpdateHandler;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.lushplugins.pluginupdater.util.lamp.annotation.PluginName;
+import org.lushplugins.pluginupdater.util.lamp.response.StringMessageResponseHandler;
+import revxrsal.commands.Lamp;
+import revxrsal.commands.bukkit.BukkitLamp;
+import revxrsal.commands.bukkit.actor.BukkitCommandActor;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 public final class PluginUpdater extends JavaPlugin {
     private static PluginUpdater plugin;
@@ -29,8 +37,22 @@ public final class PluginUpdater extends JavaPlugin {
         configManager = new ConfigManager();
         configManager.reloadConfig();
 
-        registerCommand(new PluginUpdaterCommand());
-        registerCommand(new PluginUpdatesCommand());
+        Lamp<BukkitCommandActor> lamp = BukkitLamp.builder(this)
+            .suggestionProviders(providers -> {
+                providers.addProviderForAnnotation(PluginName.class, (annotation) -> (context) -> {
+                    List<String> plugins = new ArrayList<>();
+                    plugins.add("all");
+                    plugins.addAll(PluginUpdater.getInstance().getConfigManager().getPlugins());
+                    return plugins;
+                });
+            })
+            .responseHandler(String.class, new StringMessageResponseHandler())
+            .build();
+        lamp.register(new UpdaterCommand(), new UpdatesCommand());
+
+        if (PluginUpdater.getInstance().getConfigManager().shouldAllowDownloads()) {
+            lamp.register(new UpdateCommand());
+        }
     }
 
     @Override
