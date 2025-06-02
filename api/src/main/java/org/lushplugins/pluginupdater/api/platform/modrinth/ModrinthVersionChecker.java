@@ -52,6 +52,11 @@ public class ModrinthVersionChecker implements VersionChecker {
     }
 
     private JsonObject getLatestVersion(PluginData pluginData, ModrinthData modrinthData) throws IOException, InterruptedException {
-        return getVersions(pluginData, modrinthData).get(0).getAsJsonObject();
+        JsonArray versions = getVersions(pluginData, modrinthData);
+        if (versions.isEmpty()) {
+            throw new IllegalStateException("Failed to collect versions for '%s'".formatted(pluginData.getPluginName() ));
+        }
+
+        return versions.get(0).getAsJsonObject();
     }
 }
