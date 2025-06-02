@@ -1,8 +1,5 @@
 package org.lushplugins.pluginupdater;
 
-import org.bukkit.command.CommandExecutor;
-import org.lushplugins.lushlib.LushLib;
-import org.lushplugins.lushlib.command.Command;
 import org.lushplugins.pluginupdater.api.util.DownloadLogger;
 import org.lushplugins.pluginupdater.command.UpdateCommand;
 import org.lushplugins.pluginupdater.command.UpdaterCommand;
