@@ -70,19 +70,6 @@ public final class PluginUpdater extends JavaPlugin {
         plugin = null;
     }
 
-    public void registerCommand(Command command) {
-        registerCommand(command.getName(), command);
-    }
-
-    public void registerCommand(String command, CommandExecutor executor) {
-        try {
-            getCommand(command).setExecutor(executor);
-        } catch (NullPointerException e) {
-            getLogger().severe("Failed to register command '" + command + "', make sure the command has been defined in the plugin.yml");
-            e.printStackTrace();
-        }
-    }
-
     public UpdateHandler getUpdateHandler() {
         return updateHandler;
     }
