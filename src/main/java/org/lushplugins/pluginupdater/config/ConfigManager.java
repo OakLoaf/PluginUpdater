@@ -94,7 +94,7 @@ public class ConfigManager {
 
             if (checkOnReload) {
                 UpdateHandler updateHandler = PluginUpdater.getInstance().getUpdateHandler();
-                getPlugins().forEach(pluginName -> updateHandler.queueUpdateCheck(pluginName));
+                getPlugins().forEach(updateHandler::queueUpdateCheck);
             }
         });
     }
