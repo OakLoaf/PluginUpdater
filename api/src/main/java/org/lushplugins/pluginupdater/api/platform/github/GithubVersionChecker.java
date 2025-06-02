@@ -39,7 +39,7 @@ public class GithubVersionChecker implements VersionChecker {
         HttpResponse<String> response = HttpUtil.sendRequest(String.format("%s/repos/%s/releases/latest", UpdaterConstants.APIs.GITHUB, githubData.getGithubRepo()));
 
         if (response.statusCode() != 200) {
-            throw new IllegalStateException("Received invalid response code (" + response.statusCode() + ") whilst checking '" + pluginData.getPluginName() + "' for updates.");
+            throw new IllegalStateException("Received invalid response code (%s) whilst checking '%s' for updates.".formatted(response.statusCode(), pluginData.getPluginName()));
         }
 
         return JsonParser.parseString(response.body()).getAsJsonObject();

@@ -87,7 +87,7 @@ public class UpdateHandler {
                 }
 
                 String platformNames = String.join(", ", pluginData.getPlatformData().stream().map(PlatformData::getName).toList());
-                processingData.getFuture().completeExceptionally(new IOException("Failed to download update for plugin '" + pluginData.getPluginName() + "' using defined platforms: '" + platformNames + "'"));
+                processingData.getFuture().completeExceptionally(new IOException("Failed to download update for plugin '%s' using defined platforms: '%s'".formatted(pluginData.getPluginName(), platformNames)));
             }
         } catch (InterruptedException e) {
             e.printStackTrace();

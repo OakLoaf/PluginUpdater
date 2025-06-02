@@ -47,7 +47,7 @@ public class SpigotCollector implements PluginDataCollector {
         }
 
         if (response.statusCode() != 200) {
-            PluginUpdater.getInstance().getLogger().log(Level.WARNING, "Received invalid response code (" + response.statusCode() + ") whilst searching for project on spiget (" + response.uri() + ")");
+            PluginUpdater.getInstance().getLogger().log(Level.WARNING, "Received invalid response code (%s) whilst searching for project on spiget (%s)".formatted(response.statusCode(), response.uri()));
             return null;
         }
 

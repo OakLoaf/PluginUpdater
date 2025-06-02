@@ -45,7 +45,7 @@ public class ModrinthVersionChecker implements VersionChecker {
         HttpResponse<String> response = HttpUtil.sendRequest(uriBuilder.toString());
 
         if (response.statusCode() != 200) {
-            throw new IllegalStateException("Received invalid response code (" + response.statusCode() + ") whilst checking '" + pluginData.getPluginName() + "' for updates.");
+            throw new IllegalStateException("Received invalid response code (%s) whilst checking '%s' for updates.".formatted(response.statusCode(), pluginData.getPluginName()));
         }
 
         return JsonParser.parseString(response.body()).getAsJsonArray();
