@@ -21,7 +21,7 @@ public class UpdateCommand {
     public String update(
         CommandSender sender,
         @PluginName String pluginName,
-        @Flag(value = "force", shorthand = 'f') boolean force
+        @Flag("force") boolean force
     ) {
         if (!PluginUpdater.getInstance().getConfigManager().shouldAllowDownloads()) {
             return "&#ff6969Update downloads have been disabled in the config";
