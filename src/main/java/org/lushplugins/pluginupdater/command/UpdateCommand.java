@@ -8,7 +8,7 @@ import org.lushplugins.pluginupdater.api.version.VersionDifference;
 import org.lushplugins.pluginupdater.updater.UpdateHandler;
 import org.lushplugins.pluginupdater.util.lamp.annotation.PluginName;
 import revxrsal.commands.annotation.Command;
-import revxrsal.commands.annotation.Flag;
+import revxrsal.commands.annotation.Switch;
 import revxrsal.commands.bukkit.annotation.CommandPermission;
 
 import java.util.concurrent.atomic.AtomicInteger;
@@ -21,7 +21,7 @@ public class UpdateCommand {
     public String update(
         CommandSender sender,
         @PluginName String pluginName,
-        @Flag("force") boolean force
+        @Switch("force") boolean force
     ) {
         if (!PluginUpdater.getInstance().getConfigManager().shouldAllowDownloads()) {
             return "&#ff6969Update downloads have been disabled in the config";
