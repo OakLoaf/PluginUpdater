@@ -94,7 +94,7 @@ public class UpdateHandler {
         }
     }
 
-    private static class ProcessingData {
+    public static class ProcessingData {
         private final String pluginName;
         private final State state;
         private final CompletableFuture<Boolean> future;
@@ -121,7 +121,7 @@ public class UpdateHandler {
             return future;
         }
 
-        private enum State {
+        public enum State {
             UPDATE_CHECK,
             DOWNLOAD
         }
