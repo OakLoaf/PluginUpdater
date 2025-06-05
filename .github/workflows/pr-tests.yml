@@ -29,8 +29,7 @@ jobs:
           distribution: 'adopt'
           java-version: '21'
 
-      - name: Modify gradlew permissions
-        run: chmod +x ./gradlew
-
-      - name: Build plugin
-        run: ./gradlew shadowJar
+      - name: Build with Gradle
+        run: |
+          chmod +x ./gradlew
+          ./gradlew shadowJar
