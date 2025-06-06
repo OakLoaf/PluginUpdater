@@ -13,7 +13,7 @@ allprojects {
     apply(plugin = "maven-publish")
 
     group = "org.lushplugins"
-    version = "1.0.12"
+    version = "1.0.13"
 
     repositories {
         mavenCentral()
@@ -106,11 +106,11 @@ tasks {
 
 tasks.withType(xyz.jpenilla.runtask.task.AbstractRun::class) {
     javaLauncher = javaToolchains.launcherFor {
-        vendor = JvmVendorSpec.JETBRAINS
+//        vendor = JvmVendorSpec.JETBRAINS
         languageVersion = JavaLanguageVersion.of(21)
     }
 
-    jvmArgs("-XX:+AllowEnhancedClassRedefinition")
+//    jvmArgs("-XX:+AllowEnhancedClassRedefinition")
 }
 
 publishing {

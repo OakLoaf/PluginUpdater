@@ -18,17 +18,9 @@ public class UpdateCommand {
 
     @Command("updater update")
     @CommandPermission("pluginupdater.downloadupdates")
-    public String update(
-        CommandSender sender,
-        @PluginName String pluginName,
-        @Switch("force") boolean force
-    ) {
+    public String update(CommandSender sender, @PluginName String pluginName) {
         if (!PluginUpdater.getInstance().getConfigManager().shouldAllowDownloads()) {
             return "&#ff6969Update downloads have been disabled in the config";
-        }
-
-        if (pluginName.equalsIgnoreCase("all")) {
-            return updateAll(sender, force);
         }
 
         PluginData pluginData = PluginUpdater.getInstance().getConfigManager().getPluginData(pluginName);
@@ -46,7 +38,22 @@ public class UpdateCommand {
         }
     }
 
-    private String updateAll(CommandSender sender, boolean force) {
+    // TODO: Temporary fix for update all command
+    @Command("updater update all")
+    @CommandPermission("pluginupdater.downloadupdates")
+    public String updateAll(CommandSender sender) {
+        return this.updateAll(sender, false);
+    }
+
+    @Command("updater update all --force")
+    @CommandPermission("pluginupdater.downloadupdates")
+    public String forceUpdateAll(CommandSender sender) {
+        return this.updateAll(sender, true);
+    }
+
+//    @Command("updater update all")
+//    @CommandPermission("pluginupdater.downloadupdates")
+    public String updateAll(CommandSender sender, @Switch("force") boolean force) {
         UpdateHandler updateHandler = PluginUpdater.getInstance().getUpdateHandler();
         AtomicInteger updateCount = new AtomicInteger(0);
         AtomicInteger majorUpdateCount = new AtomicInteger(0);

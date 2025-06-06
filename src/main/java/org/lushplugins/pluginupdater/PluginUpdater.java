@@ -41,10 +41,7 @@ public final class PluginUpdater extends JavaPlugin {
         Lamp<BukkitCommandActor> lamp = BukkitLamp.builder(this)
             .suggestionProviders(providers -> {
                 providers.addProviderForAnnotation(PluginName.class, (annotation) -> (context) -> {
-                    List<String> plugins = new ArrayList<>();
-                    plugins.add("all");
-                    plugins.addAll(PluginUpdater.getInstance().getConfigManager().getPlugins());
-                    return plugins;
+                    return PluginUpdater.getInstance().getConfigManager().getPlugins();
                 });
             })
             .responseHandler(String.class, new StringMessageResponseHandler())
