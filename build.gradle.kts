@@ -130,7 +130,7 @@ modrinth {
         changelog.set(getChangelogSinceLastTag())
     } else {
         versionNumber.set("${rootProject.version}-${getCurrentCommitHash()}")
-        changelog.set("**Changes since ${getLastTag()}**\n${getChangelogSinceLastTag()}")
+        changelog.set("### Changes since ${getLastTag()}\n${getChangelogSinceLastTag()}")
     }
     uploadFile.set(file("build/libs/${project.name}-${project.version}.jar"))
     versionType.set(System.getenv("RELEASE_TYPE"))
