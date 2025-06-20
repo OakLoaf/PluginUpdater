@@ -74,8 +74,6 @@ tasks {
 
         minimize()
 
-        val folder = System.getenv("pluginFolder")
-        if (folder != null) destinationDirectory.set(file(folder))
         archiveFileName.set("${project.name}-${project.version}.jar")
     }
 
