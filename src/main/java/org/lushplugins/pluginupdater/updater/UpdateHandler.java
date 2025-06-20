@@ -7,12 +7,13 @@ import org.lushplugins.pluginupdater.api.version.VersionChecker;
 import org.lushplugins.pluginupdater.api.version.VersionDifference;
 
 import java.io.IOException;
+import java.util.ArrayDeque;
 import java.util.concurrent.*;
 import java.util.logging.Level;
 
 public class UpdateHandler {
     private final ScheduledExecutorService threads = Executors.newScheduledThreadPool(1);
-    private final LinkedBlockingQueue<ProcessingData> queue = new LinkedBlockingQueue<>();
+    private final ArrayDeque<ProcessingData> queue = new ArrayDeque<>();
 
     public ScheduledExecutorService getThreads() {
         return threads;
@@ -51,9 +52,13 @@ public class UpdateHandler {
     }
 
     private void processQueue() {
-        try {
-            ProcessingData processingData = queue.take();
-            if (processingData.getState().equals(ProcessingData.State.UPDATE_CHECK)) {
+        ProcessingData processingData = queue.poll();
+        if (processingData == null) {
+            return;
+        }
+
+        switch (processingData.getState()) {
+            case UPDATE_CHECK -> {
                 PluginData pluginData = processingData.getPluginData();
 
                 try {
@@ -67,7 +72,7 @@ public class UpdateHandler {
                 String platformNames = String.join(", ", pluginData.getPlatformData().stream().map(PlatformData::getName).toList());
                 processingData.getFuture().completeExceptionally(new IOException("Failed to run check for plugin '" + pluginData.getPluginName() + "' using defined platforms: '" + platformNames + "'"));
             }
-            else if (processingData.getState().equals(ProcessingData.State.DOWNLOAD)) {
+            case DOWNLOAD -> {
                 PluginData pluginData = processingData.getPluginData();
                 if (!pluginData.isEnabled() || !pluginData.isUpdateAvailable() || pluginData.isAlreadyDownloaded()) {
                     processingData.getFuture().complete(false);
@@ -79,6 +84,7 @@ public class UpdateHandler {
                         pluginData.setVersionDifference(VersionDifference.UNKNOWN);
                         pluginData.setAlreadyDownloaded(true);
                         processingData.getFuture().complete(true);
+                        return;
                     } else {
                         processingData.getFuture().complete(false);
                     }
@@ -89,8 +95,6 @@ public class UpdateHandler {
                 String platformNames = String.join(", ", pluginData.getPlatformData().stream().map(PlatformData::getName).toList());
                 processingData.getFuture().completeExceptionally(new IOException("Failed to download update for plugin '%s' using defined platforms: '%s'".formatted(pluginData.getPluginName(), platformNames)));
             }
-        } catch (InterruptedException e) {
-            e.printStackTrace();
         }
     }
 
