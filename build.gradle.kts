@@ -127,10 +127,10 @@ modrinth {
     projectId.set("IBSpJfbm")
     if (System.getenv("RELEASE_TYPE") == "release") {
         versionNumber.set(rootProject.version.toString())
-        changelog.set(getCurrentCommitMessage())
-    } else {
-        versionNumber.set(rootProject.version.toString() + "-" + getCurrentCommitHash())
         changelog.set(getChangelogSinceLastTag())
+    } else {
+        versionNumber.set("${rootProject.version}-${getCurrentCommitHash()}")
+        changelog.set("**Changes since ${getLastTag()}**\n${getChangelogSinceLastTag()}")
     }
     uploadFile.set(file("build/libs/${project.name}-${project.version}.jar"))
     versionType.set(System.getenv("RELEASE_TYPE"))
@@ -162,25 +162,12 @@ fun getCurrentCommitHash(): String {
     }
 }
 
-fun getCurrentCommitMessage(): String {
-    val process = ProcessBuilder("git", "log", "-1", "--pretty=%s").start()
-    val reader = BufferedReader(InputStreamReader(process.inputStream))
-    val message = reader.readLine()
-    reader.close()
-    process.waitFor()
-    if (process.exitValue() == 0) {
-        return message ?: ""
-    } else {
-        throw IllegalStateException("Failed to retrieve the commit message.")
-    }
+fun getLastTag(): String {
+    return ProcessBuilder("git", "describe", "--tags", "--abbrev=0")
+        .start().inputStream.bufferedReader().readText().trim()
 }
 
 fun getChangelogSinceLastTag(): String {
-    val lastTag = ProcessBuilder("git", "describe", "--tags", "--abbrev=0")
+    return ProcessBuilder("git", "log", "${getLastTag()}..HEAD", "--pretty=format:* %s")
         .start().inputStream.bufferedReader().readText().trim()
-
-    val commits = ProcessBuilder("git", "log", "$lastTag..HEAD", "--pretty=format:* %s")
-        .start().inputStream.bufferedReader().readText().trim()
-
-    return "## Changelog since $lastTag\n\n$commits"
 }
