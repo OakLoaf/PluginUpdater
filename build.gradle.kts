@@ -130,7 +130,6 @@ modrinth {
         changelog.set(getChangelogSinceLastTag())
     } else {
         versionNumber.set("${rootProject.version}-${getCurrentCommitHash()}")
-        changelog.set("### Changes since ${getLastTag()}\n${getChangelogSinceLastTag()}")
     }
     uploadFile.set(file("build/libs/${project.name}-${project.version}.jar"))
     versionType.set(System.getenv("RELEASE_TYPE"))
@@ -168,6 +167,6 @@ fun getLastTag(): String {
 }
 
 fun getChangelogSinceLastTag(): String {
-    return ProcessBuilder("git", "log", "${getLastTag()}..HEAD", "--pretty=format:* %s ([%h](https://github.com/OakLoaf/PluginUpdater/commit/%H))")
+    return ProcessBuilder("git", "log", "${getLastTag()}..HEAD", "--pretty=format:* %s ([#%h](https://github.com/OakLoaf/PluginUpdater/commit/%H))")
         .start().inputStream.bufferedReader().readText().trim()
 }
