@@ -168,6 +168,6 @@ fun getLastTag(): String {
 }
 
 fun getChangelogSinceLastTag(): String {
-    return ProcessBuilder("git", "log", "${getLastTag()}..HEAD", "--pretty=format:* %s")
+    return ProcessBuilder("git", "log", "${getLastTag()}..HEAD", "--pretty=format:* [%s](https://github.com/OakLoaf/PluginUpdater/commit/%H)")
         .start().inputStream.bufferedReader().readText().trim()
 }
