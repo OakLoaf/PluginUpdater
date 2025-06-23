@@ -28,9 +28,5 @@ public class UpdaterConstants {
         public static final String SPIGET = "https://api.spiget.org/v2";
         public static final String HANGAR = "https://hangar.papermc.io/api/v1";
         public static final String GITHUB = "https://api.github.com";
-        /**
-         * Used to mark an unknown endpoint
-         */
-        public static final String UNKNOWN = "unknown";
     }
 }
