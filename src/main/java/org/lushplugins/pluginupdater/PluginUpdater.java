@@ -15,8 +15,6 @@ import revxrsal.commands.bukkit.BukkitLamp;
 import revxrsal.commands.bukkit.actor.BukkitCommandActor;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 
 public final class PluginUpdater extends JavaPlugin {
     private static PluginUpdater plugin;

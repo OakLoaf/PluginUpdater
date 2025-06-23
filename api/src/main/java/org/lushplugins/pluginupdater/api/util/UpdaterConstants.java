@@ -23,7 +23,7 @@ public class UpdaterConstants {
         }
     }
 
-    public static class APIs {
+    public static class Endpoint {
         public static final String MODRINTH = "https://api.modrinth.com/v2";
         public static final String SPIGET = "https://api.spiget.org/v2";
         public static final String HANGAR = "https://hangar.papermc.io/api/v1";

@@ -13,20 +13,19 @@ import org.lushplugins.pluginupdater.api.version.VersionChecker;
 import org.bukkit.configuration.ConfigurationSection;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.lushplugins.pluginupdater.api.util.Pair;
 
 import java.util.HashMap;
 import java.util.concurrent.Callable;
 
 public class PlatformRegistry {
-    private static final HashMap<String, Pair<Callable<VersionChecker>, PlatformDataConstructor>> platformConstructors = new HashMap<>();
-    private static final HashMap<String, VersionChecker> cachedPlatforms = new HashMap<>();
+    private static final HashMap<String, Platform> platforms = new HashMap<>();
+    private static final HashMap<String, VersionChecker> cachedPlatformCheckers = new HashMap<>();
 
     static {
-        register("github", GithubVersionChecker::new, GithubData::new);
-        register("hangar", HangarVersionChecker::new, HangarData::new);
-        register("modrinth", ModrinthVersionChecker::new, ModrinthData::new);
-        register("spigot", SpigotVersionChecker::new, SpigotData::new);
+        register("github", -1, GithubVersionChecker::new, GithubData::new);
+        register("hangar", 1, HangarVersionChecker::new, HangarData::new);
+        register("modrinth", 1, ModrinthVersionChecker::new, ModrinthData::new);
+        register("spigot", 1, SpigotVersionChecker::new, SpigotData::new);
     }
 
     @Nullable
@@ -37,32 +36,36 @@ public class PlatformRegistry {
     @Nullable
     public static PlatformData getPlatformData(String platform, ConfigurationSection configurationSection) {
         try {
-            return platformConstructors.containsKey(platform) ? platformConstructors.get(platform).second().apply(configurationSection) : null;
+            return platforms.containsKey(platform) ? platforms.get(platform).platformDataConstructor().apply(configurationSection) : null;
         } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
     }
 
-    public static void register(@NotNull String platform, @NotNull Callable<VersionChecker> updater, @NotNull PlatformRegistry.PlatformDataConstructor platformDataConstructor) {
-        if (platformConstructors.containsKey(platform)) {
+    public static void register(@NotNull String platform, int rateLimit, @NotNull Callable<VersionChecker> updater, @NotNull PlatformRegistry.PlatformDataConstructor platformDataConstructor) {
+        if (platforms.containsKey(platform)) {
             throw new IllegalStateException("This platform is already registered");
         }
 
-        platformConstructors.put(platform, new Pair<>(updater, platformDataConstructor));
+        platforms.put(platform, new Platform(rateLimit, updater, platformDataConstructor));
+    }
+
+    public static void register(@NotNull String platform, @NotNull Callable<VersionChecker> updater, @NotNull PlatformRegistry.PlatformDataConstructor platformDataConstructor) {
+        register(platform, 1, updater, platformDataConstructor);
     }
 
     public static void unregister(String platform) {
-        platformConstructors.remove(platform);
+        platforms.remove(platform);
     }
 
     private static @Nullable VersionChecker getOrConstructVersionChecker(@NotNull String platform) {
-        if (cachedPlatforms.containsKey(platform)) {
-            return cachedPlatforms.get(platform);
-        } else if (platformConstructors.containsKey(platform)) {
+        if (cachedPlatformCheckers.containsKey(platform)) {
+            return cachedPlatformCheckers.get(platform);
+        } else if (platforms.containsKey(platform)) {
             try {
-                VersionChecker versionChecker = platformConstructors.get(platform).first().call();
-                cachedPlatforms.put(platform, versionChecker);
+                VersionChecker versionChecker = platforms.get(platform).updater().call();
+                cachedPlatformCheckers.put(platform, versionChecker);
                 return versionChecker;
             } catch (Exception e) {
                 e.printStackTrace();

@@ -18,7 +18,7 @@ import java.util.logging.Level;
 
 public class ConfigManager {
     private boolean allowDownloads;
-    private final Map<String, PluginData> plugins = new TreeMap<>();
+    private final Map<String, PluginData> plugins = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
     private final HashSet<String> disabledPlugins = new HashSet<>();
     private final HashMap<String, String> messages = new HashMap<>();
 
