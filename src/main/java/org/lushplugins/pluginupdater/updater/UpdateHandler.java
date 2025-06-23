@@ -1,5 +1,8 @@
 package org.lushplugins.pluginupdater.updater;
 
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+import org.lushplugins.lushlib.libraries.chatcolor.ChatColorHandler;
 import org.lushplugins.pluginupdater.PluginUpdater;
 import org.lushplugins.pluginupdater.api.platform.PlatformData;
 import org.lushplugins.pluginupdater.api.updater.PluginData;
@@ -8,12 +11,15 @@ import org.lushplugins.pluginupdater.api.version.VersionDifference;
 
 import java.io.IOException;
 import java.util.ArrayDeque;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.*;
 import java.util.logging.Level;
 
 public class UpdateHandler {
     private final ScheduledExecutorService threads = Executors.newScheduledThreadPool(1);
     private final ArrayDeque<ProcessingData> queue = new ArrayDeque<>();
+    private final Map<ProcessingData.State, Integer> currentlyProcessing = new HashMap<>();
 
     public ScheduledExecutorService getThreads() {
         return threads;
@@ -35,6 +41,12 @@ public class UpdateHandler {
         }
     }
 
+    public int remainingWithState(ProcessingData.State state) {
+        return (int) this.queue.stream()
+            .filter(data -> data.getState() == state)
+            .count();
+    }
+
     public ProcessingData queueUpdateCheck(String pluginName) {
         ProcessingData processingData = new ProcessingData(pluginName, ProcessingData.State.UPDATE_CHECK);
         queue(processingData);
@@ -54,10 +66,13 @@ public class UpdateHandler {
     private void processQueue() {
         ProcessingData processingData = queue.poll();
         if (processingData == null) {
+            this.currentlyProcessing.clear();
             return;
         }
 
-        switch (processingData.getState()) {
+        ProcessingData.State state = processingData.getState();
+        sendNotification(state);
+        switch (state) {
             case UPDATE_CHECK -> {
                 PluginData pluginData = processingData.getPluginData();
 
@@ -96,6 +111,22 @@ public class UpdateHandler {
                 processingData.getFuture().completeExceptionally(new IOException("Failed to download update for plugin '%s' using defined platforms: '%s'".formatted(pluginData.getPluginName(), platformNames)));
             }
         }
+    }
+
+    public void sendNotification(ProcessingData.State state) {
+        Player[] players = Bukkit.getOnlinePlayers().stream()
+            .filter(player -> player.hasPermission("pluginupdater.notify"))
+            .toArray(Player[]::new);
+
+        if (players.length == 0) {
+            return;
+        }
+
+        int processed = this.currentlyProcessing.compute(state, (key, oldValue) -> oldValue != null ? oldValue + 1 : 1);
+        int total = processed + remainingWithState(state);
+
+        ChatColorHandler.sendActionBarMessage(players, "&#b7faa2Updater processing: &#66b04f%s&#b7faa2/&#66b04f%s"
+            .formatted(processed, total));
     }
 
     public static class ProcessingData {
