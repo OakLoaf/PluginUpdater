@@ -71,7 +71,9 @@ public class UpdateHandler {
         }
 
         ProcessingData.State state = processingData.getState();
+        this.currentlyProcessing.compute(state, (key, oldValue) -> oldValue != null ? oldValue + 1 : 1);
         sendNotification(state);
+
         switch (state) {
             case UPDATE_CHECK -> {
                 PluginData pluginData = processingData.getPluginData();
@@ -122,7 +124,7 @@ public class UpdateHandler {
             return;
         }
 
-        int processed = this.currentlyProcessing.compute(state, (key, oldValue) -> oldValue != null ? oldValue + 1 : 1);
+        int processed = this.currentlyProcessing.getOrDefault(state, 1);
         int total = processed + remainingWithState(state);
 
         ChatColorHandler.sendActionBarMessage(players, "&#b7faa2Updater processing: &#66b04f%s&#b7faa2/&#66b04f%s"
