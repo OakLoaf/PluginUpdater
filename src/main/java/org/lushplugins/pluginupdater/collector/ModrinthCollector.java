@@ -51,7 +51,7 @@ public class ModrinthCollector implements PluginDataCollector {
 
         HttpResponse<String> response;
         try {
-            response = HttpUtil.sendRequest(String.format("%s/version_files", UpdaterConstants.APIs.MODRINTH), payload);
+            response = HttpUtil.sendRequest(String.format("%s/version_files", UpdaterConstants.Endpoint.MODRINTH), payload);
         } catch (IOException | InterruptedException e) {
             PluginUpdater.getInstance().getLogger().log(Level.WARNING, "Caught error whilst getting project data from hashes: ", e);
             return Collections.emptyList();

@@ -20,15 +20,15 @@ public class UpdateHandler {
     }
 
     public void enable() {
-        threads.submit(() -> Thread.currentThread().setName("PluginUpdater Update Thread"));
-        threads.scheduleAtFixedRate(this::processQueue, 15, 1, TimeUnit.SECONDS);
+        this.threads.submit(() -> Thread.currentThread().setName("PluginUpdater Update Thread"));
+        this.threads.scheduleAtFixedRate(this::processQueue, 15, 1, TimeUnit.SECONDS);
     }
 
     @SuppressWarnings("UnusedReturnValue")
     public boolean shutdown() {
         try {
             this.threads.shutdown();
-            return threads.awaitTermination(5, TimeUnit.SECONDS);
+            return this.threads.awaitTermination(5, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
             e.printStackTrace();
             return false;
