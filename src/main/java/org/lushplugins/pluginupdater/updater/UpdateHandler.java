@@ -27,7 +27,7 @@ public class UpdateHandler {
 
     public void enable() {
         this.threads.submit(() -> Thread.currentThread().setName("PluginUpdater Update Thread"));
-        this.threads.scheduleAtFixedRate(this::processQueue, 15, 1, TimeUnit.SECONDS);
+        this.threads.scheduleAtFixedRate(this::processQueue, 0, 1, TimeUnit.SECONDS);
     }
 
     @SuppressWarnings("UnusedReturnValue")
