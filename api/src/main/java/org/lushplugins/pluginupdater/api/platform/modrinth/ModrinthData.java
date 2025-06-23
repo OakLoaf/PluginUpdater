@@ -58,7 +58,7 @@ public class ModrinthData extends PlatformData {
      * @param featuredOnly Whether to filter updates by Featured only
      */
     public ModrinthData(String modrinthProjectId, boolean featuredOnly) {
-        this(modrinthProjectId, (List<String>) null, featuredOnly);
+        this(modrinthProjectId, VersionType.ALL, featuredOnly);
     }
 
     public String getModrinthProjectId() {
@@ -83,8 +83,9 @@ public class ModrinthData extends PlatformData {
     }
 
     public static class VersionType {
-        String RELEASE = "release";
-        String BETA = "beta";
-        String ALPHA = "alpha";
+        public static final List<String> ALL = null;
+        public static final String RELEASE = "release";
+        public static final String BETA = "beta";
+        public static final String ALPHA = "alpha";
     }
 }
