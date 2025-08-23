@@ -64,7 +64,7 @@ jobs:
         uses: svenstaro/upload-release-action@v2
         if: env.RELEASE_TYPE == 'release'
         with:
-          repo_token: ${{ secrets.REPO_TOKEN }}
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: build/libs/*.jar
           file_glob: true
           asset_name: ${{ github.event.repository.name }}-${{ env.VERSION }}
