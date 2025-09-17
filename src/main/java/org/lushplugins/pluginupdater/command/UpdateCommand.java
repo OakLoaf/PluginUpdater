@@ -38,21 +38,8 @@ public class UpdateCommand {
         }
     }
 
-    // TODO: Temporary fix for update all command
     @Command("updater update all")
     @CommandPermission("pluginupdater.downloadupdates")
-    public String updateAll(CommandSender sender) {
-        return this.updateAll(sender, false);
-    }
-
-    @Command("updater update all --force")
-    @CommandPermission("pluginupdater.downloadupdates")
-    public String forceUpdateAll(CommandSender sender) {
-        return this.updateAll(sender, true);
-    }
-
-//    @Command("updater update all")
-//    @CommandPermission("pluginupdater.downloadupdates")
     public String updateAll(CommandSender sender, @Switch("force") boolean force) {
         UpdateHandler updateHandler = PluginUpdater.getInstance().getUpdateHandler();
         AtomicInteger updateCount = new AtomicInteger(0);
