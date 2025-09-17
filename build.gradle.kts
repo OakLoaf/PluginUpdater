@@ -16,8 +16,8 @@ allprojects {
     version = "1.0.16"
 
     repositories {
-        mavenCentral()
         mavenLocal()
+        mavenCentral()
         maven("https://hub.spigotmc.org/nexus/content/repositories/snapshots/") // Spigot
         maven("https://repo.lushplugins.org/releases") // LushLib
         maven("https://repo.lushplugins.org/snapshots") // LushLib
