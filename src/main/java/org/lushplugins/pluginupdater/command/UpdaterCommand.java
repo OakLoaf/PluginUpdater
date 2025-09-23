@@ -53,7 +53,7 @@ public class UpdaterCommand {
             .toList();
 
         if (!unregisteredPlugins.isEmpty()) {
-            return "&fMissing Plugins (%s):\n%s".formatted(unregisteredPlugins.size(), String.join("&7, &#ff6969", unregisteredPlugins));
+            return "&fUnregistered Plugins (%s):\n&#ff6969%s".formatted(unregisteredPlugins.size(), String.join("&7, &#ff6969", unregisteredPlugins));
         } else {
             return "&#ff6969No unregistered plugins found";
         }
