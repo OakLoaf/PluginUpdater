@@ -42,7 +42,7 @@ public class UpdatesCommand {
             .toList();
 
         if (!plugins.isEmpty()) {
-            return String.join("&7, ", plugins);
+            return "&fRegistered Plugins (%s):\n%s".formatted(plugins.size(), String.join("&7, ", plugins));
         } else {
             return "&#ff6969Could not find any registered plugins in PluginUpdater";
         }
