@@ -49,11 +49,11 @@ public class UpdaterCommand {
         List<String> unregisteredPlugins = Arrays.stream(Bukkit.getPluginManager().getPlugins())
             .map(Plugin::getName)
             .filter(pluginName -> configManager.getPluginData(pluginName) == null)
-            .sorted()
+            .sorted(String.CASE_INSENSITIVE_ORDER)
             .toList();
 
         if (!unregisteredPlugins.isEmpty()) {
-            return "&#ff6969Missing plugins:\n" + String.join(", ", unregisteredPlugins);
+            return "&fMissing Plugins (%s):\n%s".formatted(unregisteredPlugins.size(), String.join("&7, &#ff6969", unregisteredPlugins));
         } else {
             return "&#ff6969No unregistered plugins found";
         }
