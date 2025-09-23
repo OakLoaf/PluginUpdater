@@ -18,7 +18,7 @@ import java.util.regex.Pattern;
 
 @SuppressWarnings("CodeBlock2Expr")
 public interface VersionChecker {
-    Pattern VERSION_PATTERN = Pattern.compile("v?(\\d+(\\.\\d+)*)");
+    Pattern VERSION_PATTERN = Pattern.compile("(\\d+(\\.\\d+)*)");
 
     String getLatestVersion(PluginData pluginData, PlatformData platformData) throws IOException, InterruptedException;
 
