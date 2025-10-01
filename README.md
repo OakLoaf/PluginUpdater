@@ -1,3 +1,5 @@
+![This project proudly suppports the LGBTQIA+ community](https://raw.githubusercontent.com/OakLoaf/OakLoaf/refs/heads/main/assets/pride.png)
+
 # PluginUpdater
 PluginUpdater is a simple plugin and shadeable API that handles checking versions and automatically downloading plugin files from Modrinth, Spigot, Hangar and GitHub Releases. All updates and checks are ran asynchronously at a rate of 1 check/download per second to respect rate limits.
 
