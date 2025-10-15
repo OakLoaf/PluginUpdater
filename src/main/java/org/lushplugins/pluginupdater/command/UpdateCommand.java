@@ -73,7 +73,7 @@ public class UpdateCommand {
         }
 
         if (finalMajorCount > 0) {
-            ChatColorHandler.sendMessage(sender, "&#e0c01b%s &#ffe27aplugins require major updates, run &#e0c01b/updates update all --force &#ffe27ato force all possible updates".formatted(finalMajorCount));
+            ChatColorHandler.sendMessage(sender, "&#e0c01b%s &#ffe27aplugins require major updates, run &#e0c01b/updater update all --force &#ffe27ato force all possible updates".formatted(finalMajorCount));
         }
 
         return null;
