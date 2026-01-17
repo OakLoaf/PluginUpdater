@@ -4,7 +4,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.lushplugins.pluginupdater.api.platform.PlatformData;
 
 public class FancySpacesData implements PlatformData {
-    private static final String NAME = "fancyspaces";
+    private static final String NAME = "fancy_spaces";
 
     private final String spaceId;
 
