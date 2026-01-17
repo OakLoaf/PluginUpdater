@@ -8,6 +8,8 @@ import org.lushplugins.pluginupdater.api.platform.modrinth.ModrinthData;
 import org.lushplugins.pluginupdater.api.platform.modrinth.ModrinthVersionChecker;
 import org.lushplugins.pluginupdater.api.platform.spigot.SpigotData;
 import org.lushplugins.pluginupdater.api.platform.spigot.SpigotVersionChecker;
+import org.lushplugins.pluginupdater.api.platform.spigot.FancySpacesData;
+import org.lushplugins.pluginupdater.api.platform.spigot.FancySpacesVersionChecker;
 import org.lushplugins.pluginupdater.api.version.VersionChecker;
 
 import org.bukkit.configuration.ConfigurationSection;
@@ -26,6 +28,7 @@ public class PlatformRegistry {
         register("hangar", 1, HangarVersionChecker::new, HangarData::new);
         register("modrinth", 1, ModrinthVersionChecker::new, ModrinthData::new);
         register("spigot", 1, SpigotVersionChecker::new, SpigotData::new);
+        register("fancy_spaces", 1, FancySpacesVersionChecker::new, FancySpacesData::new);
     }
 
     @Nullable
