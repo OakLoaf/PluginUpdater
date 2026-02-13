@@ -5,6 +5,7 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.lushplugins.pluginupdater.PluginUpdater;
 import org.lushplugins.pluginupdater.api.platform.PlatformData;
+import org.lushplugins.pluginupdater.api.platform.github.GithubData;
 import org.lushplugins.pluginupdater.api.platform.hangar.HangarData;
 import org.lushplugins.pluginupdater.api.platform.modrinth.ModrinthData;
 import org.lushplugins.pluginupdater.api.platform.spigot.SpigotData;
@@ -49,6 +50,11 @@ public class PluginYamlCollector implements PluginDataCollector {
                 else if (pluginYml.contains("hangar-project-slug")) {
                     platformData = new HangarData(
                         pluginYml.getString("hangar-project-slug")
+                    );
+                }
+                else if (pluginYml.contains("github-repo")) {
+                    platformData = new GithubData(
+                        pluginYml.getString("github-repo")
                     );
                 }
 
