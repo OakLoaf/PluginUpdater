@@ -6,6 +6,7 @@ import org.lushplugins.pluginupdater.api.platform.PlatformRegistry;
 import org.lushplugins.pluginupdater.api.updater.PluginData;
 import org.lushplugins.pluginupdater.api.util.DownloadLogger;
 import org.lushplugins.pluginupdater.api.util.UpdaterConstants;
+import org.lushplugins.pluginupdater.api.version.comparator.VersionComparator;
 
 import java.io.*;
 import java.net.HttpURLConnection;
@@ -13,29 +14,23 @@ import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 import java.util.logging.Level;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 @SuppressWarnings("CodeBlock2Expr")
 public interface VersionChecker {
-    Pattern VERSION_PATTERN = Pattern.compile("(\\d+(\\.\\d+)*)");
-
     String getLatestVersion(PluginData pluginData, PlatformData platformData) throws IOException, InterruptedException;
 
     String getDownloadUrl(PluginData pluginData, PlatformData platformData) throws IOException, InterruptedException;
 
     default boolean isUpdateAvailable(PluginData pluginData, PlatformData platformData) throws IOException, InterruptedException {
         String currentVersion = pluginData.getCurrentVersion();
+        String latestVersion = getLatestVersion(pluginData, platformData);
 
-        Matcher matcher = VersionChecker.VERSION_PATTERN.matcher(getLatestVersion(pluginData, platformData));
-        if (!matcher.find()) {
-            return false;
-        }
-        String latestVersion = matcher.group();
-
+        VersionComparator comparator = pluginData.getOptionalComparator().orElse(platformData.getDefaultComparator());
+        VersionDifference versionDifference = comparator.getVersionDifference(currentVersion, latestVersion);
         pluginData.setCheckRan(true);
-        VersionDifference versionDifference = VersionDifference.getVersionDifference(currentVersion, latestVersion);
+
         if (!versionDifference.equals(VersionDifference.LATEST)) {
+            // TODO: Consider providing the full latest version string here - this would allow it to be parsed by the respective comparator
             pluginData.setLatestVersion(latestVersion);
             pluginData.setVersionDifference(versionDifference);
             return true;

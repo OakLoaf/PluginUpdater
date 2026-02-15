@@ -19,7 +19,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.concurrent.CompletableFuture;
 import java.util.logging.Level;
-import java.util.regex.Matcher;
 
 @SuppressWarnings("unused")
 public class Updater {
@@ -64,34 +63,18 @@ public class Updater {
      * @return A future containing whether an update is available.
      */
     public CompletableFuture<Boolean> checkForUpdate() {
-        CompletableFuture<Boolean> completableFuture = new CompletableFuture<>();
+        CompletableFuture<Boolean> future = new CompletableFuture<>();
 
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
             try {
-                String currentVersion = pluginData.getCurrentVersion();
-                Matcher matcher = VersionChecker.VERSION_PATTERN.matcher(VersionChecker.getLatestVersion(pluginData));
-                if (!matcher.find()) {
-                    completableFuture.complete(false);
-                    return;
-                }
-                String latestVersion = matcher.group();
-
-                pluginData.setCheckRan(true);
-                VersionDifference versionDifference = VersionDifference.getVersionDifference(currentVersion, latestVersion);
-                if (!versionDifference.equals(VersionDifference.LATEST)) {
-                    pluginData.setLatestVersion(latestVersion);
-                    pluginData.setVersionDifference(versionDifference);
-                    completableFuture.complete(true);
-                } else {
-                    completableFuture.complete(false);
-                }
-            } catch (IOException | IllegalStateException e) {
+                future.complete(VersionChecker.isUpdateAvailable(pluginData));
+            } catch (IOException e) {
                 plugin.getLogger().log(Level.SEVERE, e.getMessage(), e);
-                completableFuture.complete(false);
+                future.complete(false);
             }
         });
 
-        return completableFuture;
+        return future;
     }
 
     /**

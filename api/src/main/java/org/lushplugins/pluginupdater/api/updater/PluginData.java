@@ -2,17 +2,19 @@ package org.lushplugins.pluginupdater.api.updater;
 
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.lushplugins.pluginupdater.api.platform.PlatformData;
-import org.lushplugins.pluginupdater.api.version.VersionChecker;
 import org.lushplugins.pluginupdater.api.version.VersionDifference;
+import org.lushplugins.pluginupdater.api.version.comparator.VersionComparator;
 
 import java.util.List;
-import java.util.regex.Matcher;
+import java.util.Optional;
 
 // TODO: Move from constructors to Builder class
 public class PluginData {
     private final String pluginName;
     private final List<PlatformData> platformData;
+    private final VersionComparator comparator;
     private final String currentVersion;
     private String latestVersion;
 
@@ -22,8 +24,32 @@ public class PluginData {
     private boolean alreadyDownloaded = false;
     private boolean checkRan = false;
 
-    public PluginData(@NotNull Plugin plugin, @NotNull PlatformData platformData) {
-        this(plugin, List.of(platformData), true);
+    public PluginData(@NotNull String pluginName, @NotNull List<PlatformData> platformData, @Nullable VersionComparator comparator, @NotNull String currentVersion, boolean allowDownloads) {
+        this.pluginName = pluginName;
+        this.platformData = platformData;
+        this.comparator = comparator;
+        this.allowDownloads = allowDownloads;
+        this.currentVersion = currentVersion;
+    }
+
+    @Deprecated
+    public PluginData(@NotNull String pluginName, @NotNull PlatformData platformData, @NotNull String currentVersion, boolean allowDownloads) {
+        this(pluginName, List.of(platformData), null, currentVersion, allowDownloads);
+    }
+
+    @Deprecated
+    public PluginData(@NotNull String pluginName, @NotNull List<PlatformData> platformData, @NotNull String currentVersion) {
+        this(pluginName, platformData, null, currentVersion, true);
+    }
+
+    @Deprecated
+    public PluginData(@NotNull String pluginName, @NotNull PlatformData platformData, @NotNull String currentVersion) {
+        this(pluginName, List.of(platformData), null, currentVersion, true);
+    }
+
+    @Deprecated
+    public PluginData(@NotNull Plugin plugin, @NotNull List<PlatformData> platformData, boolean allowDownloads) {
+        this(plugin.getName(), platformData, null, plugin.getDescription().getVersion(), allowDownloads);
     }
 
     public PluginData(@NotNull Plugin plugin, @NotNull PlatformData platformData, boolean allowDownloads) {
@@ -34,41 +60,8 @@ public class PluginData {
         this(plugin, platformData, true);
     }
 
-    public PluginData(@NotNull Plugin plugin, @NotNull List<PlatformData> platformData, boolean allowDownloads) {
-        this.pluginName = plugin.getName();
-        this.platformData = platformData;
-        this.allowDownloads = allowDownloads;
-
-        String pluginVersion = plugin.getDescription().getVersion();
-        Matcher matcher = VersionChecker.VERSION_PATTERN.matcher(pluginVersion);
-        if (!matcher.find()) {
-            throw new IllegalStateException("Could not find valid version format for '" + pluginName + "'");
-        }
-        this.currentVersion = matcher.group();
-    }
-
-    public PluginData(@NotNull String pluginName, @NotNull PlatformData platformData, @NotNull String currentVersion) {
-        this(pluginName, List.of(platformData), currentVersion, true);
-    }
-
-    public PluginData(@NotNull String pluginName, @NotNull PlatformData platformData, @NotNull String currentVersion, boolean allowDownloads) {
-        this(pluginName, List.of(platformData), currentVersion, allowDownloads);
-    }
-
-    public PluginData(@NotNull String pluginName, @NotNull List<PlatformData> platformData, @NotNull String currentVersion) {
-        this(pluginName, platformData, currentVersion, true);
-    }
-
-    public PluginData(@NotNull String pluginName, @NotNull List<PlatformData> platformData, @NotNull String currentVersion, boolean allowDownloads) {
-        this.pluginName = pluginName;
-        this.platformData = platformData;
-        this.allowDownloads = allowDownloads;
-
-        Matcher matcher = VersionChecker.VERSION_PATTERN.matcher(currentVersion);
-        if (!matcher.find()) {
-            throw new IllegalStateException("Could not find valid version format for '" + pluginName + "'");
-        }
-        this.currentVersion = matcher.group();
+    public PluginData(@NotNull Plugin plugin, @NotNull PlatformData platformData) {
+        this(plugin, List.of(platformData), true);
     }
 
     public String getPluginName() {
@@ -79,10 +72,19 @@ public class PluginData {
         return platformData;
     }
 
+    public VersionComparator getComparator() {
+        return comparator;
+    }
+
+    public Optional<VersionComparator> getOptionalComparator() {
+        return Optional.ofNullable(comparator);
+    }
+
     public void addPlatform(PlatformData platformData) {
         this.platformData.add(platformData);
     }
 
+    // TODO: Ensure all uses do not get broken by version formatting not being applied here
     public String getCurrentVersion() {
         return currentVersion;
     }
