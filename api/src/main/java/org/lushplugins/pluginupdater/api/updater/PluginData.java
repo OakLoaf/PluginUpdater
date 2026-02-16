@@ -14,9 +14,9 @@ import java.util.Optional;
 
 public class PluginData {
     private final String pluginName;
+    private final String currentVersion;
     private final List<PlatformData> platformData;
     private final VersionComparator comparator;
-    private final String currentVersion;
     private String latestVersion;
 
     private boolean enabled = true;
@@ -25,16 +25,21 @@ public class PluginData {
     private boolean alreadyDownloaded = false;
     private boolean checkRan = false;
 
-    private PluginData(@NotNull String pluginName, @NotNull List<PlatformData> platformData, @Nullable VersionComparator comparator, @NotNull String currentVersion, boolean allowDownloads) {
+    private PluginData(@NotNull String pluginName, @NotNull String currentVersion, @NotNull List<PlatformData> platformData, @Nullable VersionComparator comparator, boolean allowDownloads) {
         this.pluginName = pluginName;
+        this.currentVersion = currentVersion;
         this.platformData = platformData;
         this.comparator = comparator;
         this.allowDownloads = allowDownloads;
-        this.currentVersion = currentVersion;
     }
 
     public String getPluginName() {
         return pluginName;
+    }
+
+    // TODO: Ensure all uses do not get broken by version formatting not being applied here
+    public String getCurrentVersion() {
+        return currentVersion;
     }
 
     public List<PlatformData> getPlatformData() {
@@ -51,11 +56,6 @@ public class PluginData {
 
     public void addPlatform(PlatformData platformData) {
         this.platformData.add(platformData);
-    }
-
-    // TODO: Ensure all uses do not get broken by version formatting not being applied here
-    public String getCurrentVersion() {
-        return currentVersion;
     }
 
     public String getLatestVersion() {
@@ -161,9 +161,9 @@ public class PluginData {
         public PluginData build() {
             return new PluginData(
                 this.pluginName,
+                this.currentVersion,
                 this.platformData,
                 this.comparator,
-                this.currentVersion,
                 this.allowDownloads
             );
         }

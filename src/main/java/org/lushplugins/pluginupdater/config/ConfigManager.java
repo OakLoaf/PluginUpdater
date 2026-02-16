@@ -10,6 +10,8 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.lushplugins.pluginupdater.api.version.comparator.ComparatorRegistry;
+import org.lushplugins.pluginupdater.api.version.comparator.VersionComparator;
 import org.lushplugins.pluginupdater.collector.PluginDataCollector;
 import org.lushplugins.pluginupdater.updater.UpdateHandler;
 
@@ -61,13 +63,14 @@ public class ConfigManager {
             getConfigurationSections(pluginsSection).forEach(pluginSection -> {
                 String pluginName = pluginSection.getName();
                 boolean enabled = pluginSection.getBoolean("enabled", true);
-                boolean allowDownloads = pluginSection.getBoolean("allow-downloads", true);
-                String platform = pluginSection.getString("platform");
-
                 if (!enabled) {
                     disabledPlugins.add(pluginName);
                     return;
-                } else if (platform == null) {
+                }
+
+                String platform = pluginSection.getString("platform");
+                boolean allowDownloads = pluginSection.getBoolean("allow-downloads", true);
+                if (platform == null) {
                     return;
                 }
 
@@ -76,11 +79,21 @@ public class ConfigManager {
                     return;
                 }
 
+                VersionComparator comparator;
+                ConfigurationSection comparatorSection = config.getConfigurationSection("comparator");
+                if (comparatorSection != null) {
+                    String comparatorType = comparatorSection.getString("type", "sem-ver");
+                    comparator = ComparatorRegistry.getVersionComparator(comparatorType, comparatorSection);
+                } else {
+                    comparator = null;
+                }
+
                 try {
                     PlatformData platformData = PlatformRegistry.getPlatformData(platform, pluginSection);
                     if (platformData != null) {
                         addPlugin(pluginName, PluginData.builder(currPlugin)
                             .platformData(platformData)
+                            .comparator(comparator)
                             .allowDownloads(allowDownloads)
                             .build());
                     }
