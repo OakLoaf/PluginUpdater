@@ -5,12 +5,13 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.lushplugins.pluginupdater.api.platform.PlatformData;
 import org.lushplugins.pluginupdater.api.version.VersionDifference;
+import org.lushplugins.pluginupdater.api.version.comparator.SemVerComparator;
 import org.lushplugins.pluginupdater.api.version.comparator.VersionComparator;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-// TODO: Move from constructors to Builder class
 public class PluginData {
     private final String pluginName;
     private final List<PlatformData> platformData;
@@ -24,28 +25,12 @@ public class PluginData {
     private boolean alreadyDownloaded = false;
     private boolean checkRan = false;
 
-    public PluginData(@NotNull String pluginName, @NotNull List<PlatformData> platformData, @Nullable VersionComparator comparator, @NotNull String currentVersion, boolean allowDownloads) {
+    private PluginData(@NotNull String pluginName, @NotNull List<PlatformData> platformData, @Nullable VersionComparator comparator, @NotNull String currentVersion, boolean allowDownloads) {
         this.pluginName = pluginName;
         this.platformData = platformData;
         this.comparator = comparator;
         this.allowDownloads = allowDownloads;
         this.currentVersion = currentVersion;
-    }
-
-    public PluginData(@NotNull Plugin plugin, @NotNull List<PlatformData> platformData, boolean allowDownloads) {
-        this(plugin.getName(), platformData, null, plugin.getDescription().getVersion(), allowDownloads);
-    }
-
-    public PluginData(@NotNull Plugin plugin, @NotNull PlatformData platformData, boolean allowDownloads) {
-        this(plugin, List.of(platformData), allowDownloads);
-    }
-
-    public PluginData(@NotNull Plugin plugin, @NotNull List<PlatformData> platformData) {
-        this(plugin, platformData, true);
-    }
-
-    public PluginData(@NotNull Plugin plugin, @NotNull PlatformData platformData) {
-        this(plugin, List.of(platformData), true);
     }
 
     public String getPluginName() {
@@ -119,5 +104,68 @@ public class PluginData {
 
     public void setCheckRan(boolean checkRan) {
         this.checkRan = checkRan;
+    }
+
+    public static Builder builder(String pluginName, String currentVersion) {
+        return new Builder(pluginName, currentVersion);
+    }
+
+    public static Builder builder(Plugin plugin) {
+        return builder(plugin.getName(), plugin.getDescription().getVersion());
+    }
+
+    public static PluginData empty(Plugin plugin) {
+        return builder(plugin).build();
+    }
+
+    public static class Builder {
+        private final String pluginName;
+        private final String currentVersion;
+        private List<PlatformData> platformData = Collections.emptyList();
+        private VersionComparator comparator = SemVerComparator.INSTANCE;
+        private boolean allowDownloads = true;
+
+        private Builder(String pluginName, String currentVersion) {
+            this.pluginName = pluginName;
+            this.currentVersion = currentVersion;
+        }
+
+        public Builder platformData(PlatformData platformData) {
+            this.platformData = Collections.singletonList(platformData);
+            return this;
+        }
+
+        public Builder platformData(List<PlatformData> platformData) {
+            this.platformData = platformData;
+            return this;
+        }
+
+        public Builder comparator(VersionComparator comparator) {
+            this.comparator = comparator;
+            return this;
+        }
+
+        public Builder allowDownloads(boolean allow) {
+            this.allowDownloads = allow;
+            return this;
+        }
+
+        public Builder allowDownloads() {
+            return allowDownloads(true);
+        }
+
+        public Builder blockDownloads() {
+            return allowDownloads(false);
+        }
+
+        public PluginData build() {
+            return new PluginData(
+                this.pluginName,
+                this.platformData,
+                this.comparator,
+                this.currentVersion,
+                this.allowDownloads
+            );
+        }
     }
 }

@@ -79,7 +79,10 @@ public class ConfigManager {
                 try {
                     PlatformData platformData = PlatformRegistry.getPlatformData(platform, pluginSection);
                     if (platformData != null) {
-                        addPlugin(pluginName, new PluginData(currPlugin, platformData, allowDownloads));
+                        addPlugin(pluginName, PluginData.builder(currPlugin)
+                            .platformData(platformData)
+                            .allowDownloads(allowDownloads)
+                            .build());
                     }
                 } catch (Exception e) {
                     plugin.getLogger().log(Level.SEVERE, "Caught error whilst collecting data for '%s'".formatted(pluginName), e);

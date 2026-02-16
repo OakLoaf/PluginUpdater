@@ -131,7 +131,7 @@ public class Updater {
 
         public Builder(Plugin plugin) {
             this.plugin = plugin;
-            this.pluginData = new PluginData(plugin, new ArrayList<>());
+            this.pluginData = PluginData.empty(plugin);
         }
 
         /**

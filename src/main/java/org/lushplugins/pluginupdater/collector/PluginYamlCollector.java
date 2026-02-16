@@ -58,7 +58,9 @@ public class PluginYamlCollector implements PluginDataCollector {
                 }
 
                 if (platformData != null) {
-                    pluginDataList.add(new PluginData(plugin, platformData));
+                    pluginDataList.add(PluginData.builder(plugin)
+                        .platformData(platformData)
+                        .build());
                 }
             }
         }

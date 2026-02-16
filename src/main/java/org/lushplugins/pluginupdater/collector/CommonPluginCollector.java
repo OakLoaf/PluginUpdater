@@ -42,7 +42,9 @@ public class CommonPluginCollector implements PluginDataCollector {
 
             PlatformData platformData = PlatformRegistry.getPlatformData(pluginSection.getString("platform"), pluginSection);
             if (platformData != null) {
-                pluginDataList.add(new PluginData(plugin, platformData));
+                pluginDataList.add(PluginData.builder(plugin)
+                    .platformData(platformData)
+                    .build());
             }
         }
 
