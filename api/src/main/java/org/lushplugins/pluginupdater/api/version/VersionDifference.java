@@ -6,7 +6,7 @@ public enum VersionDifference {
      */
     MAJOR,
     MINOR,
-    BUG_FIXES,
+    PATCH,
     BUILD,
     /**
      * Using same version or later than release (usually beta/dev-build)

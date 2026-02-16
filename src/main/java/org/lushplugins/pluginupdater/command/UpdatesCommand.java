@@ -31,7 +31,7 @@ public class UpdatesCommand {
                 } else if (versionDifference.equals(VersionDifference.MAJOR)) {
                     return configManager.getMessage("major-update-available-color", "&#ff6969")
                         + pluginName;
-                } else if (versionDifference.equals(VersionDifference.MINOR) || versionDifference.equals(VersionDifference.BUG_FIXES) || versionDifference.equals(VersionDifference.BUILD)) {
+                } else if (versionDifference.equals(VersionDifference.MINOR) || versionDifference.equals(VersionDifference.PATCH) || versionDifference.equals(VersionDifference.BUILD)) {
                     return configManager.getMessage("update-available-color", "&#ffda54")
                         + pluginName;
                 } else {

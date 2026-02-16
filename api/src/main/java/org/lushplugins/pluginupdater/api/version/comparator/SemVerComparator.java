@@ -33,7 +33,7 @@ public class SemVerComparator implements VersionComparator {
                     if (latestVersionLast >= currentVersionLast) {
                         return i == 1
                             ? VersionDifference.MINOR : i == 2
-                            ? VersionDifference.BUG_FIXES : VersionDifference.BUILD;
+                            ? VersionDifference.PATCH : VersionDifference.BUILD;
                     }
                 } else {
                     return VersionDifference.MAJOR;
