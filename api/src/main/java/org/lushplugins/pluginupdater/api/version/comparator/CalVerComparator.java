@@ -8,6 +8,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.time.temporal.ChronoField;
+import java.time.temporal.TemporalAccessor;
 
 public class CalVerComparator implements VersionComparator {
     private static final DateTimeFormatter DEFAULT_FORMAT = DateTimeFormatter.ofPattern("yyyy.MM.dd");
@@ -43,7 +45,16 @@ public class CalVerComparator implements VersionComparator {
 
     private LocalDateTime parseDateTime(String versionString) throws InvalidVersionFormatException {
         try {
-            return LocalDateTime.parse(versionString, this.dateTimeFormat);
+            TemporalAccessor accessor = this.dateTimeFormat.parse(versionString);
+
+            // Fill missing fields with defaults
+            int year = accessor.isSupported(ChronoField.YEAR) ? accessor.get(ChronoField.YEAR) : 1970;
+            int month = accessor.isSupported(ChronoField.MONTH_OF_YEAR) ? accessor.get(ChronoField.MONTH_OF_YEAR) : 1;
+            int day = accessor.isSupported(ChronoField.DAY_OF_MONTH) ? accessor.get(ChronoField.DAY_OF_MONTH) : 1;
+            int hour = accessor.isSupported(ChronoField.HOUR_OF_DAY) ? accessor.get(ChronoField.HOUR_OF_DAY) : 0;
+            int minute = accessor.isSupported(ChronoField.MINUTE_OF_HOUR) ? accessor.get(ChronoField.MINUTE_OF_HOUR) : 0;
+
+            return LocalDateTime.of(year, month, day, hour, minute);
         } catch (DateTimeParseException e) {
             throw new InvalidVersionFormatException("Version ('%s') does not match required formatting"
                 .formatted(versionString), e);
