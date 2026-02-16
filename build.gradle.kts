@@ -90,8 +90,8 @@ tasks {
         minecraftVersion("1.21")
 
         downloadPlugins {
-            modrinth("viaversion", "5.4.2") // ViaVersion
-            modrinth("viabackwards", "5.4.2") // ViaBackwards
+            modrinth("viaversion", "5.7.1") // ViaVersion
+            modrinth("viabackwards", "5.7.1") // ViaBackwards
             // The following plugins are intentionally outdated for testing purposes
             modrinth("djC8I9ui", "3.2.0") // LushRewards
             modrinth("discordsrv", "1.27.0") // DiscordSRV
