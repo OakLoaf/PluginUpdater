@@ -32,22 +32,6 @@ public class PluginData {
         this.currentVersion = currentVersion;
     }
 
-    @Deprecated
-    public PluginData(@NotNull String pluginName, @NotNull PlatformData platformData, @NotNull String currentVersion, boolean allowDownloads) {
-        this(pluginName, List.of(platformData), null, currentVersion, allowDownloads);
-    }
-
-    @Deprecated
-    public PluginData(@NotNull String pluginName, @NotNull List<PlatformData> platformData, @NotNull String currentVersion) {
-        this(pluginName, platformData, null, currentVersion, true);
-    }
-
-    @Deprecated
-    public PluginData(@NotNull String pluginName, @NotNull PlatformData platformData, @NotNull String currentVersion) {
-        this(pluginName, List.of(platformData), null, currentVersion, true);
-    }
-
-    @Deprecated
     public PluginData(@NotNull Plugin plugin, @NotNull List<PlatformData> platformData, boolean allowDownloads) {
         this(plugin.getName(), platformData, null, plugin.getDescription().getVersion(), allowDownloads);
     }
