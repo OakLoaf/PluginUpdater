@@ -22,7 +22,7 @@ public class BuildNumComparator implements VersionComparator {
     private String applyVersionFormat(String versionString) throws InvalidVersionFormatException {
         Matcher matcher = VERSION_PATTERN.matcher(versionString);
         if (!matcher.find()) {
-            throw new InvalidVersionFormatException("Latest version ('%s') does not match required formatting '%s'"
+            throw new InvalidVersionFormatException("Version ('%s') does not match required formatting '%s'"
                 .formatted(versionString, VERSION_PATTERN.toString()));
         }
 
