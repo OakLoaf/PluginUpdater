@@ -8,6 +8,8 @@ import org.lushplugins.pluginupdater.PluginUpdater;
 import org.lushplugins.pluginupdater.api.platform.PlatformData;
 import org.lushplugins.pluginupdater.api.platform.PlatformRegistry;
 import org.lushplugins.pluginupdater.api.updater.PluginData;
+import org.lushplugins.pluginupdater.api.version.comparator.ComparatorRegistry;
+import org.lushplugins.pluginupdater.api.version.comparator.VersionComparator;
 import org.lushplugins.pluginupdater.config.ConfigManager;
 
 import java.io.InputStream;
@@ -40,9 +42,21 @@ public class CommonPluginCollector implements PluginDataCollector {
                 continue;
             }
 
+            VersionComparator comparator;
+            ConfigurationSection comparatorSection = pluginSection.getConfigurationSection("comparator");
+            if (comparatorSection != null) {
+                String comparatorType = comparatorSection.getString("type", "sem-ver");
+                comparator = ComparatorRegistry.getVersionComparator(comparatorType, comparatorSection);
+            } else {
+                comparator = null;
+            }
+
             PlatformData platformData = PlatformRegistry.getPlatformData(pluginSection.getString("platform"), pluginSection);
             if (platformData != null) {
-                pluginDataList.add(new PluginData(plugin, platformData));
+                pluginDataList.add(PluginData.builder(plugin)
+                    .platformData(platformData)
+                    .comparator(comparator)
+                    .build());
             }
         }
 

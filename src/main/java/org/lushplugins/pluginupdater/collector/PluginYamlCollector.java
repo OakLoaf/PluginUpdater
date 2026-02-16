@@ -38,8 +38,7 @@ public class PluginYamlCollector implements PluginDataCollector {
                 PlatformData platformData = null;
                 if (pluginYml.contains("modrinth-project-id")) {
                     platformData = new ModrinthData(
-                        pluginYml.getString("modrinth-project-id"),
-                        true
+                        pluginYml.getString("modrinth-project-id")
                     );
                 }
                 else if (pluginYml.contains("spigot-resource-id")) {
@@ -59,7 +58,9 @@ public class PluginYamlCollector implements PluginDataCollector {
                 }
 
                 if (platformData != null) {
-                    pluginDataList.add(new PluginData(plugin, platformData));
+                    pluginDataList.add(PluginData.builder(plugin)
+                        .platformData(platformData)
+                        .build());
                 }
             }
         }

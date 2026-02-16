@@ -8,7 +8,7 @@ plugins:
   PluginUpdater:
     platform: modrinth
     modrinth-project-id: "IBSpJfbm"
-    featured-only: true
+    channels: release
   ExamplePlugin:
     enabled: false
 
