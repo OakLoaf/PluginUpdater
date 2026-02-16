@@ -6,22 +6,22 @@ import org.lushplugins.pluginupdater.api.platform.PlatformData;
 public class HangarData extends PlatformData {
     private static final String NAME = "hangar";
 
-    private final String hangarProjectSlug;
+    private final String projectSlug;
 
-    public HangarData(ConfigurationSection configurationSection) {
+    public HangarData(ConfigurationSection config) {
         super(NAME);
-        this.hangarProjectSlug = configurationSection.getString("hangar-project-slug");
+        this.projectSlug = config.getString("hangar-project-slug");
     }
 
     /**
-     * @param hangarProjectSlug Your Modrinth Project Slug
+     * @param projectSlug The Hangar Project Slug
      */
-    public HangarData(String hangarProjectSlug) {
+    public HangarData(String projectSlug) {
         super(NAME);
-        this.hangarProjectSlug = hangarProjectSlug;
+        this.projectSlug = projectSlug;
     }
 
-    public String getHangarProjectSlug() {
-        return hangarProjectSlug;
+    public String getProjectSlug() {
+        return projectSlug;
     }
 }

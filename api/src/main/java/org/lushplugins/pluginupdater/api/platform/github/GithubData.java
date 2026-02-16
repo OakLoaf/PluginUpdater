@@ -6,19 +6,19 @@ import org.lushplugins.pluginupdater.api.platform.PlatformData;
 public class GithubData extends PlatformData {
     private static final String NAME = "github";
 
-    private final String githubRepo;
+    private final String repo;
 
-    public GithubData(ConfigurationSection configurationSection) {
+    public GithubData(ConfigurationSection config) {
         super(NAME);
-        this.githubRepo = configurationSection.getString("github-repo");
+        this.repo = config.getString("github-repo");
     }
 
-    public GithubData(String githubRepo) {
+    public GithubData(String repo) {
         super(NAME);
-        this.githubRepo = githubRepo;
+        this.repo = repo;
     }
 
-    public String getGithubRepo() {
-        return githubRepo;
+    public String getRepo() {
+        return repo;
     }
 }

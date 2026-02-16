@@ -35,7 +35,7 @@ public class ModrinthVersionChecker implements VersionChecker {
     }
 
     private JsonArray getVersions(PluginData pluginData, ModrinthData modrinthData) throws IOException, InterruptedException {
-        StringBuilder uriBuilder = new StringBuilder(String.format("%s/project/%s/version", UpdaterConstants.Endpoint.MODRINTH, modrinthData.getModrinthProjectId()))
+        StringBuilder uriBuilder = new StringBuilder(String.format("%s/project/%s/version", UpdaterConstants.Endpoint.MODRINTH, modrinthData.getProjectId()))
             .append("?loaders=[%22bukkit%22,%22spigot%22,%22paper%22,%22purpur%22,%22folia%22]")
             .append("&include_changelog=false");
 

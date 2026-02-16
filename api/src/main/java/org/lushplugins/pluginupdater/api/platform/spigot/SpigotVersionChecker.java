@@ -19,7 +19,7 @@ public class SpigotVersionChecker implements VersionChecker {
             return null;
         }
 
-        HttpResponse<String> response = HttpUtil.sendRequest(String.format("%s/resources/%s/versions/latest", UpdaterConstants.Endpoint.SPIGET, spigotData.getSpigotResourceId()));
+        HttpResponse<String> response = HttpUtil.sendRequest(String.format("%s/resources/%s/versions/latest", UpdaterConstants.Endpoint.SPIGET, spigotData.getResourceId()));
 
         if (response.statusCode() != 200) {
             throw new IllegalStateException("Received invalid response code (" + response.statusCode() + ") whilst checking '" + pluginData.getPluginName() + "' for updates.");
@@ -32,7 +32,7 @@ public class SpigotVersionChecker implements VersionChecker {
     @Override
     public String getDownloadUrl(PluginData pluginData, PlatformData platformData) {
         return platformData instanceof SpigotData spigotData ?
-            String.format("%s/resources/%s/download", UpdaterConstants.Endpoint.SPIGET, spigotData.getSpigotResourceId()) :
+            String.format("%s/resources/%s/download", UpdaterConstants.Endpoint.SPIGET, spigotData.getResourceId()) :
             null;
     }
 }

@@ -137,37 +137,37 @@ public class Updater {
         /**
          * Add GitHub plugin data to be used for collecting update information
          * (Platforms should be added in order of priority).
-         * @param githubRepo The plugin's GitHub repo (e.g. 'OakLoaf/PluginUpdater')
+         * @param repo The plugin's GitHub repo (e.g. 'OakLoaf/PluginUpdater')
          */
-        public Builder github(String githubRepo) {
-            return platform(new GithubData(githubRepo));
+        public Builder github(String repo) {
+            return platform(new GithubData(repo));
         }
 
         /**
          * Add Hangar plugin data to be used for collecting update information
          * (Platforms should be added in order of priority).
-         * @param hangarProjectSlug The plugin's hangar project slug.
+         * @param projectSlug The plugin's hangar project slug.
          */
-        public Builder hangar(String hangarProjectSlug) {
-            return platform(new HangarData(hangarProjectSlug));
+        public Builder hangar(String projectSlug) {
+            return platform(new HangarData(projectSlug));
         }
 
         /**
          * Add Modrinth plugin data to be used for collecting update information
          * (Platforms should be added in order of priority).
-         * @param modrinthProjectId The plugin's modrinth project id.
+         * @param projectId The plugin's modrinth project id.
          */
-        public Builder modrinth(String modrinthProjectId, boolean featuredOnly) {
-            return platform(new ModrinthData(modrinthProjectId, featuredOnly));
+        public Builder modrinth(String projectId) {
+            return platform(new ModrinthData(projectId));
         }
 
         /**
          * Add Spigot plugin data to be used for collecting update information
          * (Platforms should be added in order of priority).
-         * @param spigotResourceId The plugin's spigot resource id.
+         * @param resourceId The plugin's spigot resource id.
          */
-        public Builder spigot(String spigotResourceId) {
-            return platform(new SpigotData(spigotResourceId));
+        public Builder spigot(String resourceId) {
+            return platform(new SpigotData(resourceId));
         }
 
         /**

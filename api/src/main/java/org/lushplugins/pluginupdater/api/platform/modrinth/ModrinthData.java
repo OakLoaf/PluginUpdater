@@ -11,70 +11,67 @@ import java.util.List;
 public class ModrinthData extends PlatformData {
     private static final String NAME = "modrinth";
 
-    private final String modrinthProjectId;
-    private final @Nullable List<String> versionTypes;
+    private final String projectId;
+    private final @Nullable List<String> releaseChannels;
 
-    public ModrinthData(ConfigurationSection configurationSection) {
+    public ModrinthData(ConfigurationSection config) {
         super(NAME);
-        this.modrinthProjectId = configurationSection.getString("modrinth-project-id");
+        this.projectId = config.getString("modrinth-project-id");
 
-        if (configurationSection.isString("channels")) {
-            this.versionTypes = Collections.singletonList(configurationSection.getString("channels", "release").toLowerCase());
-        } else if (configurationSection.isList("channels")) {
-            this.versionTypes = configurationSection.getStringList("channels").stream()
+        if (config.isString("channels")) {
+            this.releaseChannels = Collections.singletonList(config.getString("channels", ReleaseChannel.RELEASE).toLowerCase());
+        } else if (config.isList("channels")) {
+            this.releaseChannels = config.getStringList("channels").stream()
                 .map(String::toLowerCase)
                 .toList();
         } else {
-            this.versionTypes = null;
+            this.releaseChannels = ReleaseChannel.ALL;
         }
     }
 
     /**
-     * @param modrinthProjectId The Modrinth project id
-     * @param versionTypes Which version types to filter (Set to 'null' to not filter)
-     * @param featuredOnly Whether to filter updates by Featured only
+     * @param projectId The Modrinth project id
+     * @param releaseChannels Which release channels to filter, {@code null} will include all release channels
      */
-    public ModrinthData(String modrinthProjectId, @Nullable List<String> versionTypes, boolean featuredOnly) {
+    public ModrinthData(String projectId, @Nullable List<String> releaseChannels) {
         super(NAME);
-        this.modrinthProjectId = modrinthProjectId;
-        this.versionTypes = versionTypes;
+        this.projectId = projectId;
+        this.releaseChannels = releaseChannels;
     }
 
     /**
-     * @param modrinthProjectId The Modrinth project id
-     * @param versionType Which version type to filter (Set to 'null' to not filter)
-     * @param featuredOnly Whether to filter updates by Featured only
+     * @param projectId The Modrinth project id
+     * @param releaseChannel Which release channel to filter, {@code null} will include all release channels
      */
-    public ModrinthData(String modrinthProjectId, @Nullable String versionType, boolean featuredOnly) {
-        this(modrinthProjectId, Collections.singletonList(versionType), featuredOnly);
+    public ModrinthData(String projectId, @Nullable String releaseChannel) {
+        this(projectId, Collections.singletonList(releaseChannel));
     }
 
     /**
-     * @param modrinthProjectId The Modrinth project id
-     * @param featuredOnly Whether to filter updates by Featured only
+     * @param projectId The Modrinth project id
      */
-    public ModrinthData(String modrinthProjectId, boolean featuredOnly) {
-        this(modrinthProjectId, VersionType.ALL, featuredOnly);
+    public ModrinthData(String projectId) {
+        this(projectId, ReleaseChannel.ALL);
     }
 
-    public String getModrinthProjectId() {
-        return modrinthProjectId;
+    public String getProjectId() {
+        return projectId;
     }
 
     public boolean specifiesVersionType() {
-        return this.versionTypes != null;
+        return this.releaseChannels != null;
     }
 
     @ApiStatus.Internal
     public @Nullable String getVersionType() {
-        return this.versionTypes != null ? this.versionTypes.get(0) : null;
+        return this.releaseChannels != null ? this.releaseChannels.get(0) : null;
     }
 
-    public @Nullable List<String> getVersionTypes() {
-        return versionTypes;
+    public @Nullable List<String> getReleaseChannels() {
+        return releaseChannels;
     }
 
-    public static class VersionType {
+    public static class ReleaseChannel {
         public static final List<String> ALL = null;
         public static final String RELEASE = "release";
         public static final String BETA = "beta";

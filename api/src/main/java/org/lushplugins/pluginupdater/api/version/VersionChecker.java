@@ -30,7 +30,6 @@ public interface VersionChecker {
         pluginData.setCheckRan(true);
 
         if (!versionDifference.equals(VersionDifference.LATEST)) {
-            // TODO: Consider providing the full latest version string here - this would allow it to be parsed by the respective comparator
             pluginData.setLatestVersion(latestVersion);
             pluginData.setVersionDifference(versionDifference);
             return true;
