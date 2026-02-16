@@ -120,6 +120,10 @@ public class Updater {
         return completableFuture;
     }
 
+    public static Builder builder(Plugin plugin) {
+        return new Builder(plugin);
+    }
+
     public static class Builder {
         private final Plugin plugin;
         private final PluginData pluginData;
@@ -129,7 +133,7 @@ public class Updater {
         private String notificationMessage = "&#ffe27aA new &#e0c01b%plugin% &#ffe27aupdate is now available! &#e0c01b%current_version% &#ffe27a-> &#e0c01b%latest_version%";
         private File downloadLogFile;
 
-        public Builder(Plugin plugin) {
+        private Builder(Plugin plugin) {
             this.plugin = plugin;
             this.pluginData = PluginData.empty(plugin);
         }
