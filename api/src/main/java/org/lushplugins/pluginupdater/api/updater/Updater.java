@@ -19,7 +19,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.concurrent.CompletableFuture;
 import java.util.logging.Level;
-import java.util.regex.Matcher;
 
 @SuppressWarnings("unused")
 public class Updater {
@@ -64,34 +63,18 @@ public class Updater {
      * @return A future containing whether an update is available.
      */
     public CompletableFuture<Boolean> checkForUpdate() {
-        CompletableFuture<Boolean> completableFuture = new CompletableFuture<>();
+        CompletableFuture<Boolean> future = new CompletableFuture<>();
 
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
             try {
-                String currentVersion = pluginData.getCurrentVersion();
-                Matcher matcher = VersionChecker.VERSION_PATTERN.matcher(VersionChecker.getLatestVersion(pluginData));
-                if (!matcher.find()) {
-                    completableFuture.complete(false);
-                    return;
-                }
-                String latestVersion = matcher.group();
-
-                pluginData.setCheckRan(true);
-                VersionDifference versionDifference = VersionDifference.getVersionDifference(currentVersion, latestVersion);
-                if (!versionDifference.equals(VersionDifference.LATEST)) {
-                    pluginData.setLatestVersion(latestVersion);
-                    pluginData.setVersionDifference(versionDifference);
-                    completableFuture.complete(true);
-                } else {
-                    completableFuture.complete(false);
-                }
-            } catch (IOException | IllegalStateException e) {
+                future.complete(VersionChecker.isUpdateAvailable(pluginData));
+            } catch (IOException e) {
                 plugin.getLogger().log(Level.SEVERE, e.getMessage(), e);
-                completableFuture.complete(false);
+                future.complete(false);
             }
         });
 
-        return completableFuture;
+        return future;
     }
 
     /**
@@ -148,43 +131,43 @@ public class Updater {
 
         public Builder(Plugin plugin) {
             this.plugin = plugin;
-            this.pluginData = new PluginData(plugin, new ArrayList<>());
+            this.pluginData = PluginData.empty(plugin);
         }
 
         /**
          * Add GitHub plugin data to be used for collecting update information
          * (Platforms should be added in order of priority).
-         * @param githubRepo The plugin's GitHub repo (e.g. 'OakLoaf/PluginUpdater')
+         * @param repo The plugin's GitHub repo (e.g. 'OakLoaf/PluginUpdater')
          */
-        public Builder github(String githubRepo) {
-            return platform(new GithubData(githubRepo));
+        public Builder github(String repo) {
+            return platform(new GithubData(repo));
         }
 
         /**
          * Add Hangar plugin data to be used for collecting update information
          * (Platforms should be added in order of priority).
-         * @param hangarProjectSlug The plugin's hangar project slug.
+         * @param projectSlug The plugin's hangar project slug.
          */
-        public Builder hangar(String hangarProjectSlug) {
-            return platform(new HangarData(hangarProjectSlug));
+        public Builder hangar(String projectSlug) {
+            return platform(new HangarData(projectSlug));
         }
 
         /**
          * Add Modrinth plugin data to be used for collecting update information
          * (Platforms should be added in order of priority).
-         * @param modrinthProjectId The plugin's modrinth project id.
+         * @param projectId The plugin's modrinth project id.
          */
-        public Builder modrinth(String modrinthProjectId, boolean featuredOnly) {
-            return platform(new ModrinthData(modrinthProjectId, featuredOnly));
+        public Builder modrinth(String projectId) {
+            return platform(new ModrinthData(projectId));
         }
 
         /**
          * Add Spigot plugin data to be used for collecting update information
          * (Platforms should be added in order of priority).
-         * @param spigotResourceId The plugin's spigot resource id.
+         * @param resourceId The plugin's spigot resource id.
          */
-        public Builder spigot(String spigotResourceId) {
-            return platform(new SpigotData(spigotResourceId));
+        public Builder spigot(String resourceId) {
+            return platform(new SpigotData(resourceId));
         }
 
         /**

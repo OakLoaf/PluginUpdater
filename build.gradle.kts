@@ -90,14 +90,15 @@ tasks {
         minecraftVersion("1.21")
 
         downloadPlugins {
-            modrinth("viaversion", "5.4.2") // ViaVersion
-            modrinth("viabackwards", "5.4.2") // ViaBackwards
+            modrinth("viaversion", "5.7.1") // ViaVersion
+            modrinth("viabackwards", "5.7.1") // ViaBackwards
             // The following plugins are intentionally outdated for testing purposes
             modrinth("djC8I9ui", "3.2.0") // LushRewards
             modrinth("discordsrv", "1.27.0") // DiscordSRV
             modrinth("coreprotect", "22.3") // CoreProtect
             modrinth("fancynpcs", "2.2.2") // FancyNPCs
             modrinth("fancyholograms", "2.3.1") // FancyHolograms
+            modrinth("nMwMeNFr", "2025.07") // UltimateAutoRestart
         }
     }
 }

@@ -36,7 +36,7 @@ public class GithubVersionChecker implements VersionChecker {
     }
 
     private JsonObject getLatestRelease(PluginData pluginData, GithubData githubData) throws IOException, InterruptedException {
-        HttpResponse<String> response = HttpUtil.sendRequest(String.format("%s/repos/%s/releases/latest", UpdaterConstants.Endpoint.GITHUB, githubData.getGithubRepo()));
+        HttpResponse<String> response = HttpUtil.sendRequest(String.format("%s/repos/%s/releases/latest", UpdaterConstants.Endpoint.GITHUB, githubData.getRepo()));
 
         if (response.statusCode() != 200) {
             throw new IllegalStateException("Received invalid response code (%s) whilst checking '%s' for updates.".formatted(response.statusCode(), pluginData.getPluginName()));
