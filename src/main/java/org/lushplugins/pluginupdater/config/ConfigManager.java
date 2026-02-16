@@ -80,7 +80,7 @@ public class ConfigManager {
                 }
 
                 VersionComparator comparator;
-                ConfigurationSection comparatorSection = config.getConfigurationSection("comparator");
+                ConfigurationSection comparatorSection = pluginSection.getConfigurationSection("comparator");
                 if (comparatorSection != null) {
                     String comparatorType = comparatorSection.getString("type", "sem-ver");
                     comparator = ComparatorRegistry.getVersionComparator(comparatorType, comparatorSection);
