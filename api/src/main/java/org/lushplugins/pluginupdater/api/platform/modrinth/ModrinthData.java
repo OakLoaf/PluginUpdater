@@ -13,7 +13,6 @@ public class ModrinthData extends PlatformData {
 
     private final String modrinthProjectId;
     private final @Nullable List<String> versionTypes;
-    private final boolean featuredOnly;
 
     public ModrinthData(ConfigurationSection configurationSection) {
         super(NAME);
@@ -28,8 +27,6 @@ public class ModrinthData extends PlatformData {
         } else {
             this.versionTypes = null;
         }
-
-        this.featuredOnly = configurationSection.getBoolean("featured-only");
     }
 
     /**
@@ -41,7 +38,6 @@ public class ModrinthData extends PlatformData {
         super(NAME);
         this.modrinthProjectId = modrinthProjectId;
         this.versionTypes = versionTypes;
-        this.featuredOnly = featuredOnly;
     }
 
     /**
@@ -76,10 +72,6 @@ public class ModrinthData extends PlatformData {
 
     public @Nullable List<String> getVersionTypes() {
         return versionTypes;
-    }
-
-    public boolean includeFeaturedOnly() {
-        return featuredOnly;
     }
 
     public static class VersionType {
