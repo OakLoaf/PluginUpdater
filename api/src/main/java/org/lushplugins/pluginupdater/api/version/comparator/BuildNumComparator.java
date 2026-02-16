@@ -8,7 +8,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class BuildNumComparator implements VersionComparator {
-    private static final Pattern DEFAULT_PATTERN = Pattern.compile("[.#-]([0-9]+)$");
+    private static final Pattern DEFAULT_PATTERN = Pattern.compile("[.#-+]([0-9]+)$");
     public static final BuildNumComparator INSTANCE = new BuildNumComparator(DEFAULT_PATTERN);
 
     private final Pattern pattern;
