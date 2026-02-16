@@ -98,6 +98,7 @@ tasks {
             modrinth("coreprotect", "22.3") // CoreProtect
             modrinth("fancynpcs", "2.2.2") // FancyNPCs
             modrinth("fancyholograms", "2.3.1") // FancyHolograms
+            modrinth("nMwMeNFr", "2025.07") // UltimateAutoRestart
         }
     }
 }
