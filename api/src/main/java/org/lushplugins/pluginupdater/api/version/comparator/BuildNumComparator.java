@@ -15,7 +15,7 @@ public class BuildNumComparator implements VersionComparator {
         int currentBuild = Integer.parseInt(applyVersionFormat(currentVersionString));
         int latestBuild = Integer.parseInt(applyVersionFormat(latestVersionString));
 
-        return latestBuild > currentBuild ? VersionDifference.MINOR : VersionDifference.LATEST;
+        return latestBuild > currentBuild ? VersionDifference.BUILD : VersionDifference.LATEST;
     }
 
     // TODO: Test
