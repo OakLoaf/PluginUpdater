@@ -7,8 +7,14 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class SemVerComparator implements VersionComparator {
-    public static final SemVerComparator INSTANCE = new SemVerComparator();
-    private static final Pattern VERSION_PATTERN = Pattern.compile("(\\d+(\\.\\d+)*)");
+    private static final Pattern DEFAULT_PATTERN = Pattern.compile("(\\d+(\\.\\d+)*)");
+    public static final SemVerComparator INSTANCE = new SemVerComparator(DEFAULT_PATTERN);
+
+    private final Pattern pattern;
+
+    public SemVerComparator(Pattern pattern) {
+        this.pattern = pattern;
+    }
     
     @Override
     public VersionDifference getVersionDifference(String currentVersionString, String latestVersionString) throws InvalidVersionFormatException {
@@ -50,10 +56,10 @@ public class SemVerComparator implements VersionComparator {
 
     // TODO: Test
     private String applyVersionFormat(String versionString) throws InvalidVersionFormatException {
-        Matcher matcher = VERSION_PATTERN.matcher(versionString);
+        Matcher matcher = this.pattern.matcher(versionString);
         if (!matcher.find()) {
             throw new InvalidVersionFormatException("Version ('%s') does not match required formatting '%s'"
-                .formatted(versionString, VERSION_PATTERN.toString()));
+                .formatted(versionString, this.pattern.toString()));
         }
 
         return matcher.group();

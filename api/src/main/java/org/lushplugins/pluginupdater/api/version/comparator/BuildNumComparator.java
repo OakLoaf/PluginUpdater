@@ -7,8 +7,14 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class BuildNumComparator implements VersionComparator {
-    public static final BuildNumComparator INSTANCE = new BuildNumComparator();
-    private static final Pattern VERSION_PATTERN = Pattern.compile("[.#-]([0-9]+)$");
+    private static final Pattern DEFAULT_PATTERN = Pattern.compile("[.#-]([0-9]+)$");
+    public static final BuildNumComparator INSTANCE = new BuildNumComparator(DEFAULT_PATTERN);
+
+    private final Pattern pattern;
+
+    public BuildNumComparator(Pattern pattern) {
+        this.pattern = pattern;
+    }
 
     @Override
     public VersionDifference getVersionDifference(String currentVersionString, String latestVersionString) throws InvalidVersionFormatException {
@@ -20,10 +26,10 @@ public class BuildNumComparator implements VersionComparator {
 
     // TODO: Test
     private String applyVersionFormat(String versionString) throws InvalidVersionFormatException {
-        Matcher matcher = VERSION_PATTERN.matcher(versionString);
+        Matcher matcher = this.pattern.matcher(versionString);
         if (!matcher.find()) {
             throw new InvalidVersionFormatException("Version ('%s') does not match required formatting '%s'"
-                .formatted(versionString, VERSION_PATTERN.toString()));
+                .formatted(versionString, this.pattern.toString()));
         }
 
         return matcher.group(1);
