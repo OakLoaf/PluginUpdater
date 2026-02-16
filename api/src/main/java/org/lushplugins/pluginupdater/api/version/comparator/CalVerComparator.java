@@ -1,5 +1,6 @@
 package org.lushplugins.pluginupdater.api.version.comparator;
 
+import org.bukkit.configuration.ConfigurationSection;
 import org.lushplugins.pluginupdater.api.exception.InvalidVersionFormatException;
 import org.lushplugins.pluginupdater.api.version.VersionDifference;
 
@@ -16,6 +17,10 @@ public class CalVerComparator implements VersionComparator {
 
     public CalVerComparator(DateTimeFormatter dateTimeFormat) {
         this.dateTimeFormat = dateTimeFormat;
+    }
+
+    public CalVerComparator(ConfigurationSection config) {
+        this.dateTimeFormat = config.isString("date-format") ? DateTimeFormatter.ofPattern(config.getString("date-format")) : DEFAULT_FORMAT;
     }
 
     /**

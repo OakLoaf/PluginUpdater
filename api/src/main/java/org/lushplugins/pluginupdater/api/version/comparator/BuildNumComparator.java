@@ -1,5 +1,6 @@
 package org.lushplugins.pluginupdater.api.version.comparator;
 
+import org.bukkit.configuration.ConfigurationSection;
 import org.lushplugins.pluginupdater.api.exception.InvalidVersionFormatException;
 import org.lushplugins.pluginupdater.api.version.VersionDifference;
 
@@ -14,6 +15,10 @@ public class BuildNumComparator implements VersionComparator {
 
     public BuildNumComparator(Pattern pattern) {
         this.pattern = pattern;
+    }
+
+    public BuildNumComparator(ConfigurationSection config) {
+        this.pattern = config.isString("pattern") ? Pattern.compile(config.getString("pattern")) : DEFAULT_PATTERN;
     }
 
     @Override
