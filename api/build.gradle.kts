@@ -8,7 +8,7 @@ dependencies {
 
     implementation("org.lushplugins:ChatColorHandler:5.1.6")
 
-    compileOnlyApi("org.jetbrains:annotations:26.0.2")
+    compileOnlyApi("org.jetbrains:annotations:26.1.0")
 }
 
 java {
