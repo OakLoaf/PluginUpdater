@@ -59,7 +59,6 @@ public class SemVerComparator implements VersionComparator {
         return VersionDifference.LATEST;
     }
 
-    // TODO: Test
     private String applyVersionFormat(String versionString) throws InvalidVersionFormatException {
         Matcher matcher = this.pattern.matcher(versionString);
         if (!matcher.find()) {

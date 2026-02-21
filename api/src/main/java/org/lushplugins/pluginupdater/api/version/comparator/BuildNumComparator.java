@@ -29,7 +29,6 @@ public class BuildNumComparator implements VersionComparator {
         return latestBuild > currentBuild ? VersionDifference.BUILD : VersionDifference.LATEST;
     }
 
-    // TODO: Test
     private String applyVersionFormat(String versionString) throws InvalidVersionFormatException {
         Matcher matcher = this.pattern.matcher(versionString);
         if (!matcher.find()) {
