@@ -31,7 +31,7 @@ public interface VersionChecker {
         try {
             versionDifference = comparator.getVersionDifference(currentVersion, latestVersion);
         } catch (InvalidVersionFormatException e) {
-            UpdaterConstants.LOGGER.severe("Failed to compare versions for '%s': " + e.getMessage());
+            UpdaterConstants.LOGGER.severe("Failed to compare versions for '%s': %s".formatted(pluginData.getPluginName(), e.getMessage()));
             return false;
         }
 
