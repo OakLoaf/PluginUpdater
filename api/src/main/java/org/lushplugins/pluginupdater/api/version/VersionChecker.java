@@ -1,6 +1,7 @@
 package org.lushplugins.pluginupdater.api.version;
 
 import org.bukkit.Bukkit;
+import org.lushplugins.pluginupdater.api.exception.InvalidVersionFormatException;
 import org.lushplugins.pluginupdater.api.platform.PlatformData;
 import org.lushplugins.pluginupdater.api.platform.PlatformRegistry;
 import org.lushplugins.pluginupdater.api.updater.PluginData;
@@ -26,7 +27,14 @@ public interface VersionChecker {
         String latestVersion = getLatestVersion(pluginData, platformData);
 
         VersionComparator comparator = pluginData.getOptionalComparator().orElse(platformData.getDefaultComparator());
-        VersionDifference versionDifference = comparator.getVersionDifference(currentVersion, latestVersion);
+        VersionDifference versionDifference;
+        try {
+            versionDifference = comparator.getVersionDifference(currentVersion, latestVersion);
+        } catch (InvalidVersionFormatException e) {
+            UpdaterConstants.LOGGER.severe("Failed to compare versions for '%s': " + e.getMessage());
+            return false;
+        }
+
         pluginData.setCheckRan(true);
 
         if (!versionDifference.equals(VersionDifference.LATEST)) {
