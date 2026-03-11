@@ -10,6 +10,9 @@ import org.lushplugins.pluginupdater.api.version.VersionChecker;
 import org.lushplugins.pluginupdater.api.updater.PluginData;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
 public class GithubVersionChecker implements VersionChecker {
@@ -36,7 +39,17 @@ public class GithubVersionChecker implements VersionChecker {
     }
 
     private JsonObject getLatestRelease(PluginData pluginData, GithubData githubData) throws IOException, InterruptedException {
-        HttpResponse<String> response = HttpUtil.sendRequest(String.format("%s/repos/%s/releases/latest", UpdaterConstants.Endpoint.GITHUB, githubData.getRepo()));
+        HttpRequest.Builder requestBuilder = HttpUtil.prepareRequestBuilder(URI.create("%s/repos/%s/releases/latest"
+                .formatted(UpdaterConstants.Endpoint.GITHUB, githubData.getRepo())), null);
+
+        String token = githubData.getToken();
+        if (token != null && !token.isEmpty()) {
+            requestBuilder.header("Authorization", "Bearer " + token);
+        }
+
+        HttpResponse<String> response = HttpClient.newHttpClient().send(
+            requestBuilder.build(),
+            HttpResponse.BodyHandlers.ofString());
 
         if (response.statusCode() != 200) {
             throw new IllegalStateException("Received invalid response code (%s) whilst checking '%s' for updates.".formatted(response.statusCode(), pluginData.getPluginName()));

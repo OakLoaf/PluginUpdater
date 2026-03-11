@@ -142,9 +142,19 @@ public class Updater {
          * Add GitHub plugin data to be used for collecting update information
          * (Platforms should be added in order of priority).
          * @param repo The plugin's GitHub repo (e.g. 'OakLoaf/PluginUpdater')
+         * @param token The GitHub access token (if required)
+         */
+        public Builder github(String repo, @Nullable String token) {
+            return platform(new GithubData(repo, token));
+        }
+
+        /**
+         * Add GitHub plugin data to be used for collecting update information
+         * (Platforms should be added in order of priority).
+         * @param repo The plugin's GitHub repo (e.g. 'OakLoaf/PluginUpdater')
          */
         public Builder github(String repo) {
-            return platform(new GithubData(repo));
+            return github(repo, null);
         }
 
         /**

@@ -53,7 +53,8 @@ public class PluginYamlCollector implements PluginDataCollector {
                 }
                 else if (pluginYml.contains("github-repo")) {
                     platformData = new GithubData(
-                        pluginYml.getString("github-repo")
+                        pluginYml.getString("github-repo"),
+                        null
                     );
                 }
 
