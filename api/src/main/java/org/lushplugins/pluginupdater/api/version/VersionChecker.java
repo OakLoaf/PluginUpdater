@@ -11,6 +11,7 @@ import org.lushplugins.pluginupdater.api.version.comparator.VersionComparator;
 
 import java.io.*;
 import java.net.HttpURLConnection;
+import java.net.URI;
 import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
@@ -54,7 +55,7 @@ public interface VersionChecker {
             return false;
         }
 
-        URL url = new URL(downloadUrl);
+        URL url = URI.create(downloadUrl).toURL();
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.addRequestProperty("User-Agent", "PluginUpdater/" + UpdaterConstants.VERSION);
         connection.setInstanceFollowRedirects(true);
