@@ -2,7 +2,7 @@ package org.lushplugins.pluginupdater.updater;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.lushplugins.lushlib.libraries.chatcolor.ChatColorHandler;
+import org.lushplugins.lushlib.libraries.chatcolor.paper.PaperColor;
 import org.lushplugins.pluginupdater.PluginUpdater;
 import org.lushplugins.pluginupdater.api.platform.PlatformData;
 import org.lushplugins.pluginupdater.api.updater.PluginData;
@@ -12,9 +12,11 @@ import org.lushplugins.pluginupdater.api.version.VersionDifference;
 import java.io.IOException;
 import java.util.ArrayDeque;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.*;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 
 public class UpdateHandler {
     private final ScheduledExecutorService threads = Executors.newScheduledThreadPool(1);
@@ -116,18 +118,18 @@ public class UpdateHandler {
     }
 
     public void sendNotification(ProcessingData.State state) {
-        Player[] players = Bukkit.getOnlinePlayers().stream()
+        List<Player> players = Bukkit.getOnlinePlayers().stream()
             .filter(player -> player.hasPermission("pluginupdater.notify"))
-            .toArray(Player[]::new);
+            .collect(Collectors.toUnmodifiableList());
 
-        if (players.length == 0) {
+        if (players.isEmpty()) {
             return;
         }
 
         int processed = this.currentlyProcessing.getOrDefault(state, 1);
         int total = processed + remainingWithState(state);
 
-        ChatColorHandler.sendActionBarMessage(players, "&#b7faa2Updater processing: &#66b04f%s&#b7faa2/&#66b04f%s"
+        PaperColor.handler().sendActionBarMessage(players, "&#b7faa2Updater processing: &#66b04f%s&#b7faa2/&#66b04f%s"
             .formatted(processed, total));
     }
 
