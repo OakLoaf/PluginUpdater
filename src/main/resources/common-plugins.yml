@@ -43,9 +43,6 @@ ExcellentEnchants:
 FastAsyncWorldEdit:
   platform: modrinth
   modrinth-project-id: z4HZZnLr
-floodgate:
-  platform: hangar
-  hangar-project-slug: Floodgate
 ForcePack:
   platform: spigot
   spigot-resource-id: 45439

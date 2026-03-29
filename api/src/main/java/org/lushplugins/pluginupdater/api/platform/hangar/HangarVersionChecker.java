@@ -17,7 +17,7 @@ public class HangarVersionChecker implements VersionChecker {
             return null;
         }
 
-        HttpResponse<String> response = HttpUtil.sendRequest(String.format("%s/projects/%s/latestrelease", UpdaterConstants.Endpoint.HANGAR, hangarData.getHangarProjectSlug()));
+        HttpResponse<String> response = HttpUtil.sendRequest(String.format("%s/projects/%s/latestrelease", UpdaterConstants.Endpoint.HANGAR, hangarData.getProjectSlug()));
 
         if (response.statusCode() != 200) {
             throw new IllegalStateException("Received invalid response code (" + response.statusCode() + ") whilst checking '" + pluginData.getPluginName() + "' for updates.");
@@ -29,7 +29,7 @@ public class HangarVersionChecker implements VersionChecker {
     @Override
     public String getDownloadUrl(PluginData pluginData, PlatformData platformData) {
         return platformData instanceof HangarData hangarData ?
-            String.format("%s/projects/%s/versions/%s/PAPER/download", UpdaterConstants.Endpoint.HANGAR, hangarData.getHangarProjectSlug(), pluginData.getLatestVersion()) :
+            String.format("%s/projects/%s/versions/%s/PAPER/download", UpdaterConstants.Endpoint.HANGAR, hangarData.getProjectSlug(), pluginData.getLatestVersion()) :
             null;
     }
 }

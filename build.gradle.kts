@@ -4,8 +4,8 @@ import java.io.InputStreamReader
 plugins {
     `java-library`
     `maven-publish`
-    id("com.gradleup.shadow") version("8.3.0")
-    id("xyz.jpenilla.run-paper") version("2.3.1")
+    id("com.gradleup.shadow") version("9.3.1")
+    id("xyz.jpenilla.run-paper") version("3.0.2")
     id("com.modrinth.minotaur") version ("2.+")
 }
 
@@ -13,7 +13,7 @@ allprojects {
     apply(plugin = "maven-publish")
 
     group = "org.lushplugins"
-    version = "1.0.18"
+    version = "2.1.0"
 
     repositories {
         mavenLocal()
@@ -49,13 +49,13 @@ allprojects {
 }
 
 dependencies {
-    compileOnly("org.spigotmc:spigot-api:1.21.11-R0.2-SNAPSHOT")
+    compileOnly("org.spigotmc:spigot-api:26.1-R0.1-SNAPSHOT")
 
     implementation(project(":api"))
 
-    implementation("org.lushplugins:LushLib:0.10.83")
-    implementation("io.github.revxrsal:lamp.common:4.0.0-rc.14")
-    implementation("io.github.revxrsal:lamp.bukkit:4.0.0-rc.14")
+    implementation("org.lushplugins:LushLib:0.10.89")
+    implementation("io.github.revxrsal:lamp.common:4.0.0-rc.16")
+    implementation("io.github.revxrsal:lamp.bukkit:4.0.0-rc.16")
 }
 
 java {
@@ -90,14 +90,15 @@ tasks {
         minecraftVersion("1.21")
 
         downloadPlugins {
-            modrinth("viaversion", "5.4.2") // ViaVersion
-            modrinth("viabackwards", "5.4.2") // ViaBackwards
+            modrinth("viaversion", "5.7.1") // ViaVersion
+            modrinth("viabackwards", "5.7.1") // ViaBackwards
             // The following plugins are intentionally outdated for testing purposes
             modrinth("djC8I9ui", "3.2.0") // LushRewards
             modrinth("discordsrv", "1.27.0") // DiscordSRV
             modrinth("coreprotect", "22.3") // CoreProtect
             modrinth("fancynpcs", "2.2.2") // FancyNPCs
             modrinth("fancyholograms", "2.3.1") // FancyHolograms
+            modrinth("nMwMeNFr", "2025.07") // UltimateAutoRestart
         }
     }
 }
@@ -134,9 +135,10 @@ modrinth {
         "1.18", "1.18.1", "1.18.2",
         "1.19", "1.19.1", "1.19.2", "1.19.3", "1.19.4",
         "1.20", "1.20.1", "1.20.2", "1.20.3", "1.20.4", "1.20.5", "1.20.6",
-        "1.21", "1.21.1", "1.21.2", "1.21.3", "1.21.4", "1.21.5", "1.21.6", "1.21.7", "1.21.8", "1.21.9", "1.21.10", "1.21.11"
+        "1.21", "1.21.1", "1.21.2", "1.21.3", "1.21.4", "1.21.5", "1.21.6", "1.21.7", "1.21.8", "1.21.9", "1.21.10", "1.21.11",
+        "26.1"
     )
-    loaders.addAll("spigot", "paper", "purpur")
+    loaders.addAll("spigot", "paper", "purpur", "folia")
     syncBodyFrom.set(rootProject.file("README.md").readText())
 }
 

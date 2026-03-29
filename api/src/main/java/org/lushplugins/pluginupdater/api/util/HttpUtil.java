@@ -20,6 +20,12 @@ public class HttpUtil {
     }
 
     public static HttpResponse<String> sendRequest(URI uri, @Nullable String payload) throws IOException, InterruptedException {
+        return HttpClient.newHttpClient().send(
+            prepareRequestBuilder(uri, payload).build(),
+            HttpResponse.BodyHandlers.ofString());
+    }
+
+    public static HttpRequest.Builder prepareRequestBuilder(URI uri, @Nullable String payload) {
         HttpRequest.Builder requestBuilder = HttpRequest.newBuilder(uri)
             .header("User-Agent", "PluginUpdater/" + UpdaterConstants.VERSION);
 
@@ -32,8 +38,6 @@ public class HttpUtil {
                 .GET();
         }
 
-        return HttpClient.newHttpClient().send(
-            requestBuilder.build(),
-            HttpResponse.BodyHandlers.ofString());
+        return requestBuilder;
     }
 }

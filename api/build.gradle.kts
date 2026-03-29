@@ -1,14 +1,14 @@
 plugins {
     `java-library`
-    id("com.gradleup.shadow") version("8.3.0")
+    id("com.gradleup.shadow") version("9.3.1")
 }
 
 dependencies {
-    compileOnly("org.spigotmc:spigot-api:1.21.11-R0.2-SNAPSHOT")
+    compileOnly("org.spigotmc:spigot-api:26.1-R0.1-SNAPSHOT")
 
     implementation("org.lushplugins:ChatColorHandler:6.0.4")
 
-    compileOnlyApi("org.jetbrains:annotations:26.0.2")
+    compileOnlyApi("org.jetbrains:annotations:26.1.0")
 }
 
 java {

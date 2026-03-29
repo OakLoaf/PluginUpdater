@@ -1,11 +1,13 @@
 package org.lushplugins.pluginupdater.api.version;
 
 import org.bukkit.Bukkit;
+import org.lushplugins.pluginupdater.api.exception.InvalidVersionFormatException;
 import org.lushplugins.pluginupdater.api.platform.PlatformData;
 import org.lushplugins.pluginupdater.api.platform.PlatformRegistry;
 import org.lushplugins.pluginupdater.api.updater.PluginData;
 import org.lushplugins.pluginupdater.api.util.DownloadLogger;
 import org.lushplugins.pluginupdater.api.util.UpdaterConstants;
+import org.lushplugins.pluginupdater.api.version.comparator.VersionComparator;
 
 import java.io.*;
 import java.net.HttpURLConnection;
@@ -13,28 +15,28 @@ import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 import java.util.logging.Level;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 @SuppressWarnings("CodeBlock2Expr")
 public interface VersionChecker {
-    Pattern VERSION_PATTERN = Pattern.compile("(\\d+(\\.\\d+)*)");
-
     String getLatestVersion(PluginData pluginData, PlatformData platformData) throws IOException, InterruptedException;
 
     String getDownloadUrl(PluginData pluginData, PlatformData platformData) throws IOException, InterruptedException;
 
     default boolean isUpdateAvailable(PluginData pluginData, PlatformData platformData) throws IOException, InterruptedException {
         String currentVersion = pluginData.getCurrentVersion();
+        String latestVersion = getLatestVersion(pluginData, platformData);
 
-        Matcher matcher = VersionChecker.VERSION_PATTERN.matcher(getLatestVersion(pluginData, platformData));
-        if (!matcher.find()) {
+        VersionComparator comparator = pluginData.getOptionalComparator().orElse(platformData.getDefaultComparator());
+        VersionDifference versionDifference;
+        try {
+            versionDifference = comparator.getVersionDifference(currentVersion, latestVersion);
+        } catch (InvalidVersionFormatException e) {
+            UpdaterConstants.LOGGER.severe("Failed to compare versions for '%s': %s".formatted(pluginData.getPluginName(), e.getMessage()));
             return false;
         }
-        String latestVersion = matcher.group();
 
         pluginData.setCheckRan(true);
-        VersionDifference versionDifference = VersionDifference.getVersionDifference(currentVersion, latestVersion);
+
         if (!versionDifference.equals(VersionDifference.LATEST)) {
             pluginData.setLatestVersion(latestVersion);
             pluginData.setVersionDifference(versionDifference);

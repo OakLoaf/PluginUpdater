@@ -1,5 +1,7 @@
 package org.lushplugins.pluginupdater.command;
 
+import org.bukkit.Bukkit;
+import org.bukkit.plugin.Plugin;
 import org.lushplugins.pluginupdater.PluginUpdater;
 import org.lushplugins.pluginupdater.config.ConfigManager;
 import org.lushplugins.pluginupdater.api.version.VersionDifference;
@@ -7,6 +9,7 @@ import revxrsal.commands.annotation.Command;
 import revxrsal.commands.bukkit.annotation.CommandPermission;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @SuppressWarnings("unused")
@@ -31,7 +34,7 @@ public class UpdatesCommand {
                 } else if (versionDifference.equals(VersionDifference.MAJOR)) {
                     return configManager.getMessage("major-update-available-color", "&#ff6969")
                         + pluginName;
-                } else if (versionDifference.equals(VersionDifference.MINOR) || versionDifference.equals(VersionDifference.BUG_FIXES) || versionDifference.equals(VersionDifference.BUILD)) {
+                } else if (versionDifference.equals(VersionDifference.MINOR) || versionDifference.equals(VersionDifference.PATCH) || versionDifference.equals(VersionDifference.BUILD)) {
                     return configManager.getMessage("update-available-color", "&#ffda54")
                         + pluginName;
                 } else {
@@ -48,7 +51,7 @@ public class UpdatesCommand {
         }
     }
 
-    @Command({ "updater updates list", "updates list" })
+    @Command({ "updater list updates", "updates list" })
     @CommandPermission("pluginupdater.checkupdates")
     public String list() {
         ConfigManager configManager = PluginUpdater.getInstance().getConfigManager();
@@ -76,6 +79,23 @@ public class UpdatesCommand {
             return String.join("&r\n", plugins);
         } else {
             return "&#ff6969No updates found";
+        }
+    }
+
+    @Command("updater list unregistered")
+    @CommandPermission("pluginupdater.unregisteredplugins")
+    public String unregisteredPlugins() {
+        ConfigManager configManager = PluginUpdater.getInstance().getConfigManager();
+        List<String> unregisteredPlugins = Arrays.stream(Bukkit.getPluginManager().getPlugins())
+            .map(Plugin::getName)
+            .filter(pluginName -> configManager.getPluginData(pluginName) == null)
+            .sorted(String.CASE_INSENSITIVE_ORDER)
+            .toList();
+
+        if (!unregisteredPlugins.isEmpty()) {
+            return "&fUnregistered Plugins (%s):\n&#ff6969%s".formatted(unregisteredPlugins.size(), String.join("&7, &#ff6969", unregisteredPlugins));
+        } else {
+            return "&#ff6969No unregistered plugins found";
         }
     }
 }

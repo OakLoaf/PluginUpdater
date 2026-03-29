@@ -6,22 +6,22 @@ import org.lushplugins.pluginupdater.api.platform.PlatformData;
 public class SpigotData extends PlatformData {
     private static final String NAME = "spigot";
 
-    private final String spigotResourceId;
+    private final String resourceId;
 
-    public SpigotData(ConfigurationSection configurationSection) {
+    public SpigotData(ConfigurationSection config) {
         super(NAME);
-        spigotResourceId = configurationSection.getString("spigot-resource-id");
+        resourceId = config.getString("spigot-resource-id");
     }
 
     /**
-     * @param spigotResourceId Your Spigot Resource Id
+     * @param resourceId The Spigot Resource Id
      */
-    public SpigotData(String spigotResourceId) {
+    public SpigotData(String resourceId) {
         super(NAME);
-        this.spigotResourceId = spigotResourceId;
+        this.resourceId = resourceId;
     }
 
-    public String getSpigotResourceId() {
-        return spigotResourceId;
+    public String getResourceId() {
+        return resourceId;
     }
 }
