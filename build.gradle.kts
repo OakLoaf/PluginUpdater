@@ -59,7 +59,7 @@ dependencies {
 }
 
 java {
-    toolchain.languageVersion.set(JavaLanguageVersion.of(17))
+    toolchain.languageVersion.set(JavaLanguageVersion.of(21))
 
     withSourcesJar()
 }
@@ -103,12 +103,6 @@ tasks {
     }
 }
 
-tasks.withType(xyz.jpenilla.runtask.task.AbstractRun::class) {
-    javaLauncher = javaToolchains.launcherFor {
-        languageVersion = JavaLanguageVersion.of(21)
-    }
-}
-
 publishing {
     publications {
         create<MavenPublication>("maven") {
@@ -132,10 +126,8 @@ modrinth {
     uploadFile.set(file("build/libs/${project.name}-${project.version}.jar"))
     versionType.set(System.getenv("RELEASE_TYPE"))
     gameVersions.addAll(
-        "1.18", "1.18.1", "1.18.2",
-        "1.19", "1.19.1", "1.19.2", "1.19.3", "1.19.4",
-        "1.20", "1.20.1", "1.20.2", "1.20.3", "1.20.4", "1.20.5", "1.20.6",
-        "1.21", "1.21.1", "1.21.2", "1.21.3", "1.21.4", "1.21.5", "1.21.6", "1.21.7", "1.21.8", "1.21.9", "1.21.10", "1.21.11"
+        "1.21.4", "1.21.5", "1.21.6", "1.21.7", "1.21.8", "1.21.9", "1.21.10", "1.21.11",
+        "21.6"
     )
     loaders.addAll("spigot", "paper", "purpur", "folia")
     syncBodyFrom.set(rootProject.file("README.md").readText())
