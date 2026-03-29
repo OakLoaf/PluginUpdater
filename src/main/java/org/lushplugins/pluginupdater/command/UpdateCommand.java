@@ -1,7 +1,7 @@
 package org.lushplugins.pluginupdater.command;
 
 import org.bukkit.command.CommandSender;
-import org.lushplugins.lushlib.libraries.chatcolor.ChatColorHandler;
+import org.lushplugins.lushlib.libraries.chatcolor.paper.PaperColor;
 import org.lushplugins.pluginupdater.PluginUpdater;
 import org.lushplugins.pluginupdater.api.updater.PluginData;
 import org.lushplugins.pluginupdater.api.version.VersionDifference;
@@ -67,13 +67,13 @@ public class UpdateCommand {
         int finalMajorCount = majorUpdateCount.get();
 
         if (finalCount == 0 && finalMajorCount == 0) {
-            ChatColorHandler.sendMessage(sender, "&#ff6969No updates found");
+            PaperColor.handler().sendMessage(sender, "&#ff6969No updates found");
         } else if (finalCount > 0) {
-            ChatColorHandler.sendMessage(sender, "&#b7faa2Successfully queued an update for %s plugins".formatted(finalCount));
+            PaperColor.handler().sendMessage(sender, "&#b7faa2Successfully queued an update for %s plugins".formatted(finalCount));
         }
 
         if (finalMajorCount > 0) {
-            ChatColorHandler.sendMessage(sender, "&#e0c01b%s &#ffe27aplugins require major updates, run &#e0c01b/updater update all --force &#ffe27ato force all possible updates".formatted(finalMajorCount));
+            PaperColor.handler().sendMessage(sender, "&#e0c01b%s &#ffe27aplugins require major updates, run &#e0c01b/updater update all --force &#ffe27ato force all possible updates".formatted(finalMajorCount));
         }
 
         return null;
