@@ -6,13 +6,13 @@ plugins {
 dependencies {
     compileOnly("org.spigotmc:spigot-api:26.1-R0.1-SNAPSHOT")
 
-    implementation("org.lushplugins:ChatColorHandler:5.1.6")
+    implementation("org.lushplugins.chatcolorhandler:paper:8.1.0")
 
     compileOnlyApi("org.jetbrains:annotations:26.1.0")
 }
 
 java {
-    toolchain.languageVersion.set(JavaLanguageVersion.of(17))
+    toolchain.languageVersion.set(JavaLanguageVersion.of(21))
 
     withSourcesJar()
 }
