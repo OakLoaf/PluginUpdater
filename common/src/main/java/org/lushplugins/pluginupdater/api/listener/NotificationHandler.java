@@ -5,7 +5,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.lushplugins.chatcolorhandler.ChatColorHandler;
+import org.lushplugins.chatcolorhandler.paper.PaperColor;
 import org.lushplugins.pluginupdater.api.updater.PluginData;
 import org.lushplugins.pluginupdater.api.updater.Updater;
 
@@ -28,7 +28,7 @@ public class NotificationHandler implements Listener {
         if (notificationPermission == null || player.hasPermission(notificationPermission)) {
             PluginData pluginData = updater.getPluginData();
             if (pluginData.isUpdateAvailable() && !pluginData.isAlreadyDownloaded()) {
-                Bukkit.getScheduler().runTaskLaterAsynchronously(updater.getPlugin(), () -> ChatColorHandler.sendMessage(player, notificationMessage
+                Bukkit.getScheduler().runTaskLaterAsynchronously(updater.getPlugin(), () -> PaperColor.handler().sendMessage(player, notificationMessage
                     .replace("%plugin%", pluginData.getPluginName())
                     .replace("%current_version%", pluginData.getCurrentVersion())
                     .replace("%latest_version%", pluginData.getLatestVersion())
