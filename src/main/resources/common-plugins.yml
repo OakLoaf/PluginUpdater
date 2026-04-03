@@ -148,3 +148,12 @@ VillagerMarket:
 WorldEdit:
   platform: modrinth
   modrinth-project-id: 1u6JkXh5
+TAB:
+  platform: github
+  github-repo: "NEZNAMY/TAB"
+UltraCosmetics:
+  platform: spigot
+  spigot-resource-id: 10905
+DecentHolograms:
+  platform: spigot
+  spigot-resource-id: 96927
