@@ -19,6 +19,9 @@ CoreProtect:
 CrazyCrates:
   platform: modrinth
   modrinth-project-id: r3BBZyf3
+DecentHolograms:
+  platform: spigot
+  spigot-resource-id: 96927
 DeluxeMenus:
   platform: spigot
   spigot-resource-id: 11734
@@ -118,6 +121,9 @@ squaremap:
 SunLight:
   platform: spigot
   spigot-resource-id: 67733
+TAB:
+  platform: github
+  github-repo: "NEZNAMY/TAB"
 TabTPS:
   platform: modrinth
   modrinth-project-id: cUhi3iB2
@@ -127,6 +133,9 @@ Tebex:
 Tweakin:
   platform: spigot
   spigot-resource-id: 93444
+UltraCosmetics:
+  platform: spigot
+  spigot-resource-id: 10905
 Vault:
   platform: spigot
   spigot-resource-id: 34315
@@ -148,12 +157,3 @@ VillagerMarket:
 WorldEdit:
   platform: modrinth
   modrinth-project-id: 1u6JkXh5
-TAB:
-  platform: github
-  github-repo: "NEZNAMY/TAB"
-UltraCosmetics:
-  platform: spigot
-  spigot-resource-id: 10905
-DecentHolograms:
-  platform: spigot
-  spigot-resource-id: 96927
