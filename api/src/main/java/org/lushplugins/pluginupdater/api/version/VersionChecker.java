@@ -15,6 +15,8 @@ import java.net.URI;
 import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
+import java.util.Collections;
+import java.util.Map;
 import java.util.logging.Level;
 
 @SuppressWarnings("CodeBlock2Expr")
@@ -22,6 +24,10 @@ public interface VersionChecker {
     String getLatestVersion(PluginData pluginData, PlatformData platformData) throws IOException, InterruptedException;
 
     String getDownloadUrl(PluginData pluginData, PlatformData platformData) throws IOException, InterruptedException;
+
+    default Map<String, String> getDownloadHeaders(PluginData pluginData, PlatformData platformData) throws IOException, InterruptedException {
+        return Collections.emptyMap();
+    }
 
     default boolean isUpdateAvailable(PluginData pluginData, PlatformData platformData) throws IOException, InterruptedException {
         String currentVersion = pluginData.getCurrentVersion();
@@ -58,6 +64,9 @@ public interface VersionChecker {
         URL url = URI.create(downloadUrl).toURL();
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.addRequestProperty("User-Agent", "PluginUpdater/" + UpdaterConstants.VERSION);
+        for (Map.Entry<String, String> header : getDownloadHeaders(pluginData, platformData).entrySet()) {
+            connection.addRequestProperty(header.getKey(), header.getValue());
+        }
         connection.setInstanceFollowRedirects(true);
         HttpURLConnection.setFollowRedirects(true);
 

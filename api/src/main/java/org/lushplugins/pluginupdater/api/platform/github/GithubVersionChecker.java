@@ -1,6 +1,5 @@
 package org.lushplugins.pluginupdater.api.platform.github;
 
-import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import org.lushplugins.pluginupdater.api.platform.PlatformData;
@@ -14,6 +13,9 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 public class GithubVersionChecker implements VersionChecker {
 
@@ -34,8 +36,31 @@ public class GithubVersionChecker implements VersionChecker {
         }
 
         JsonObject releaseJson = getLatestRelease(pluginData, githubData);
-        JsonArray assetsJson = releaseJson.get("assets").getAsJsonArray();
-        return assetsJson.get(0).getAsJsonObject().get("browser_download_url").getAsString();
+        JsonObject assetJson = releaseJson.get("assets").getAsJsonArray().get(0).getAsJsonObject();
+
+        String token = githubData.getToken();
+        if (token != null && !token.isEmpty()) {
+            return assetJson.get("url").getAsString();
+        }
+
+        return assetJson.get("browser_download_url").getAsString();
+    }
+
+    @Override
+    public Map<String, String> getDownloadHeaders(PluginData pluginData, PlatformData platformData) {
+        if (!(platformData instanceof GithubData githubData)) {
+            return Collections.emptyMap();
+        }
+
+        String token = githubData.getToken();
+        if (token == null || token.isEmpty()) {
+            return Collections.emptyMap();
+        }
+
+        Map<String, String> headers = new HashMap<>();
+        headers.put("Authorization", "Bearer " + token);
+        headers.put("Accept", "application/octet-stream");
+        return headers;
     }
 
     private JsonObject getLatestRelease(PluginData pluginData, GithubData githubData) throws IOException, InterruptedException {
