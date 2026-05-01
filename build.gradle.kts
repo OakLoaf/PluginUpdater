@@ -20,7 +20,7 @@ allprojects {
     repositories {
         mavenLocal()
         mavenCentral()
-        maven("https://hub.spigotmc.org/nexus/content/repositories/snapshots/") // Spigot
+        maven("https://repo.papermc.io/repository/maven-public/") // Paper
         maven("https://repo.lushplugins.org/snapshots") // LushLib
     }
 

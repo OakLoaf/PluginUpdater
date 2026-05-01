@@ -1,6 +1,6 @@
 rootProject.name = "PluginUpdater"
 include("common")
-include("api:spigot")
-include("api:velocity")
-include("platform:spigot")
-include("platform:velocity")
+include("common:commands")
+include("common:config")
+include("platform:spigot:plugin")
+include("platform:velocity:plugin")

@@ -1,0 +1,76 @@
+package org.lushplugins.pluginupdater;
+
+import org.lushplugins.pluginupdater.api.util.DownloadLogger;
+import org.lushplugins.pluginupdater.common.command.UpdateCommand;
+import org.lushplugins.pluginupdater.common.command.UpdaterCommand;
+import org.lushplugins.pluginupdater.common.command.UpdatesCommand;
+import org.lushplugins.pluginupdater.common.config.ConfigManager;
+import org.lushplugins.pluginupdater.listener.PlayerListener;
+import org.lushplugins.pluginupdater.updater.UpdateHandler;
+import org.bukkit.plugin.java.JavaPlugin;
+import org.lushplugins.pluginupdater.common.command.annotation.PluginName;
+import org.lushplugins.pluginupdater.common.command.response.StringMessageResponseHandler;
+import revxrsal.commands.Lamp;
+import revxrsal.commands.bukkit.BukkitLamp;
+import revxrsal.commands.bukkit.actor.BukkitCommandActor;
+
+import java.io.File;
+
+public final class PluginUpdater extends JavaPlugin {
+    private static PluginUpdater plugin;
+
+    private UpdateHandler updateHandler;
+    private ConfigManager configManager;
+
+    @Override
+    public void onEnable() {
+        plugin = this;
+
+        DownloadLogger.setLogFile(new File(plugin.getDataFolder(), "downloads.log"));
+
+        updateHandler = new UpdateHandler();
+        updateHandler.enable();
+
+        configManager = new ConfigManager();
+        configManager.reloadConfig();
+
+        getServer().getPluginManager().registerEvents(new PlayerListener(), this);
+
+        Lamp<BukkitCommandActor> lamp = BukkitLamp.builder(this)
+            .suggestionProviders(providers -> {
+                providers.addProviderForAnnotation(PluginName.class, (annotation) -> (context) -> {
+                    return PluginUpdater.getInstance().getConfigManager().getPlugins();
+                });
+            })
+            .responseHandler(String.class, new StringMessageResponseHandler())
+            .build();
+        lamp.register(new UpdaterCommand(), new UpdatesCommand());
+
+        if (PluginUpdater.getInstance().getConfigManager().shouldAllowDownloads()) {
+            lamp.register(new UpdateCommand());
+        }
+    }
+
+    @Override
+    public void onDisable() {
+        if (updateHandler != null) {
+            updateHandler.shutdown();
+            updateHandler = null;
+        }
+
+        configManager = null;
+        plugin = null;
+    }
+
+    public UpdateHandler getUpdateHandler() {
+        return updateHandler;
+    }
+
+    public ConfigManager getConfigManager() {
+        return configManager;
+    }
+
+    public static PluginUpdater getInstance() {
+        return plugin;
+    }
+}

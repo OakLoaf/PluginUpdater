@@ -1,6 +1,5 @@
 package org.lushplugins.pluginupdater.api.version.comparator;
 
-import org.bukkit.configuration.ConfigurationSection;
 import org.lushplugins.pluginupdater.api.exception.InvalidVersionFormatException;
 import org.lushplugins.pluginupdater.api.version.VersionDifference;
 
@@ -8,17 +7,13 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class SemVerComparator implements VersionComparator {
-    private static final Pattern DEFAULT_PATTERN = Pattern.compile("(\\d+(\\.\\d+)*)");
+    public static final Pattern DEFAULT_PATTERN = Pattern.compile("(\\d+(\\.\\d+)*)");
     public static final SemVerComparator INSTANCE = new SemVerComparator(DEFAULT_PATTERN);
 
     private final Pattern pattern;
 
     public SemVerComparator(Pattern pattern) {
         this.pattern = pattern;
-    }
-
-    public SemVerComparator(ConfigurationSection config) {
-        this.pattern = config.isString("pattern") ? Pattern.compile(config.getString("pattern")) : DEFAULT_PATTERN;
     }
     
     @Override

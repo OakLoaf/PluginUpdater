@@ -5,10 +5,6 @@ plugins {
 subprojects {
     apply(plugin = "com.gradleup.shadow")
 
-    dependencies {
-        implementation(project(":api:" + project.name))
-    }
-
     tasks {
         shadowJar {
             minimize()
