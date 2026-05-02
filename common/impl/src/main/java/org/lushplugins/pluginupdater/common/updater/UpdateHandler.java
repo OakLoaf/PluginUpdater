@@ -1,10 +1,10 @@
 package org.lushplugins.pluginupdater.common.updater;
 
 import org.lushplugins.pluginupdater.PluginUpdater;
-import org.lushplugins.pluginupdater.paper.api.platform.PlatformData;
-import org.lushplugins.pluginupdater.paper.api.updater.PluginData;
-import org.lushplugins.pluginupdater.paper.api.version.VersionChecker;
-import org.lushplugins.pluginupdater.paper.api.version.VersionDifference;
+import org.lushplugins.pluginupdater.api.platform.PlatformData;
+import org.lushplugins.pluginupdater.api.updater.PluginData;
+import org.lushplugins.pluginupdater.api.version.VersionChecker;
+import org.lushplugins.pluginupdater.api.version.VersionDifference;
 
 import java.io.IOException;
 import java.util.ArrayDeque;

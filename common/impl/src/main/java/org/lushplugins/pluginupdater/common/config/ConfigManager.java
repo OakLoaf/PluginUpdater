@@ -4,10 +4,10 @@ import com.electronwill.nightconfig.core.Config;
 import com.electronwill.nightconfig.core.file.FileConfig;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.lushplugins.pluginupdater.paper.api.platform.PlatformData;
-import org.lushplugins.pluginupdater.paper.api.platform.PlatformRegistry;
-import org.lushplugins.pluginupdater.paper.api.updater.PluginData;
-import org.lushplugins.pluginupdater.paper.api.version.comparator.VersionComparator;
+import org.lushplugins.pluginupdater.api.platform.PlatformData;
+import org.lushplugins.pluginupdater.api.platform.PlatformRegistry;
+import org.lushplugins.pluginupdater.api.updater.PluginData;
+import org.lushplugins.pluginupdater.api.version.comparator.VersionComparator;
 
 import java.util.*;
 import java.util.logging.Level;

@@ -1,9 +1,9 @@
 package org.lushplugins.pluginupdater.common.config.serializer;
 
 import com.electronwill.nightconfig.core.Config;
-import org.lushplugins.pluginupdater.paper.api.version.comparator.BuildNumComparator;
-import org.lushplugins.pluginupdater.paper.api.version.comparator.CalVerComparator;
-import org.lushplugins.pluginupdater.paper.api.version.comparator.SemVerComparator;
+import org.lushplugins.pluginupdater.api.version.comparator.BuildNumComparator;
+import org.lushplugins.pluginupdater.api.version.comparator.CalVerComparator;
+import org.lushplugins.pluginupdater.api.version.comparator.SemVerComparator;
 
 import java.time.format.DateTimeFormatter;
 import java.util.regex.Pattern;

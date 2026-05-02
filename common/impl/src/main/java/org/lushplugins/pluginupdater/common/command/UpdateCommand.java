@@ -1,28 +1,28 @@
 package org.lushplugins.pluginupdater.common.command;
 
-import org.lushplugins.pluginupdater.PluginUpdater;
-import org.lushplugins.pluginupdater.paper.api.updater.PluginData;
-import org.lushplugins.pluginupdater.paper.api.version.VersionDifference;
-import org.lushplugins.pluginupdater.updater.UpdateHandler;
+import org.lushplugins.pluginupdater.common.command.annotation.CommandPermission;
+import org.lushplugins.pluginupdater.common.platform.UpdaterImpl;
+import org.lushplugins.pluginupdater.common.updater.UpdateHandler;
+import org.lushplugins.pluginupdater.api.updater.PluginData;
+import org.lushplugins.pluginupdater.api.version.VersionDifference;
 import org.lushplugins.pluginupdater.common.command.annotation.PluginName;
 import revxrsal.commands.annotation.Command;
 import revxrsal.commands.annotation.Switch;
-import revxrsal.commands.bukkit.annotation.CommandPermission;
 import revxrsal.commands.command.CommandActor;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
 @SuppressWarnings("unused")
-public class UpdateCommand {
+public record UpdateCommand(UpdaterImpl instance) {
 
     @Command("updater update")
     @CommandPermission("pluginupdater.downloadupdates")
     public String update(@PluginName String pluginName) {
-        if (!PluginUpdater.getInstance().getConfigManager().shouldAllowDownloads()) {
+        if (!instance.getConfig().shouldAllowDownloads()) {
             return "&#ff6969Update downloads have been disabled in the config";
         }
 
-        PluginData pluginData = PluginUpdater.getInstance().getConfigManager().getPluginData(pluginName);
+        PluginData pluginData = instance.getConfig().getPluginData(pluginName);
         if (pluginData == null) {
             return "&#ff6969That plugin is not registered";
         } else if (!pluginData.areDownloadsAllowed()) {
@@ -32,7 +32,7 @@ public class UpdateCommand {
         } else if (!pluginData.isUpdateAvailable()) {
             return "&#ff6969No update has been found for this plugin";
         } else {
-            PluginUpdater.getInstance().getUpdateHandler().queueDownload(pluginData.getPluginName());
+            instance.getUpdateHandler().queueDownload(pluginData.getPluginName());
             return "&#b7faa2Successfully queued an update for '%s'".formatted(pluginData.getPluginName());
         }
     }
@@ -40,10 +40,10 @@ public class UpdateCommand {
     @Command("updater update all")
     @CommandPermission("pluginupdater.downloadupdates")
     public String updateAll(CommandActor actor, @Switch("force") boolean force) {
-        UpdateHandler updateHandler = PluginUpdater.getInstance().getUpdateHandler();
+        UpdateHandler updateHandler = instance.getUpdateHandler();
         AtomicInteger updateCount = new AtomicInteger(0);
         AtomicInteger majorUpdateCount = new AtomicInteger(0);
-        PluginUpdater.getInstance().getConfigManager().getAllPluginData().forEach(pluginData -> {
+        instance.getConfig().getAllPluginData().forEach(pluginData -> {
             if (!pluginData.areDownloadsAllowed()) {
                 return;
             }

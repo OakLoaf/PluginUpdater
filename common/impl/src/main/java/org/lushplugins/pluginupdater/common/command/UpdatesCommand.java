@@ -1,24 +1,22 @@
 package org.lushplugins.pluginupdater.common.command;
 
-import org.bukkit.Bukkit;
-import org.bukkit.plugin.Plugin;
-import org.lushplugins.pluginupdater.PluginUpdater;
-import org.lushplugins.pluginupdater.paper.api.version.VersionDifference;
+import org.lushplugins.pluginupdater.common.command.annotation.CommandPermission;
+import org.lushplugins.pluginupdater.common.platform.UpdaterImpl;
+import org.lushplugins.pluginupdater.api.updater.PluginInfo;
+import org.lushplugins.pluginupdater.api.version.VersionDifference;
 import org.lushplugins.pluginupdater.common.config.ConfigManager;
 import revxrsal.commands.annotation.Command;
-import revxrsal.commands.bukkit.annotation.CommandPermission;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 @SuppressWarnings("unused")
-public class UpdatesCommand {
+public record UpdatesCommand(UpdaterImpl instance) {
 
     @Command({ "updater updates", "updates" })
     @CommandPermission("pluginupdater.checkupdates")
     public String updates() {
-        ConfigManager configManager = PluginUpdater.getInstance().getConfigManager();
+        ConfigManager configManager = instance.getConfig();
         List<String> plugins = configManager.getAllPluginData().stream()
             .map(pluginData -> {
                 String pluginName = pluginData.getPluginName();
@@ -54,7 +52,7 @@ public class UpdatesCommand {
     @Command({ "updater list updates", "updates list" })
     @CommandPermission("pluginupdater.checkupdates")
     public String list() {
-        ConfigManager configManager = PluginUpdater.getInstance().getConfigManager();
+        ConfigManager configManager = instance.getConfig();
         String updateAvailableColor = configManager.getMessage("update-available-color", "&#ffda54");
         String majorUpdateAvailableColor = configManager.getMessage("major-update-available-color", "&#ff6969");
         String latestVersionColor = configManager.getMessage("latest-version-color", "&#b7faa2");
@@ -85,9 +83,9 @@ public class UpdatesCommand {
     @Command("updater list unregistered")
     @CommandPermission("pluginupdater.unregisteredplugins")
     public String unregisteredPlugins() {
-        ConfigManager configManager = PluginUpdater.getInstance().getConfigManager();
-        List<String> unregisteredPlugins = Arrays.stream(Bukkit.getPluginManager().getPlugins())
-            .map(Plugin::getName)
+        ConfigManager configManager = instance.getConfig();
+        List<String> unregisteredPlugins = instance.getPlugins().stream()
+            .map(PluginInfo::getName)
             .filter(pluginName -> configManager.getPluginData(pluginName) == null)
             .sorted(String.CASE_INSENSITIVE_ORDER)
             .toList();

@@ -3,7 +3,7 @@ package org.lushplugins.pluginupdater.common.config;
 import com.electronwill.nightconfig.core.Config;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.lushplugins.pluginupdater.paper.api.version.comparator.VersionComparator;
+import org.lushplugins.pluginupdater.api.version.comparator.VersionComparator;
 import org.lushplugins.pluginupdater.common.config.serializer.ComparatorSerializer;
 
 import java.util.HashMap;
