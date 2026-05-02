@@ -11,7 +11,7 @@ dependencies {
     compileOnly("io.papermc.paper:paper-api:1.21.11-R0.1-SNAPSHOT")
 
     implementation(project(":common:impl"))
-    implementation(project(":platform:paper:api"))
+    implementation(project(":platform:paper-api"))
     implementation("org.lushplugins.chatcolorhandler:paper:8.1.0")
     implementation("io.github.revxrsal:lamp.bukkit:4.0.0-rc.16")
 }
