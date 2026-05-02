@@ -75,11 +75,3 @@ jobs:
       - name: Build velocity:plugin
         run: |
           ./gradlew platform:velocity:plugin:shadowJar
-  check-success:
-    runs-on: ubuntu-latest
-    needs:
-      - build-common
-      - build-paper
-      - build-velocity
-    steps:
-      - run: echo All builds successfully compiled
