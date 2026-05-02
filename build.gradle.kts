@@ -21,7 +21,7 @@ allprojects {
         mavenLocal()
         mavenCentral()
         maven("https://repo.papermc.io/repository/maven-public/") // Paper
-        maven("https://repo.lushplugins.org/snapshots") // LushLib
+        maven("https://repo.lushplugins.org/snapshots") // ChatColorHandler
     }
 
     java {

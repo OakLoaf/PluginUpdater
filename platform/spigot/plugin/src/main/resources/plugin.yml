@@ -1,5 +1,5 @@
 name: PluginUpdater
 version: '${version}'
-main: org.lushplugins.pluginupdater.PluginUpdater
+main: org.lushplugins.pluginupdater.paper.PluginUpdater
 api-version: '1.18'
 modrinth-project-id: "plugin-updater"
