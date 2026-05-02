@@ -50,11 +50,11 @@ jobs:
 
       - name: Build paper:api
         run: |
-          ./gradlew platform:paper:api:shadowJar
+          ./gradlew platform:paper:api:build
 
       - name: Build paper:plugin
         run: |
-          ./gradlew platform:paper:plugin:shadowJar
+          ./gradlew platform:paper:plugin:build
   build-velocity:
     runs-on: ubuntu-latest
     needs: build-common
@@ -74,4 +74,4 @@ jobs:
 
       - name: Build velocity:plugin
         run: |
-          ./gradlew platform:velocity:plugin:shadowJar
+          ./gradlew platform:velocity:plugin:build

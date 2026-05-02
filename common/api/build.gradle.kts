@@ -4,8 +4,6 @@ dependencies {
 
 tasks {
     processResources{
-        expand(project.properties)
-
         inputs.property("version", rootProject.version)
         filesMatching("settings.properties") {
             expand("version" to rootProject.version)

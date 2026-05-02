@@ -2,12 +2,14 @@ import java.io.BufferedReader
 import java.io.InputStreamReader
 
 plugins {
+    id("com.gradleup.shadow") version("9.3.1")
     id("com.modrinth.minotaur") version ("2.+")
-    id("xyz.jpenilla.run-paper") version("3.0.2")
+    id("xyz.jpenilla.run-paper") version ("3.0.2")
 }
 
 dependencies {
-    compileOnly(project(":common:api"))
+    compileOnly("io.papermc.paper:paper-api:1.21.11-R0.1-SNAPSHOT")
+
     implementation(project(":common:impl"))
     implementation(project(":platform:paper:api"))
     implementation("org.lushplugins.chatcolorhandler:paper:8.1.0")
@@ -26,6 +28,8 @@ tasks {
 
     shadowJar {
         relocate("org.lushplugins.lushlib", "org.lushplugins.pluginupdater.libraries.lushlib")
+
+        archiveFileName.set("${project.name}-${project.version}.jar")
     }
 
     runServer {
