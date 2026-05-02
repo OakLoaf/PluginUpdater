@@ -81,3 +81,5 @@ jobs:
       - build-common
       - build-paper
       - build-velocity
+    steps:
+      - run: echo All builds successfully compiled
