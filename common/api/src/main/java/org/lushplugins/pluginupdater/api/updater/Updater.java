@@ -3,11 +3,11 @@ package org.lushplugins.pluginupdater.api.updater;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.lushplugins.pluginupdater.api.listener.NotificationHandler;
-import org.lushplugins.pluginupdater.api.platform.PlatformData;
-import org.lushplugins.pluginupdater.api.platform.github.GithubData;
-import org.lushplugins.pluginupdater.api.platform.hangar.HangarData;
-import org.lushplugins.pluginupdater.api.platform.modrinth.ModrinthData;
-import org.lushplugins.pluginupdater.api.platform.spigot.SpigotData;
+import org.lushplugins.pluginupdater.api.source.SourceData;
+import org.lushplugins.pluginupdater.api.source.github.GithubData;
+import org.lushplugins.pluginupdater.api.source.hangar.HangarData;
+import org.lushplugins.pluginupdater.api.source.modrinth.ModrinthData;
+import org.lushplugins.pluginupdater.api.source.spigot.SpigotData;
 import org.lushplugins.pluginupdater.api.util.DownloadLogger;
 import org.lushplugins.pluginupdater.api.version.VersionChecker;
 import org.lushplugins.pluginupdater.api.version.VersionDifference;
@@ -182,12 +182,12 @@ public class Updater {
         }
 
         /**
-         * Add a plugin's platform data to be used for collecting update information
-         * (Platforms should be added in order of priority).
-         * @param platformData The platform data.
+         * Add a plugin's source data to be used for collecting update information
+         * (Sources should be added in order of priority).
+         * @param sourceData The source data.
          */
-        public Builder platform(PlatformData platformData) {
-            this.pluginData.addPlatform(platformData);
+        public Builder platform(SourceData sourceData) {
+            this.pluginData.addPlatform(sourceData);
             return this;
         }
 
@@ -242,7 +242,7 @@ public class Updater {
          * @return The created Updater instance.
          */
         public Updater build() {
-            if (pluginData.getPlatformData().isEmpty()) {
+            if (pluginData.getSourceData().isEmpty()) {
                 throw new IllegalStateException("At least 1 platform must be registered before building the Updater.");
             }
 

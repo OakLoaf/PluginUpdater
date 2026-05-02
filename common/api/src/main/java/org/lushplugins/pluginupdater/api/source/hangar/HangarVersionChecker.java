@@ -1,6 +1,6 @@
-package org.lushplugins.pluginupdater.api.platform.hangar;
+package org.lushplugins.pluginupdater.api.source.hangar;
 
-import org.lushplugins.pluginupdater.api.platform.PlatformData;
+import org.lushplugins.pluginupdater.api.source.SourceData;
 import org.lushplugins.pluginupdater.api.util.HttpUtil;
 import org.lushplugins.pluginupdater.api.util.UpdaterConstants;
 import org.lushplugins.pluginupdater.api.version.VersionChecker;
@@ -12,8 +12,8 @@ import java.net.http.HttpResponse;
 public class HangarVersionChecker implements VersionChecker {
 
     @Override
-    public String getLatestVersion(PluginData pluginData, PlatformData platformData) throws IOException, InterruptedException {
-        if (!(platformData instanceof HangarData hangarData)) {
+    public String getLatestVersion(PluginData pluginData, SourceData sourceData) throws IOException, InterruptedException {
+        if (!(sourceData instanceof HangarData hangarData)) {
             return null;
         }
 
@@ -27,8 +27,8 @@ public class HangarVersionChecker implements VersionChecker {
     }
 
     @Override
-    public String getDownloadUrl(PluginData pluginData, PlatformData platformData) {
-        return platformData instanceof HangarData hangarData ?
+    public String getDownloadUrl(PluginData pluginData, SourceData sourceData) {
+        return sourceData instanceof HangarData hangarData ?
             String.format("%s/projects/%s/versions/%s/PAPER/download", UpdaterConstants.Endpoint.HANGAR, hangarData.getProjectSlug(), pluginData.getLatestVersion()) :
             null;
     }

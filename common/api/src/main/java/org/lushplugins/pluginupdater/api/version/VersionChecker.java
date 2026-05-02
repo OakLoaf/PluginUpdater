@@ -1,8 +1,8 @@
 package org.lushplugins.pluginupdater.api.version;
 
 import org.lushplugins.pluginupdater.api.exception.InvalidVersionFormatException;
-import org.lushplugins.pluginupdater.api.platform.PlatformData;
-import org.lushplugins.pluginupdater.api.platform.PlatformRegistry;
+import org.lushplugins.pluginupdater.api.source.SourceData;
+import org.lushplugins.pluginupdater.api.source.SourceRegistry;
 import org.lushplugins.pluginupdater.api.updater.PluginData;
 import org.lushplugins.pluginupdater.api.util.DownloadLogger;
 import org.lushplugins.pluginupdater.api.util.UpdaterConstants;
@@ -18,15 +18,15 @@ import java.util.logging.Level;
 
 @SuppressWarnings("CodeBlock2Expr")
 public interface VersionChecker {
-    String getLatestVersion(PluginData pluginData, PlatformData platformData) throws IOException, InterruptedException;
+    String getLatestVersion(PluginData pluginData, SourceData sourceData) throws IOException, InterruptedException;
 
-    String getDownloadUrl(PluginData pluginData, PlatformData platformData) throws IOException, InterruptedException;
+    String getDownloadUrl(PluginData pluginData, SourceData sourceData) throws IOException, InterruptedException;
 
-    default boolean isUpdateAvailable(PluginData pluginData, PlatformData platformData) throws IOException, InterruptedException {
+    default boolean isUpdateAvailable(PluginData pluginData, SourceData sourceData) throws IOException, InterruptedException {
         String currentVersion = pluginData.getCurrentVersion();
-        String latestVersion = getLatestVersion(pluginData, platformData);
+        String latestVersion = getLatestVersion(pluginData, sourceData);
 
-        VersionComparator comparator = pluginData.getOptionalComparator().orElse(platformData.getDefaultComparator());
+        VersionComparator comparator = pluginData.getOptionalComparator().orElse(sourceData.getDefaultComparator());
         VersionDifference versionDifference;
         try {
             versionDifference = comparator.getVersionDifference(currentVersion, latestVersion);
@@ -46,10 +46,10 @@ public interface VersionChecker {
         }
     }
 
-    default boolean download(PluginData pluginData, PlatformData platformData) throws IOException, InterruptedException {
+    default boolean download(PluginData pluginData, SourceData sourceData, File destinationDir) throws IOException, InterruptedException {
         String pluginName = pluginData.getPluginName();
         String latestVersion = pluginData.getLatestVersion();
-        String downloadUrl = getDownloadUrl(pluginData, platformData);
+        String downloadUrl = getDownloadUrl(pluginData, sourceData);
         if (downloadUrl == null) {
             return false;
         }
@@ -71,11 +71,11 @@ public interface VersionChecker {
         }
 
         // Ensures update folder exists
-        Bukkit.getUpdateFolderFile().mkdirs();
+        destinationDir.mkdirs();
 
         // Downloads file from url
         ReadableByteChannel rbc = Channels.newChannel(connection.getInputStream());
-        File out = new File(Bukkit.getUpdateFolderFile(), fileName);
+        File out = new File(destinationDir, fileName);
         UpdaterConstants.LOGGER.info("Saving '" + fileName + "' to '" + out.getAbsolutePath() + "'");
         FileOutputStream fos = new FileOutputStream(out);
         fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
@@ -116,10 +116,10 @@ public interface VersionChecker {
         }
     }
 
-    static boolean download(PluginData pluginData) throws IOException {
+    static boolean download(PluginData pluginData, File destinationDir) throws IOException {
         try {
             return attemptOnPlatforms(pluginData, (versionChecker, platformData) -> {
-                return versionChecker.download(pluginData, platformData);
+                return versionChecker.download(pluginData, platformData, destinationDir);
             });
         } catch (IOException e) {
             throw new IOException("Failed to download update for plugin '" + pluginData.getPluginName() + "'.");
@@ -127,14 +127,14 @@ public interface VersionChecker {
     }
 
     private static <T> T attemptOnPlatforms(PluginData pluginData, VersionCheckerCallable<T> callable) throws IOException {
-        for (PlatformData platformData : pluginData.getPlatformData()) {
-            VersionChecker versionChecker = PlatformRegistry.getVersionChecker(platformData.getName());
+        for (SourceData sourceData : pluginData.getSourceData()) {
+            VersionChecker versionChecker = SourceRegistry.getVersionChecker(sourceData.getName());
             if (versionChecker == null) {
                 continue;
             }
 
             try {
-                return callable.call(versionChecker, platformData);
+                return callable.call(versionChecker, sourceData);
             } catch (IOException | InterruptedException e) {
                 UpdaterConstants.LOGGER.log(Level.SEVERE, e.getMessage(), e);
             }
@@ -145,6 +145,6 @@ public interface VersionChecker {
 
     @FunctionalInterface
     interface VersionCheckerCallable<T> {
-        T call(VersionChecker versionChecker, PlatformData platformData) throws IOException, InterruptedException;
+        T call(VersionChecker versionChecker, SourceData sourceData) throws IOException, InterruptedException;
     }
 }

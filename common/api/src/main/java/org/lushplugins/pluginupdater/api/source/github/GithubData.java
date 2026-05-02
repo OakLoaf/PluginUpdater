@@ -1,10 +1,10 @@
-package org.lushplugins.pluginupdater.api.platform.github;
+package org.lushplugins.pluginupdater.api.source.github;
 
 import org.bukkit.configuration.ConfigurationSection;
 import org.jetbrains.annotations.Nullable;
-import org.lushplugins.pluginupdater.api.platform.PlatformData;
+import org.lushplugins.pluginupdater.api.source.SourceData;
 
-public class GithubData extends PlatformData {
+public class GithubData extends SourceData {
     private static final String NAME = "github";
 
     private final String repo;

@@ -1,9 +1,9 @@
-package org.lushplugins.pluginupdater.api.platform.spigot;
+package org.lushplugins.pluginupdater.api.source.spigot;
 
 import org.bukkit.configuration.ConfigurationSection;
-import org.lushplugins.pluginupdater.api.platform.PlatformData;
+import org.lushplugins.pluginupdater.api.source.SourceData;
 
-public class SpigotData extends PlatformData {
+public class SpigotData extends SourceData {
     private static final String NAME = "spigot";
 
     private final String resourceId;

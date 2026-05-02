@@ -1,14 +1,14 @@
-package org.lushplugins.pluginupdater.api.platform.modrinth;
+package org.lushplugins.pluginupdater.api.source.modrinth;
 
 import org.bukkit.configuration.ConfigurationSection;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
-import org.lushplugins.pluginupdater.api.platform.PlatformData;
+import org.lushplugins.pluginupdater.api.source.SourceData;
 
 import java.util.Collections;
 import java.util.List;
 
-public class ModrinthData extends PlatformData {
+public class ModrinthData extends SourceData {
     private static final String NAME = "modrinth";
 
     private final String projectId;

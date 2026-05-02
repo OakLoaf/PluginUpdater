@@ -7,8 +7,8 @@ import org.lushplugins.pluginupdater.common.config.ComparatorRegistry;
 import org.lushplugins.pluginupdater.common.config.ConfigManager;
 import org.lushplugins.pluginupdater.api.updater.PluginInfo;
 import org.lushplugins.pluginupdater.paper.PluginUpdater;
-import org.lushplugins.pluginupdater.api.platform.PlatformData;
-import org.lushplugins.pluginupdater.api.platform.PlatformRegistry;
+import org.lushplugins.pluginupdater.api.source.SourceData;
+import org.lushplugins.pluginupdater.api.source.SourceRegistry;
 import org.lushplugins.pluginupdater.api.updater.PluginData;
 import org.lushplugins.pluginupdater.api.version.comparator.VersionComparator;
 
@@ -53,10 +53,10 @@ public class CommonPluginCollector implements PluginDataCollector {
                 comparator = null;
             }
 
-            PlatformData platformData = PlatformRegistry.getPlatformData(pluginSection.getString("platform"), pluginSection);
-            if (platformData != null) {
+            SourceData sourceData = SourceRegistry.getSourceData(pluginSection.getString("platform"), pluginSection);
+            if (sourceData != null) {
                 pluginDataList.add(PluginData.builder(plugin)
-                    .platformData(platformData)
+                    .platformData(sourceData)
                     .comparator(comparator)
                     .build());
             }

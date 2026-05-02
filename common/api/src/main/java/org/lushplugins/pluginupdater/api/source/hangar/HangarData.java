@@ -1,9 +1,9 @@
-package org.lushplugins.pluginupdater.api.platform.hangar;
+package org.lushplugins.pluginupdater.api.source.hangar;
 
 import org.bukkit.configuration.ConfigurationSection;
-import org.lushplugins.pluginupdater.api.platform.PlatformData;
+import org.lushplugins.pluginupdater.api.source.SourceData;
 
-public class HangarData extends PlatformData {
+public class HangarData extends SourceData {
     private static final String NAME = "hangar";
 
     private final String projectSlug;

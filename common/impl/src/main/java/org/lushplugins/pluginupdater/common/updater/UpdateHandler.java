@@ -1,10 +1,10 @@
 package org.lushplugins.pluginupdater.common.updater;
 
-import org.lushplugins.pluginupdater.PluginUpdater;
-import org.lushplugins.pluginupdater.api.platform.PlatformData;
+import org.lushplugins.pluginupdater.api.source.SourceData;
 import org.lushplugins.pluginupdater.api.updater.PluginData;
 import org.lushplugins.pluginupdater.api.version.VersionChecker;
 import org.lushplugins.pluginupdater.api.version.VersionDifference;
+import org.lushplugins.pluginupdater.common.platform.UpdaterImpl;
 
 import java.io.IOException;
 import java.util.ArrayDeque;
@@ -87,8 +87,8 @@ public class UpdateHandler {
                     PluginUpdater.getInstance().getLogger().log(Level.SEVERE, e.getMessage(), e);
                 }
 
-                String platformNames = String.join(", ", pluginData.getPlatformData().stream().map(PlatformData::getName).toList());
-                processingData.getFuture().completeExceptionally(new IOException("Failed to run check for plugin '" + pluginData.getPluginName() + "' using defined platforms: '" + platformNames + "'"));
+                String sourceNames = String.join(", ", pluginData.getSourceData().stream().map(SourceData::getName).toList());
+                processingData.getFuture().completeExceptionally(new IOException("Failed to run check for plugin '" + pluginData.getPluginName() + "' using defined platforms: '" + sourceNames + "'"));
             }
             case DOWNLOAD -> {
                 PluginData pluginData = processingData.getPluginData();
@@ -110,8 +110,8 @@ public class UpdateHandler {
                     processingData.getFuture().completeExceptionally(e);
                 }
 
-                String platformNames = String.join(", ", pluginData.getPlatformData().stream().map(PlatformData::getName).toList());
-                processingData.getFuture().completeExceptionally(new IOException("Failed to download update for plugin '%s' using defined platforms: '%s'".formatted(pluginData.getPluginName(), platformNames)));
+                String sourceNames = String.join(", ", pluginData.getSourceData().stream().map(SourceData::getName).toList());
+                processingData.getFuture().completeExceptionally(new IOException("Failed to download update for plugin '%s' using defined platforms: '%s'".formatted(pluginData.getPluginName(), sourceNames)));
             }
         }
     }
@@ -121,11 +121,13 @@ public class UpdateHandler {
     }
 
     public static class ProcessingData {
+        private final UpdaterImpl instance;
         private final String pluginName;
         private final State state;
         private final CompletableFuture<Boolean> future;
 
-        public ProcessingData(String pluginName, State state) {
+        public ProcessingData(UpdaterImpl instance, String pluginName, State state) {
+            this.instance = instance;
             this.pluginName = pluginName;
             this.state = state;
             this.future = new CompletableFuture<>();
@@ -140,7 +142,7 @@ public class UpdateHandler {
         }
 
         public PluginData getPluginData() {
-            return PluginUpdater.getInstance().getConfigManager().getPluginData(pluginName);
+            return instance.getConfig().getPluginData(pluginName);
         }
 
         public CompletableFuture<Boolean> getFuture() {

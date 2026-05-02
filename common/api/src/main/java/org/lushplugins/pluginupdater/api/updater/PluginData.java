@@ -2,7 +2,7 @@ package org.lushplugins.pluginupdater.api.updater;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.lushplugins.pluginupdater.api.platform.PlatformData;
+import org.lushplugins.pluginupdater.api.source.SourceData;
 import org.lushplugins.pluginupdater.api.version.VersionDifference;
 import org.lushplugins.pluginupdater.api.version.comparator.SemVerComparator;
 import org.lushplugins.pluginupdater.api.version.comparator.VersionComparator;
@@ -14,7 +14,7 @@ import java.util.Optional;
 public class PluginData {
     private final String pluginName;
     private final String currentVersion;
-    private final List<PlatformData> platformData;
+    private final List<SourceData> sourceData;
     private final VersionComparator comparator;
     private String latestVersion;
 
@@ -24,10 +24,10 @@ public class PluginData {
     private boolean alreadyDownloaded = false;
     private boolean checkRan = false;
 
-    private PluginData(@NotNull String pluginName, @NotNull String currentVersion, @NotNull List<PlatformData> platformData, @Nullable VersionComparator comparator, boolean allowDownloads) {
+    private PluginData(@NotNull String pluginName, @NotNull String currentVersion, @NotNull List<SourceData> sourceData, @Nullable VersionComparator comparator, boolean allowDownloads) {
         this.pluginName = pluginName;
         this.currentVersion = currentVersion;
-        this.platformData = platformData;
+        this.sourceData = sourceData;
         this.comparator = comparator;
         this.allowDownloads = allowDownloads;
     }
@@ -41,8 +41,8 @@ public class PluginData {
         return currentVersion;
     }
 
-    public List<PlatformData> getPlatformData() {
-        return platformData;
+    public List<SourceData> getSourceData() {
+        return sourceData;
     }
 
     public VersionComparator getComparator() {
@@ -53,8 +53,8 @@ public class PluginData {
         return Optional.ofNullable(comparator);
     }
 
-    public void addPlatform(PlatformData platformData) {
-        this.platformData.add(platformData);
+    public void addPlatform(SourceData sourceData) {
+        this.sourceData.add(sourceData);
     }
 
     public String getLatestVersion() {
@@ -120,7 +120,7 @@ public class PluginData {
     public static class Builder {
         private final String pluginName;
         private final String currentVersion;
-        private List<PlatformData> platformData = Collections.emptyList();
+        private List<SourceData> sourceData = Collections.emptyList();
         private VersionComparator comparator = SemVerComparator.INSTANCE;
         private boolean allowDownloads = true;
 
@@ -129,13 +129,13 @@ public class PluginData {
             this.currentVersion = currentVersion;
         }
 
-        public Builder platformData(PlatformData platformData) {
-            this.platformData = Collections.singletonList(platformData);
+        public Builder platformData(SourceData sourceData) {
+            this.sourceData = Collections.singletonList(sourceData);
             return this;
         }
 
-        public Builder platformData(List<PlatformData> platformData) {
-            this.platformData = platformData;
+        public Builder platformData(List<SourceData> sourceData) {
+            this.sourceData = sourceData;
             return this;
         }
 
@@ -161,7 +161,7 @@ public class PluginData {
             return new PluginData(
                 this.pluginName,
                 this.currentVersion,
-                this.platformData,
+                this.sourceData,
                 this.comparator,
                 this.allowDownloads
             );

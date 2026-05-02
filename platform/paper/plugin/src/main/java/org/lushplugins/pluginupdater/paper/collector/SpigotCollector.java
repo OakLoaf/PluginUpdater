@@ -7,7 +7,7 @@ import org.jetbrains.annotations.Nullable;
 import org.lushplugins.pluginupdater.api.updater.PluginInfo;
 import org.lushplugins.pluginupdater.common.collector.PluginDataCollector;
 import org.lushplugins.pluginupdater.paper.PluginUpdater;
-import org.lushplugins.pluginupdater.api.platform.spigot.SpigotData;
+import org.lushplugins.pluginupdater.api.source.spigot.SpigotData;
 import org.lushplugins.pluginupdater.api.updater.PluginData;
 import org.lushplugins.pluginupdater.api.util.HttpUtil;
 import org.lushplugins.pluginupdater.api.util.UpdaterConstants;

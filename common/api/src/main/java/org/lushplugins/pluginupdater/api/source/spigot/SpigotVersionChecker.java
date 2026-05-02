@@ -1,4 +1,4 @@
-package org.lushplugins.pluginupdater.api.platform.spigot;
+package org.lushplugins.pluginupdater.api.source.spigot;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -6,7 +6,7 @@ import org.lushplugins.pluginupdater.api.updater.PluginData;
 import org.lushplugins.pluginupdater.api.util.HttpUtil;
 import org.lushplugins.pluginupdater.api.util.UpdaterConstants;
 import org.lushplugins.pluginupdater.api.version.VersionChecker;
-import org.lushplugins.pluginupdater.api.platform.PlatformData;
+import org.lushplugins.pluginupdater.api.source.SourceData;
 
 import java.io.IOException;
 import java.net.http.HttpResponse;
@@ -14,8 +14,8 @@ import java.net.http.HttpResponse;
 public class SpigotVersionChecker implements VersionChecker {
 
     @Override
-    public String getLatestVersion(PluginData pluginData, PlatformData platformData) throws IOException, InterruptedException {
-        if (!(platformData instanceof SpigotData spigotData)) {
+    public String getLatestVersion(PluginData pluginData, SourceData sourceData) throws IOException, InterruptedException {
+        if (!(sourceData instanceof SpigotData spigotData)) {
             return null;
         }
 
@@ -30,8 +30,8 @@ public class SpigotVersionChecker implements VersionChecker {
     }
 
     @Override
-    public String getDownloadUrl(PluginData pluginData, PlatformData platformData) {
-        return platformData instanceof SpigotData spigotData ?
+    public String getDownloadUrl(PluginData pluginData, SourceData sourceData) {
+        return sourceData instanceof SpigotData spigotData ?
             String.format("%s/resources/%s/download", UpdaterConstants.Endpoint.SPIGET, spigotData.getResourceId()) :
             null;
     }

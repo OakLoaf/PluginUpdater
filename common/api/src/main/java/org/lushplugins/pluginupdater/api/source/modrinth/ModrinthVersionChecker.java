@@ -1,4 +1,4 @@
-package org.lushplugins.pluginupdater.api.platform.modrinth;
+package org.lushplugins.pluginupdater.api.source.modrinth;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -7,7 +7,7 @@ import org.lushplugins.pluginupdater.api.util.HttpUtil;
 import org.lushplugins.pluginupdater.api.util.UpdaterConstants;
 import org.lushplugins.pluginupdater.api.version.VersionChecker;
 import org.lushplugins.pluginupdater.api.updater.PluginData;
-import org.lushplugins.pluginupdater.api.platform.PlatformData;
+import org.lushplugins.pluginupdater.api.source.SourceData;
 
 import java.io.IOException;
 import java.net.http.HttpResponse;
@@ -15,8 +15,8 @@ import java.net.http.HttpResponse;
 public class ModrinthVersionChecker implements VersionChecker {
 
     @Override
-    public String getLatestVersion(PluginData pluginData, PlatformData platformData) throws IOException, InterruptedException {
-        if (!(platformData instanceof ModrinthData modrinthData)) {
+    public String getLatestVersion(PluginData pluginData, SourceData sourceData) throws IOException, InterruptedException {
+        if (!(sourceData instanceof ModrinthData modrinthData)) {
             return null;
         }
 
@@ -25,8 +25,8 @@ public class ModrinthVersionChecker implements VersionChecker {
     }
 
     @Override
-    public String getDownloadUrl(PluginData pluginData, PlatformData platformData) throws IOException, InterruptedException {
-        if (!(platformData instanceof ModrinthData modrinthData)) {
+    public String getDownloadUrl(PluginData pluginData, SourceData sourceData) throws IOException, InterruptedException {
+        if (!(sourceData instanceof ModrinthData modrinthData)) {
             return null;
         }
 

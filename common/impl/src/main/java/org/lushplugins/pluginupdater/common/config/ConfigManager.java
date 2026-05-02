@@ -4,8 +4,8 @@ import com.electronwill.nightconfig.core.Config;
 import com.electronwill.nightconfig.core.file.FileConfig;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.lushplugins.pluginupdater.api.platform.PlatformData;
-import org.lushplugins.pluginupdater.api.platform.PlatformRegistry;
+import org.lushplugins.pluginupdater.api.source.SourceData;
+import org.lushplugins.pluginupdater.api.source.SourceRegistry;
 import org.lushplugins.pluginupdater.api.updater.PluginData;
 import org.lushplugins.pluginupdater.api.version.comparator.VersionComparator;
 
@@ -78,10 +78,10 @@ public class ConfigManager {
                 }
 
                 try {
-                    PlatformData platformData = PlatformRegistry.getPlatformData(platform, pluginConfig);
-                    if (platformData != null) {
+                    SourceData sourceData = SourceRegistry.getSourceData(platform, pluginConfig);
+                    if (sourceData != null) {
                         addPlugin(pluginName, PluginData.builder(currPlugin)
-                            .platformData(platformData)
+                            .platformData(sourceData)
                             .comparator(comparator)
                             .allowDownloads(allowDownloads)
                             .build());

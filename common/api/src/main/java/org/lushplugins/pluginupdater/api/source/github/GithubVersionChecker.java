@@ -1,9 +1,9 @@
-package org.lushplugins.pluginupdater.api.platform.github;
+package org.lushplugins.pluginupdater.api.source.github;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import org.lushplugins.pluginupdater.api.platform.PlatformData;
+import org.lushplugins.pluginupdater.api.source.SourceData;
 import org.lushplugins.pluginupdater.api.util.HttpUtil;
 import org.lushplugins.pluginupdater.api.util.UpdaterConstants;
 import org.lushplugins.pluginupdater.api.version.VersionChecker;
@@ -18,8 +18,8 @@ import java.net.http.HttpResponse;
 public class GithubVersionChecker implements VersionChecker {
 
     @Override
-    public String getLatestVersion(PluginData pluginData, PlatformData platformData) throws IOException, InterruptedException {
-        if (!(platformData instanceof GithubData githubData)) {
+    public String getLatestVersion(PluginData pluginData, SourceData sourceData) throws IOException, InterruptedException {
+        if (!(sourceData instanceof GithubData githubData)) {
             return null;
         }
 
@@ -28,8 +28,8 @@ public class GithubVersionChecker implements VersionChecker {
     }
 
     @Override
-    public String getDownloadUrl(PluginData pluginData, PlatformData platformData) throws IOException, InterruptedException {
-        if (!(platformData instanceof GithubData githubData)) {
+    public String getDownloadUrl(PluginData pluginData, SourceData sourceData) throws IOException, InterruptedException {
+        if (!(sourceData instanceof GithubData githubData)) {
             return null;
         }
 
