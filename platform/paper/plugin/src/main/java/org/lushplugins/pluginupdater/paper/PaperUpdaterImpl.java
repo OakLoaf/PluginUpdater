@@ -8,7 +8,7 @@ import org.lushplugins.chatcolorhandler.paper.PaperColor;
 import org.lushplugins.pluginupdater.api.updater.PluginInfo;
 import org.lushplugins.pluginupdater.common.platform.UpdaterImpl;
 import org.lushplugins.pluginupdater.common.updater.UpdateHandler;
-import org.lushplugins.pluginupdater.paper.plugin.PaperPluginInfo;
+import org.lushplugins.pluginupdater.paper.api.plugin.PaperPluginInfo;
 import revxrsal.commands.Lamp;
 import revxrsal.commands.bukkit.BukkitLamp;
 import revxrsal.commands.bukkit.actor.BukkitCommandActor;

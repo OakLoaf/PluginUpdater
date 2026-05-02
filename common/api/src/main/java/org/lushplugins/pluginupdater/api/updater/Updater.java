@@ -21,11 +21,13 @@ import java.util.logging.Level;
 public class Updater {
     private final PluginInfo plugin;
     private final PluginData pluginData;
+    private final File downloadDir;
     private final NotificationHandler notificationHandler;
 
-    private Updater(@NotNull PluginInfo plugin, @NotNull PluginData pluginData, boolean notify, String notificationPermission, String notificationMessage) {
+    private Updater(@NotNull PluginInfo plugin, @NotNull PluginData pluginData, File downloadDir, boolean notify, String notificationPermission, String notificationMessage) {
         this.plugin = plugin;
         this.pluginData = pluginData;
+        this.downloadDir = downloadDir;
         this.notificationHandler = notify ? new NotificationHandler(this, notificationPermission, notificationMessage) : null;
     }
 
@@ -35,6 +37,10 @@ public class Updater {
 
     public PluginData getPluginData() {
         return pluginData;
+    }
+
+    public File getDownloadDir() {
+        return downloadDir;
     }
 
     public NotificationHandler getNotificationHandler() {
@@ -101,7 +107,7 @@ public class Updater {
 
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
             try {
-                if (VersionChecker.download(pluginData)) {
+                if (VersionChecker.download(pluginData, downloadDir)) {
                     pluginData.setVersionDifference(VersionDifference.UNKNOWN);
                     pluginData.setAlreadyDownloaded(true);
                     completableFuture.complete(true);
@@ -117,22 +123,29 @@ public class Updater {
         return completableFuture;
     }
 
-    public static Builder builder(PluginInfo plugin) {
-        return new Builder(plugin);
+    public static Builder builder(PluginInfo plugin, File downloadDir) {
+        return new Builder(plugin,  downloadDir);
     }
 
     public static class Builder {
         private final PluginInfo plugin;
         private final PluginData pluginData;
+        private File downloadDir;
         private long checkFrequency = 600;
         private boolean notify = true;
         private String notificationPermission = "pluginupdater.notifications";
         private String notificationMessage = "&#ffe27aA new &#e0c01b%plugin% &#ffe27aupdate is now available! &#e0c01b%current_version% &#ffe27a-> &#e0c01b%latest_version%";
         private File downloadLogFile;
 
-        private Builder(PluginInfo plugin) {
+        private Builder(PluginInfo plugin, File downloadDir) {
             this.plugin = plugin;
             this.pluginData = PluginData.of(plugin);
+            this.downloadDir = downloadDir;
+        }
+
+        public Builder downloadDir(File downloadDir) {
+            this.downloadDir = downloadDir;
+            return this;
         }
 
         /**
@@ -247,7 +260,7 @@ public class Updater {
             }
 
             DownloadLogger.setLogFile(downloadLogFile);
-            Updater updater = new Updater(plugin, pluginData, notify, notificationPermission, notificationMessage);
+            Updater updater = new Updater(plugin, pluginData, downloadDir, notify, notificationPermission, notificationMessage);
 
             if (checkFrequency > 0) {
                 Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, updater::checkForUpdate, 0, checkFrequency * 20);

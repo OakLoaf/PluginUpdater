@@ -1,9 +1,8 @@
-package org.lushplugins.pluginupdater.paper.plugin;
+package org.lushplugins.pluginupdater.paper.api.plugin;
 
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.lushplugins.pluginupdater.api.updater.PluginInfo;
-import org.lushplugins.pluginupdater.paper.PluginUpdater;
 
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
@@ -12,6 +11,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public record PaperPluginInfo(Plugin plugin) implements PluginInfo {
+    private static final Logger LOGGER = Logger.getLogger("PluginUpdater");
 
     @Override
     public String getName() {
@@ -31,7 +31,7 @@ public record PaperPluginInfo(Plugin plugin) implements PluginInfo {
 
             return (File) method.invoke(plugin);
         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-            PluginUpdater.getInstance().getLogger().log(Level.WARNING, "Caught error whilst getting plugin file: ", e);
+            LOGGER.log(Level.WARNING, "[PluginUpdater] Caught error whilst getting plugin file: ", e);
             return null;
         }
     }
