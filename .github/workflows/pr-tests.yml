@@ -26,11 +26,11 @@ jobs:
 
       - name: Build common:api
         run: |
-          ./gradlew common:api:shadowJar
+          ./gradlew common:api:build
 
       - name: Build common:impl
         run: |
-          ./gradlew common:impl:shadowJar
+          ./gradlew common:impl:build
   build-paper:
     runs-on: ubuntu-latest
     needs: build-common
