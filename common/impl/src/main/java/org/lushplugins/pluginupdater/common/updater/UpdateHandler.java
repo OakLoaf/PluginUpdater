@@ -14,9 +14,14 @@ import java.util.concurrent.*;
 import java.util.logging.Level;
 
 public class UpdateHandler {
+    private final UpdaterImpl instance;
     private final ScheduledExecutorService threads = Executors.newScheduledThreadPool(1);
     private final ArrayDeque<ProcessingData> queue = new ArrayDeque<>();
     private final Map<ProcessingData.State, Integer> currentlyProcessing = new HashMap<>();
+
+    public UpdateHandler(UpdaterImpl instance) {
+        this.instance = instance;
+    }
 
     public ScheduledExecutorService getThreads() {
         return threads;
@@ -49,13 +54,13 @@ public class UpdateHandler {
     }
 
     public ProcessingData queueUpdateCheck(String pluginName) {
-        ProcessingData processingData = new ProcessingData(pluginName, ProcessingData.State.UPDATE_CHECK);
+        ProcessingData processingData = new ProcessingData(instance, pluginName, ProcessingData.State.UPDATE_CHECK);
         queue(processingData);
         return processingData;
     }
 
     public ProcessingData queueDownload(String pluginName) {
-        ProcessingData processingData = new ProcessingData(pluginName, ProcessingData.State.DOWNLOAD);
+        ProcessingData processingData = new ProcessingData(instance, pluginName, ProcessingData.State.DOWNLOAD);
         queue(processingData);
         return processingData;
     }
@@ -84,7 +89,7 @@ public class UpdateHandler {
                     pluginData.setCheckRan(true);
                     return;
                 } catch (Exception e) {
-                    PluginUpdater.getInstance().getLogger().log(Level.SEVERE, e.getMessage(), e);
+                    instance.getLogger().log(Level.SEVERE, e.getMessage(), e);
                 }
 
                 String sourceNames = String.join(", ", pluginData.getSourceData().stream().map(SourceData::getName).toList());
@@ -98,7 +103,7 @@ public class UpdateHandler {
                 }
 
                 try {
-                    if (VersionChecker.download(pluginData)) {
+                    if (VersionChecker.download(pluginData, instance.getDownloadDir())) {
                         pluginData.setVersionDifference(VersionDifference.UNKNOWN);
                         pluginData.setAlreadyDownloaded(true);
                         processingData.getFuture().complete(true);

@@ -1,5 +1,7 @@
 package org.lushplugins.pluginupdater.common.platform;
 
+import org.jetbrains.annotations.Nullable;
+import org.lushplugins.pluginupdater.common.collector.CollectorRegistry;
 import org.lushplugins.pluginupdater.common.command.UpdateCommand;
 import org.lushplugins.pluginupdater.common.command.UpdaterCommand;
 import org.lushplugins.pluginupdater.common.command.UpdatesCommand;
@@ -12,18 +14,21 @@ import org.lushplugins.pluginupdater.common.updater.UpdateHandler;
 import revxrsal.commands.Lamp;
 import revxrsal.commands.command.CommandActor;
 
+import java.io.File;
 import java.util.List;
 import java.util.logging.Logger;
 
 public abstract class UpdaterImpl {
+    private final CollectorRegistry collectorRegistry;
     private final UpdateHandler updateHandler;
     private final ConfigManager config;
 
     public UpdaterImpl() {
-        updateHandler = new UpdateHandler();
+        collectorRegistry = new CollectorRegistry(this);
+        updateHandler = new UpdateHandler(this);
         updateHandler.enable();
 
-        config = new ConfigManager();
+        config = new ConfigManager(this);
         config.reloadConfig();
 
         Lamp<?> lamp = prepareLamp()
@@ -46,6 +51,10 @@ public abstract class UpdaterImpl {
         updateHandler.shutdown();
     }
 
+    public CollectorRegistry getCollectorRegistry() {
+        return collectorRegistry;
+    }
+
     public UpdateHandler getUpdateHandler() {
         return updateHandler;
     }
@@ -58,7 +67,11 @@ public abstract class UpdaterImpl {
         config.reloadConfig();
     }
 
+    public abstract @Nullable PluginInfo getPlugin(String name);
+
     public abstract List<? extends PluginInfo> getPlugins();
+
+    public abstract File getDownloadDir();
 
     public abstract Lamp.Builder<?> prepareLamp();
 

@@ -7,18 +7,23 @@ import org.jetbrains.annotations.Nullable;
 import org.lushplugins.pluginupdater.api.source.SourceData;
 import org.lushplugins.pluginupdater.api.source.SourceRegistry;
 import org.lushplugins.pluginupdater.api.updater.PluginData;
+import org.lushplugins.pluginupdater.api.updater.PluginInfo;
 import org.lushplugins.pluginupdater.api.version.comparator.VersionComparator;
+import org.lushplugins.pluginupdater.common.platform.UpdaterImpl;
+import org.lushplugins.pluginupdater.common.updater.UpdateHandler;
 
 import java.util.*;
 import java.util.logging.Level;
 
 public class ConfigManager {
+    private final UpdaterImpl instance;
     private boolean allowDownloads;
     private final Map<String, PluginData> plugins = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
     private final Set<String> disabledPlugins = new HashSet<>();
     private Messages messages;
 
-    public ConfigManager() {
+    public ConfigManager(UpdaterImpl instance) {
+        this.instance = instance;
         PluginUpdater.getInstance().saveDefaultConfig();
     }
 
@@ -29,7 +34,7 @@ public class ConfigManager {
 
         boolean checkOnReload = config.getOrElse("check-updates-on-reload", () -> {
             if (config.contains("check-updates-on-start")) {
-                PluginUpdater.getInstance().getLogger().log(Level.WARNING, "Deprecated: The config section 'check-updates-on-start' has been renamed to 'check-updates-on-reload'");
+                instance.getLogger().log(Level.WARNING, "Deprecated: The config section 'check-updates-on-start' has been renamed to 'check-updates-on-reload'");
                 return config.get("check-updates-on-start");
             } else {
                 return true;
@@ -63,7 +68,7 @@ public class ConfigManager {
                     return;
                 }
 
-                Plugin currPlugin = Bukkit.getPluginManager().getPlugin(pluginName);
+                PluginInfo currPlugin = instance.getPlugin(pluginName);
                 if (currPlugin == null) {
                     return;
                 }
@@ -87,18 +92,18 @@ public class ConfigManager {
                             .build());
                     }
                 } catch (Exception e) {
-                    plugin.getLogger().log(Level.SEVERE, "Caught error whilst collecting data for '%s'".formatted(pluginName), e);
+                    instance.getLogger().log(Level.SEVERE, "Caught error whilst collecting data for '%s'".formatted(pluginName), e);
                 }
             });
         }
 
-        PluginDataCollector.collectUnknownPlugins().thenAccept(collectedPluginData -> {
+        instance.getCollectorRegistry().collectUnknownPlugins().thenAccept(collectedPluginData -> {
             for (PluginData pluginData : collectedPluginData) {
                 addPlugin(pluginData);
             }
 
             if (checkOnReload) {
-                UpdateHandler updateHandler = PluginUpdater.getInstance().getUpdateHandler();
+                UpdateHandler updateHandler = instance.getUpdateHandler();
                 getPlugins().forEach(updateHandler::queueUpdateCheck);
             }
         });

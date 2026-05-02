@@ -2,19 +2,23 @@ package org.lushplugins.pluginupdater.common.collector;
 
 import org.jetbrains.annotations.NotNull;
 import org.lushplugins.pluginupdater.api.updater.PluginData;
+import org.lushplugins.pluginupdater.api.updater.PluginInfo;
+import org.lushplugins.pluginupdater.common.config.ConfigManager;
+import org.lushplugins.pluginupdater.common.platform.UpdaterImpl;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 public class CollectorRegistry {
-    private static final Map<String, PluginDataCollector> collectors = new HashMap<>();
+    private final UpdaterImpl instance;
+    private final Map<String, PluginDataCollector> collectors = new LinkedHashMap<>();
 
-    static {
-        register("", null);
+    public CollectorRegistry(UpdaterImpl instance) {
+        this.instance = instance;
     }
 
-    public static void register(@NotNull String id, PluginDataCollector collector) {
+    public void register(@NotNull String id, PluginDataCollector collector) {
         if (collectors.containsKey(id)) {
             throw new IllegalStateException("This collector is already registered");
         }
@@ -22,43 +26,35 @@ public class CollectorRegistry {
         collectors.put(id, collector);
     }
 
-    public static void unregister(String id) {
+    public void unregister(String id) {
         collectors.remove(id);
     }
 
-    public static CompletableFuture<List<PluginData>> collectUnknownPlugins() {
+    public CompletableFuture<List<PluginData>> collectUnknownPlugins() {
         CompletableFuture<List<PluginData>> future = new CompletableFuture<>();
 
-        PluginUpdater.getInstance().getUpdateHandler().getThreads().execute(() -> {
-            ConfigManager configManager = PluginUpdater.getInstance().getConfigManager();
-            Map<String, JavaPlugin> unknownPlugins = Arrays.stream(Bukkit.getPluginManager().getPlugins())
-                .map(plugin -> plugin instanceof JavaPlugin javaPlugin ? javaPlugin : null)
-                .filter(plugin -> plugin != null && configManager.canRegisterPluginData(plugin.getName()))
-                .collect(Collectors.toMap(PluginBase::getName, plugin -> plugin));
+        instance.getUpdateHandler().getThreads().execute(() -> {
+            ConfigManager config = instance.getConfig();
+            Map<String, PluginInfo> unknownPlugins = instance.getPlugins().stream()
+                .filter(plugin -> config.canRegisterPluginData(plugin.getName()))
+                .collect(Collectors.toMap(PluginInfo::getName, plugin -> plugin));
 
             if (unknownPlugins.isEmpty()) {
                 future.complete(Collections.emptyList());
                 return;
             }
 
-            List<PluginData> foundPluginDataList = new ArrayList<>();
-            List<PluginDataCollector> collectors = List.of(
-                new CommonPluginCollector(),
-                new PluginYamlCollector(),
-                new ModrinthCollector(),
-                new SpigotCollector()
-            );
+            List<PluginData> collectedPluginData = new ArrayList<>();
+            for (PluginDataCollector collector : collectors.values()) {
+                List<PluginData> foundPluginData = collector.collectPluginData(unknownPlugins.values());
 
-            for (PluginDataCollector collector : collectors) {
-                List<PluginData> pluginDataList = collector.collectPlugins(unknownPlugins.values());
-
-                foundPluginDataList.addAll(pluginDataList);
-                for (PluginData pluginData : pluginDataList) {
+                collectedPluginData.addAll(foundPluginData);
+                for (PluginData pluginData : foundPluginData) {
                     unknownPlugins.remove(pluginData.getPluginName());
                 }
             }
 
-            future.complete(foundPluginDataList);
+            future.complete(collectedPluginData);
         });
 
         return future;

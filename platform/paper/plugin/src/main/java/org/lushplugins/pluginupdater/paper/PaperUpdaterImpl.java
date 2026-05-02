@@ -3,7 +3,9 @@ package org.lushplugins.pluginupdater.paper;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
+import org.jetbrains.annotations.Nullable;
 import org.lushplugins.chatcolorhandler.paper.PaperColor;
+import org.lushplugins.pluginupdater.api.updater.PluginInfo;
 import org.lushplugins.pluginupdater.common.platform.UpdaterImpl;
 import org.lushplugins.pluginupdater.common.updater.UpdateHandler;
 import org.lushplugins.pluginupdater.paper.plugin.PaperPluginInfo;
@@ -12,6 +14,7 @@ import revxrsal.commands.bukkit.BukkitLamp;
 import revxrsal.commands.bukkit.actor.BukkitCommandActor;
 import revxrsal.commands.command.CommandActor;
 
+import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Logger;
@@ -26,10 +29,21 @@ public class PaperUpdaterImpl extends UpdaterImpl {
     }
 
     @Override
+    public @Nullable PluginInfo getPlugin(String name) {
+        Plugin plugin = Bukkit.getPluginManager().getPlugin(name);
+        return plugin != null ? new PaperPluginInfo(plugin) : null;
+    }
+
+    @Override
     public List<PaperPluginInfo> getPlugins() {
         return Arrays.stream(Bukkit.getPluginManager().getPlugins())
             .map(PaperPluginInfo::new)
             .toList();
+    }
+
+    @Override
+    public File getDownloadDir() {
+        return Bukkit.getUpdateFolderFile();
     }
 
     @Override
