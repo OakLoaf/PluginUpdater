@@ -46,9 +46,4 @@ public class SourceRegistry {
     public static void unregister(String source) {
         sources.remove(source);
     }
-
-    @FunctionalInterface
-    public interface SourceDataConstructor {
-        SourceData apply(Config config);
-    }
 }

@@ -4,10 +4,10 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.lushplugins.pluginupdater.api.listener.NotificationHandler;
 import org.lushplugins.pluginupdater.api.source.SourceData;
-import org.lushplugins.pluginupdater.api.source.github.GithubData;
-import org.lushplugins.pluginupdater.api.source.hangar.HangarData;
-import org.lushplugins.pluginupdater.api.source.modrinth.ModrinthData;
-import org.lushplugins.pluginupdater.api.source.spigot.SpigotData;
+import org.lushplugins.pluginupdater.api.source.type.GithubSource;
+import org.lushplugins.pluginupdater.api.source.type.HangarSource;
+import org.lushplugins.pluginupdater.api.source.type.ModrinthSource;
+import org.lushplugins.pluginupdater.api.source.type.SpigotSource;
 import org.lushplugins.pluginupdater.api.util.DownloadLogger;
 import org.lushplugins.pluginupdater.api.source.Source;
 import org.lushplugins.pluginupdater.api.version.VersionDifference;
@@ -155,7 +155,7 @@ public class Updater {
          * @param token The GitHub access token (if required)
          */
         public Builder github(String repo, @Nullable String token) {
-            return source(new GithubData(repo, token));
+            return source(new GithubSource.Data(repo, token));
         }
 
         /**
@@ -173,7 +173,7 @@ public class Updater {
          * @param projectSlug The plugin's hangar project slug.
          */
         public Builder hangar(String projectSlug) {
-            return source(new HangarData(projectSlug));
+            return source(new HangarSource.Data(projectSlug));
         }
 
         /**
@@ -182,7 +182,7 @@ public class Updater {
          * @param projectId The plugin's modrinth project id.
          */
         public Builder modrinth(String projectId) {
-            return source(new ModrinthData(projectId));
+            return source(new ModrinthSource.Data(projectId, ModrinthSource.ReleaseChannel.ALL));
         }
 
         /**
@@ -191,7 +191,7 @@ public class Updater {
          * @param resourceId The plugin's spigot resource id.
          */
         public Builder spigot(String resourceId) {
-            return source(new SpigotData(resourceId));
+            return source(new SpigotSource.Data(resourceId));
         }
 
         /**

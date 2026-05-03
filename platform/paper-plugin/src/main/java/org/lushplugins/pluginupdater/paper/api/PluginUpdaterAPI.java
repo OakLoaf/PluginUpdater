@@ -47,19 +47,18 @@ public class PluginUpdaterAPI {
 
     /**
      * Register support for a source
-     * @param source Name of source
-     * @param sourceUpdater Constructor for updater
-     * @param dataConstructor Constructor for source data
+     * @param name Name of source
+     * @param source Source to register
      */
-    public static void registerSource(String source, Callable<Source> sourceUpdater, SourceRegistry.SourceDataConstructor dataConstructor) {
-        SourceRegistry.register(source, sourceUpdater, dataConstructor);
+    public static void registerSource(String name, Source source) {
+        SourceRegistry.register(name, source);
     }
 
     /**
      * Unregister support for a source
-     * @param source Name of source
+     * @param name Name of source
      */
-    public static void unregisterSource(String source) {
-        SourceRegistry.unregister(source);
+    public static void unregisterSource(String name) {
+        SourceRegistry.unregister(name);
     }
 }

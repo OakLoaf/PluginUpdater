@@ -4,7 +4,7 @@ import com.electronwill.nightconfig.core.Config;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.lushplugins.pluginupdater.api.version.comparator.VersionComparator;
-import org.lushplugins.pluginupdater.common.config.serializer.ComparatorSerializer;
+import org.lushplugins.pluginupdater.common.config.serializer.ComparatorDeserializer;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -14,9 +14,9 @@ public class ComparatorRegistry {
     private static final Map<String, Function<Config, VersionComparator>> comparators = new HashMap<>();
 
     static {
-        register("build", ComparatorSerializer::buildNum);
-        register("cal-ver", ComparatorSerializer::calVer);
-        register("sem-ver", ComparatorSerializer::semVer);
+        register("build", ComparatorDeserializer::buildNum);
+        register("cal-ver", ComparatorDeserializer::calVer);
+        register("sem-ver", ComparatorDeserializer::semVer);
     }
 
     public static @Nullable VersionComparator readVersionComparator(String id, Config config) {
