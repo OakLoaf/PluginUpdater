@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Setup Gradle Environment
-        uses: ./.github/actions/setup-gradle
+        uses: ./.github/actions/setup-gradle.yml
 
       - name: ${{ inputs.display-name }}
         run: ./gradlew ${{ inputs.gradle-tasks }}
