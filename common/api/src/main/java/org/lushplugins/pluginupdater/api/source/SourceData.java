@@ -5,7 +5,7 @@ import org.lushplugins.pluginupdater.api.version.comparator.VersionComparator;
 
 public interface SourceData {
 
-    String name();
+    String sourceName();
 
     default VersionComparator getDefaultComparator() {
         return SemVerComparator.INSTANCE;

@@ -19,6 +19,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class GithubSource implements Source {
+    public static final String NAME = "github";
+
+    @Override
+    public String getName() {
+        return NAME;
+    }
 
     @Override
     public String getLatestVersion(PluginData pluginData, SourceData sourceData) throws IOException, InterruptedException {
@@ -89,8 +95,8 @@ public class GithubSource implements Source {
     public record Data(String repo, @Nullable String token) implements SourceData {
 
         @Override
-        public String name() {
-            return "github";
+        public String sourceName() {
+            return NAME;
         }
     }
 }

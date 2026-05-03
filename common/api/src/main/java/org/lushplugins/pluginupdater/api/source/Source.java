@@ -20,6 +20,8 @@ import java.util.logging.Level;
 @SuppressWarnings("CodeBlock2Expr")
 public interface Source {
 
+    String getName();
+
     String getLatestVersion(PluginData pluginData, SourceData sourceData) throws IOException, InterruptedException;
 
     String getDownloadUrl(PluginData pluginData, SourceData sourceData) throws IOException, InterruptedException;
@@ -144,7 +146,7 @@ public interface Source {
 
     private static <T> T attemptOnSources(PluginData pluginData, SourceSupplier<T> callable) throws IOException {
         for (SourceData sourceData : pluginData.getSourceData()) {
-            Source source = SourceRegistry.getSource(sourceData.name());
+            Source source = SourceRegistry.get(sourceData.sourceName());
             if (source == null) {
                 continue;
             }

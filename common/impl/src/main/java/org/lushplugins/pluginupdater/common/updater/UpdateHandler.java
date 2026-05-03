@@ -92,7 +92,7 @@ public class UpdateHandler {
                     instance.getLogger().log(Level.SEVERE, e.getMessage(), e);
                 }
 
-                String sourceNames = String.join(", ", pluginData.getSourceData().stream().map(SourceData::name).toList());
+                String sourceNames = String.join(", ", pluginData.getSourceData().stream().map(SourceData::sourceName).toList());
                 processingData.getFuture().completeExceptionally(new IOException("Failed to run check for plugin '" + pluginData.getPluginName() + "' using defined sources: '" + sourceNames + "'"));
             }
             case DOWNLOAD -> {
@@ -115,7 +115,7 @@ public class UpdateHandler {
                     processingData.getFuture().completeExceptionally(e);
                 }
 
-                String sourceNames = String.join(", ", pluginData.getSourceData().stream().map(SourceData::name).toList());
+                String sourceNames = String.join(", ", pluginData.getSourceData().stream().map(SourceData::sourceName).toList());
                 processingData.getFuture().completeExceptionally(new IOException("Failed to download update for plugin '%s' using defined sources: '%s'".formatted(pluginData.getPluginName(), sourceNames)));
             }
         }

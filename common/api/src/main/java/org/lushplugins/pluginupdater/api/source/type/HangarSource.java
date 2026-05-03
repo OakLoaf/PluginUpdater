@@ -10,6 +10,12 @@ import java.io.IOException;
 import java.net.http.HttpResponse;
 
 public class HangarSource implements Source {
+    public static final String NAME = "hangar";
+
+    @Override
+    public String getName() {
+        return NAME;
+    }
 
     @Override
     public String getLatestVersion(PluginData pluginData, SourceData sourceData) throws IOException, InterruptedException {
@@ -47,8 +53,8 @@ public class HangarSource implements Source {
     public record Data(String projectSlug) implements SourceData {
 
         @Override
-        public String name() {
-            return "hangar";
+        public String sourceName() {
+            return NAME;
         }
     }
 }

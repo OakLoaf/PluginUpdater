@@ -17,6 +17,12 @@ import java.util.Collections;
 import java.util.List;
 
 public class ModrinthSource implements Source {
+    public static final String NAME = "modrinth";
+
+    @Override
+    public String getName() {
+        return NAME;
+    }
 
     @Override
     public String getLatestVersion(PluginData pluginData, SourceData sourceData) throws IOException, InterruptedException {
@@ -88,8 +94,8 @@ public class ModrinthSource implements Source {
         }
 
         @Override
-        public String name() {
-            return "modrinth";
+        public String sourceName() {
+            return NAME;
         }
 
         public boolean filtersReleaseChannel() {

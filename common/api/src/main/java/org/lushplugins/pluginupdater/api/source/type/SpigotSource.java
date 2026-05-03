@@ -12,6 +12,12 @@ import java.io.IOException;
 import java.net.http.HttpResponse;
 
 public class SpigotSource implements Source {
+    public static final String NAME = "spigot";
+
+    @Override
+    public String getName() {
+        return NAME;
+    }
 
     @Override
     public String getLatestVersion(PluginData pluginData, SourceData sourceData) throws IOException, InterruptedException {
@@ -48,8 +54,8 @@ public class SpigotSource implements Source {
     public record Data(String resourceId) implements SourceData {
 
         @Override
-        public String name() {
-            return "spigot";
+        public String sourceName() {
+            return NAME;
         }
     }
 }
