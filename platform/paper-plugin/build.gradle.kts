@@ -18,8 +18,6 @@ dependencies {
 
 tasks {
     processResources {
-        expand(project.properties)
-
         inputs.property("version", rootProject.version)
         filesMatching("plugin.yml") {
             expand("version" to rootProject.version)
@@ -27,8 +25,6 @@ tasks {
     }
 
     shadowJar {
-        relocate("org.lushplugins.lushlib", "org.lushplugins.pluginupdater.libraries.lushlib")
-
         archiveFileName.set("${project.name}-${project.version}.jar")
     }
 

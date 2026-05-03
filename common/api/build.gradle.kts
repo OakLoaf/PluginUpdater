@@ -15,8 +15,8 @@ tasks {
 publishing {
     publications {
         create<MavenPublication>("maven") {
-            groupId = rootProject.group.toString() + ".pluginupdater"
-            artifactId = rootProject.name + "-API"
+            groupId = rootProject.group.toString() + "." + rootProject.name.lowercase()
+            artifactId = "common-api"
             version = rootProject.version.toString()
             from(project.components["java"])
         }
