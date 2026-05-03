@@ -18,7 +18,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Setup Gradle Environment
-        uses: ./.github/actions/setup-gradle.yml
+        uses: ./.github/actions/setup-gradle
 
       - name: ${{ inputs.display-name }}
         run: ./gradlew ${{ inputs.gradle-tasks }}
