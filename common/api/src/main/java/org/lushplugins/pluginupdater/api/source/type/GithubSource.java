@@ -45,7 +45,7 @@ public class GithubSource implements Source {
         JsonObject releaseJson = getLatestRelease(pluginData, githubData);
         JsonObject assetJson = releaseJson.get("assets").getAsJsonArray().get(0).getAsJsonObject();
 
-        String token = githubData.getToken();
+        String token = githubData.token();
         if (token != null && !token.isEmpty()) {
             return assetJson.get("url").getAsString();
         }
