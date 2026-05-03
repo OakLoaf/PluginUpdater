@@ -9,69 +9,24 @@ on:
 
 jobs:
   build-common:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v2
+    name: 'Build common modules'
+    uses: ./.github/workflows/build-platform.yml
+    with:
+      display-name: 'Build common modules'
+      gradle-tasks: 'common:api:build common:impl:build'
 
-      - name: Setup Java
-        uses: actions/setup-java@v3
-        with:
-          distribution: 'adopt'
-          java-version: '21'
-
-      - name: Prepare gradle
-        run: |
-          chmod +x ./gradlew
-
-      - name: Build common:api
-        run: |
-          ./gradlew common:api:build
-
-      - name: Build common:impl
-        run: |
-          ./gradlew common:impl:build
   build-paper:
-    runs-on: ubuntu-latest
+    name: 'Build Paper modules'
     needs: build-common
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v2
+    uses: ./.github/workflows/build-platform.yml
+    with:
+      display-name: 'Build Paper modules'
+      gradle-tasks: 'platform:paper:api:build platform:paper:plugin:build'
 
-      - name: Setup Java
-        uses: actions/setup-java@v3
-        with:
-          distribution: 'adopt'
-          java-version: '21'
-
-      - name: Prepare gradle
-        run: |
-          chmod +x ./gradlew
-
-      - name: Build paper:api
-        run: |
-          ./gradlew platform:paper:api:build
-
-      - name: Build paper:plugin
-        run: |
-          ./gradlew platform:paper:plugin:build
   build-velocity:
-    runs-on: ubuntu-latest
+    name: 'Build Velocity modules'
     needs: build-common
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v2
-
-      - name: Setup Java
-        uses: actions/setup-java@v3
-        with:
-          distribution: 'adopt'
-          java-version: '21'
-
-      - name: Prepare gradle
-        run: |
-          chmod +x ./gradlew
-
-      - name: Build velocity:plugin
-        run: |
-          ./gradlew platform:velocity:plugin:build
+    uses: ./.github/workflows/build-platform.yml
+    with:
+      display-name: 'Build Velocity modules'
+      gradle-tasks: 'platform:velocity:plugin:build'
