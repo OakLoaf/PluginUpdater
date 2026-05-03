@@ -12,7 +12,7 @@ jobs:
     name: 'Build common modules'
     uses: ./.github/workflows/build-platform.yml
     with:
-      display-name: 'Build common modules'
+      display-name: 'Build common'
       gradle-tasks: 'common:impl:build'
 
   build-paper:
