@@ -15,10 +15,14 @@ import org.lushplugins.pluginupdater.api.version.VersionDifference;
 import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
 @SuppressWarnings("unused")
 public class Updater {
+    private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
     private final PluginInfo plugin;
     private final PluginData pluginData;
     private final File downloadDir;
@@ -29,6 +33,10 @@ public class Updater {
         this.pluginData = pluginData;
         this.downloadDir = downloadDir;
         this.notificationHandler = notify ? new NotificationHandler(this, notificationPermission, notificationMessage) : null;
+    }
+
+    public ScheduledExecutorService getScheduler() {
+        return scheduler;
     }
 
     public PluginInfo getPluginInfo() {
@@ -66,18 +74,14 @@ public class Updater {
      * @return A future containing whether an update is available.
      */
     public CompletableFuture<Boolean> checkForUpdate() {
-        CompletableFuture<Boolean> future = new CompletableFuture<>();
-
-        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+        return CompletableFuture.supplyAsync(() -> {
             try {
-                future.complete(Source.isUpdateAvailable(pluginData));
+                return Source.isUpdateAvailable(pluginData);
             } catch (IOException e) {
                 plugin.getLogger().log(Level.SEVERE, e.getMessage(), e);
-                future.complete(false);
+                return false;
             }
         });
-
-        return future;
     }
 
     /**
@@ -103,24 +107,24 @@ public class Updater {
     }
 
     private CompletableFuture<Boolean> download() {
-        CompletableFuture<Boolean> completableFuture = new CompletableFuture<>();
-
-        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
+        return CompletableFuture.supplyAsync(() -> {
             try {
                 if (Source.download(pluginData, downloadDir)) {
                     pluginData.setVersionDifference(VersionDifference.UNKNOWN);
                     pluginData.setAlreadyDownloaded(true);
-                    completableFuture.complete(true);
+                    return true;
                 } else {
-                    completableFuture.complete(false);
+                    return false;
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
-                completableFuture.completeExceptionally(e);
+            } catch (IOException e) {
+                plugin.getLogger().log(Level.SEVERE, e.getMessage(), e);
+                return false;
             }
         });
+    }
 
-        return completableFuture;
+    public void shutdown() {
+        scheduler.shutdown();
     }
 
     public static Builder builder(PluginInfo plugin, File downloadDir) {
@@ -263,7 +267,7 @@ public class Updater {
             Updater updater = new Updater(plugin, pluginData, downloadDir, notify, notificationPermission, notificationMessage);
 
             if (checkFrequency > 0) {
-                Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, updater::checkForUpdate, 0, checkFrequency * 20);
+                updater.getScheduler().scheduleAtFixedRate(updater::checkForUpdate, 0, checkFrequency, TimeUnit.SECONDS);
             }
 
             return updater;
