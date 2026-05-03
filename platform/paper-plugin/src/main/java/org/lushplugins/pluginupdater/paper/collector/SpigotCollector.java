@@ -59,7 +59,7 @@ public class SpigotCollector implements PluginDataCollector {
 
         JsonObject resultJson = resultsJson.get(0).getAsJsonObject();
         return PluginData.builder(unknownPlugin)
-            .platformData(new SpigotData(resultJson.get("id").getAsString()))
+            .sourceData(new SpigotData(resultJson.get("id").getAsString()))
             .blockDownloads()
             .build();
     }

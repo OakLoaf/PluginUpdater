@@ -3,10 +3,10 @@ check-updates-on-reload: true
 # Set to 'false' to disable all download features of PluginUpdater (May require restart)
 allow-downloads: true
 
-# To learn how to configure plugins that are on different platforms check out the wiki: https://github.com/OakLoaf/PluginUpdater/wiki/PluginUpdater-Plugin
+# To learn how to configure plugins that require different sources check out the wiki: https://github.com/OakLoaf/PluginUpdater/wiki/PluginUpdater-Plugin
 plugins:
   PluginUpdater:
-    platform: modrinth
+    source: modrinth
     modrinth-project-id: "IBSpJfbm"
     channels: release
   ExamplePlugin:

@@ -53,7 +53,7 @@ public class PluginData {
         return Optional.ofNullable(comparator);
     }
 
-    public void addPlatform(SourceData sourceData) {
+    public void addSource(SourceData sourceData) {
         this.sourceData.add(sourceData);
     }
 
@@ -129,12 +129,12 @@ public class PluginData {
             this.currentVersion = currentVersion;
         }
 
-        public Builder platformData(SourceData sourceData) {
+        public Builder sourceData(SourceData sourceData) {
             this.sourceData = Collections.singletonList(sourceData);
             return this;
         }
 
-        public Builder platformData(List<SourceData> sourceData) {
+        public Builder sourceData(List<SourceData> sourceData) {
             this.sourceData = sourceData;
             return this;
         }

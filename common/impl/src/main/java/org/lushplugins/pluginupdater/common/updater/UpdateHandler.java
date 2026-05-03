@@ -93,7 +93,7 @@ public class UpdateHandler {
                 }
 
                 String sourceNames = String.join(", ", pluginData.getSourceData().stream().map(SourceData::getName).toList());
-                processingData.getFuture().completeExceptionally(new IOException("Failed to run check for plugin '" + pluginData.getPluginName() + "' using defined platforms: '" + sourceNames + "'"));
+                processingData.getFuture().completeExceptionally(new IOException("Failed to run check for plugin '" + pluginData.getPluginName() + "' using defined sources: '" + sourceNames + "'"));
             }
             case DOWNLOAD -> {
                 PluginData pluginData = processingData.getPluginData();
@@ -116,7 +116,7 @@ public class UpdateHandler {
                 }
 
                 String sourceNames = String.join(", ", pluginData.getSourceData().stream().map(SourceData::getName).toList());
-                processingData.getFuture().completeExceptionally(new IOException("Failed to download update for plugin '%s' using defined platforms: '%s'".formatted(pluginData.getPluginName(), sourceNames)));
+                processingData.getFuture().completeExceptionally(new IOException("Failed to download update for plugin '%s' using defined sources: '%s'".formatted(pluginData.getPluginName(), sourceNames)));
             }
         }
     }

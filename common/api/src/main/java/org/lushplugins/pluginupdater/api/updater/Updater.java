@@ -150,17 +150,17 @@ public class Updater {
 
         /**
          * Add GitHub plugin data to be used for collecting update information
-         * (Platforms should be added in order of priority).
+         * (Sources should be added in order of priority).
          * @param repo The plugin's GitHub repo (e.g. 'OakLoaf/PluginUpdater')
          * @param token The GitHub access token (if required)
          */
         public Builder github(String repo, @Nullable String token) {
-            return platform(new GithubData(repo, token));
+            return source(new GithubData(repo, token));
         }
 
         /**
          * Add GitHub plugin data to be used for collecting update information
-         * (Platforms should be added in order of priority).
+         * (Sources should be added in order of priority).
          * @param repo The plugin's GitHub repo (e.g. 'OakLoaf/PluginUpdater')
          */
         public Builder github(String repo) {
@@ -169,29 +169,29 @@ public class Updater {
 
         /**
          * Add Hangar plugin data to be used for collecting update information
-         * (Platforms should be added in order of priority).
+         * (Sources should be added in order of priority).
          * @param projectSlug The plugin's hangar project slug.
          */
         public Builder hangar(String projectSlug) {
-            return platform(new HangarData(projectSlug));
+            return source(new HangarData(projectSlug));
         }
 
         /**
          * Add Modrinth plugin data to be used for collecting update information
-         * (Platforms should be added in order of priority).
+         * (Sources should be added in order of priority).
          * @param projectId The plugin's modrinth project id.
          */
         public Builder modrinth(String projectId) {
-            return platform(new ModrinthData(projectId));
+            return source(new ModrinthData(projectId));
         }
 
         /**
          * Add Spigot plugin data to be used for collecting update information
-         * (Platforms should be added in order of priority).
+         * (Sources should be added in order of priority).
          * @param resourceId The plugin's spigot resource id.
          */
         public Builder spigot(String resourceId) {
-            return platform(new SpigotData(resourceId));
+            return source(new SpigotData(resourceId));
         }
 
         /**
@@ -199,8 +199,8 @@ public class Updater {
          * (Sources should be added in order of priority).
          * @param sourceData The source data.
          */
-        public Builder platform(SourceData sourceData) {
-            this.pluginData.addPlatform(sourceData);
+        public Builder source(SourceData sourceData) {
+            this.pluginData.addSource(sourceData);
             return this;
         }
 
@@ -256,7 +256,7 @@ public class Updater {
          */
         public Updater build() {
             if (pluginData.getSourceData().isEmpty()) {
-                throw new IllegalStateException("At least 1 platform must be registered before building the Updater.");
+                throw new IllegalStateException("At least 1 source must be registered before building the Updater.");
             }
 
             DownloadLogger.setLogFile(downloadLogFile);

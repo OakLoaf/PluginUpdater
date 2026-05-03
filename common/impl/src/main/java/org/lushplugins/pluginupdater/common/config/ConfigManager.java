@@ -62,9 +62,17 @@ public class ConfigManager {
                     return;
                 }
 
-                String platform = pluginConfig.get("platform");
+                String source = pluginConfig.getOrElse("source", () -> {
+                    String deprecatedSource = pluginConfig.get("platform");
+                    if (deprecatedSource != null) {
+                        instance.getLogger().log(Level.WARNING, "Deprecated: The config option 'platform' has been renamed to 'source'");
+                    }
+
+                    return deprecatedSource;
+                });
+
                 boolean allowDownloads = pluginConfig.getOrElse("allow-downloads", true);
-                if (platform == null) {
+                if (source == null) {
                     return;
                 }
 
@@ -83,10 +91,10 @@ public class ConfigManager {
                 }
 
                 try {
-                    SourceData sourceData = SourceRegistry.getSourceData(platform, pluginConfig);
+                    SourceData sourceData = SourceRegistry.getSourceData(source, pluginConfig);
                     if (sourceData != null) {
                         addPlugin(pluginName, PluginData.builder(currPlugin)
-                            .platformData(sourceData)
+                            .sourceData(sourceData)
                             .comparator(comparator)
                             .allowDownloads(allowDownloads)
                             .build());

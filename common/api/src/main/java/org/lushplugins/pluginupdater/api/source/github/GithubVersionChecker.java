@@ -47,8 +47,8 @@ public class GithubVersionChecker implements VersionChecker {
     }
 
     @Override
-    public Map<String, String> getDownloadHeaders(PluginData pluginData, PlatformData platformData) {
-        if (!(platformData instanceof GithubData githubData)) {
+    public Map<String, String> getDownloadHeaders(PluginData pluginData, SourceData sourceData) {
+        if (!(sourceData instanceof GithubData githubData)) {
             return Collections.emptyMap();
         }
 

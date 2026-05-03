@@ -53,10 +53,10 @@ public class CommonPluginCollector implements PluginDataCollector {
                 comparator = null;
             }
 
-            SourceData sourceData = SourceRegistry.getSourceData(pluginSection.getString("platform"), pluginSection);
+            SourceData sourceData = SourceRegistry.getSourceData(pluginSection.getString("source"), pluginSection);
             if (sourceData != null) {
                 pluginDataList.add(PluginData.builder(plugin)
-                    .platformData(sourceData)
+                    .sourceData(sourceData)
                     .comparator(comparator)
                     .build());
             }

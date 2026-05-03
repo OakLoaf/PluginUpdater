@@ -63,7 +63,7 @@ public interface VersionChecker {
         URL url = URI.create(downloadUrl).toURL();
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.addRequestProperty("User-Agent", "PluginUpdater/" + UpdaterConstants.VERSION);
-        for (Map.Entry<String, String> header : getDownloadHeaders(pluginData, platformData).entrySet()) {
+        for (Map.Entry<String, String> header : getDownloadHeaders(pluginData, sourceData).entrySet()) {
             connection.addRequestProperty(header.getKey(), header.getValue());
         }
         connection.setInstanceFollowRedirects(true);
@@ -97,8 +97,8 @@ public interface VersionChecker {
 
     static String getLatestVersion(PluginData pluginData) throws IOException {
         try {
-            return attemptOnPlatforms(pluginData, (versionChecker, platformData) -> {
-                return versionChecker.getLatestVersion(pluginData, platformData);
+            return attemptOnSources(pluginData, (versionChecker, sourceData) -> {
+                return versionChecker.getLatestVersion(pluginData, sourceData);
             });
         } catch (IOException e) {
             throw new IOException("Failed to check plugin '" + pluginData.getPluginName() + "' for latest version.");
@@ -107,8 +107,8 @@ public interface VersionChecker {
 
     static String getDownloadUrl(PluginData pluginData) throws IOException {
         try {
-            return attemptOnPlatforms(pluginData, (versionChecker, platformData) -> {
-                return versionChecker.getDownloadUrl(pluginData, platformData);
+            return attemptOnSources(pluginData, (versionChecker, sourceData) -> {
+                return versionChecker.getDownloadUrl(pluginData, sourceData);
             });
         } catch (IOException e) {
             throw new IOException("Failed to get download url for plugin '" + pluginData.getPluginName() + "'.");
@@ -117,8 +117,8 @@ public interface VersionChecker {
 
     static boolean isUpdateAvailable(PluginData pluginData) throws IOException {
         try {
-            return attemptOnPlatforms(pluginData, (versionChecker, platformData) -> {
-                return versionChecker.isUpdateAvailable(pluginData, platformData);
+            return attemptOnSources(pluginData, (versionChecker, sourceData) -> {
+                return versionChecker.isUpdateAvailable(pluginData, sourceData);
             });
         } catch (IOException e) {
             throw new IOException("Failed to check if update is available for plugin '" + pluginData.getPluginName() + "'.");
@@ -127,15 +127,15 @@ public interface VersionChecker {
 
     static boolean download(PluginData pluginData, File destinationDir) throws IOException {
         try {
-            return attemptOnPlatforms(pluginData, (versionChecker, platformData) -> {
-                return versionChecker.download(pluginData, platformData, destinationDir);
+            return attemptOnSources(pluginData, (versionChecker, sourceData) -> {
+                return versionChecker.download(pluginData, sourceData, destinationDir);
             });
         } catch (IOException e) {
             throw new IOException("Failed to download update for plugin '" + pluginData.getPluginName() + "'.");
         }
     }
 
-    private static <T> T attemptOnPlatforms(PluginData pluginData, VersionCheckerCallable<T> callable) throws IOException {
+    private static <T> T attemptOnSources(PluginData pluginData, VersionCheckerCallable<T> callable) throws IOException {
         for (SourceData sourceData : pluginData.getSourceData()) {
             VersionChecker versionChecker = SourceRegistry.getVersionChecker(sourceData.getName());
             if (versionChecker == null) {
@@ -149,7 +149,7 @@ public interface VersionChecker {
             }
         }
 
-        throw new IOException("Failed attempts on all available platforms for plugin '" + pluginData.getPluginName() + "'.");
+        throw new IOException("Failed attempts on all available sources for plugin '" + pluginData.getPluginName() + "'.");
     }
 
     @FunctionalInterface

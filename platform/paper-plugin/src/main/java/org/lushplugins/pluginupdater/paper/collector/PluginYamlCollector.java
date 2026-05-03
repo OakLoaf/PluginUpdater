@@ -60,7 +60,7 @@ public class PluginYamlCollector implements PluginDataCollector {
 
                 if (sourceData != null) {
                     pluginDataList.add(PluginData.builder(plugin)
-                        .platformData(sourceData)
+                        .sourceData(sourceData)
                         .build());
                 }
             }
