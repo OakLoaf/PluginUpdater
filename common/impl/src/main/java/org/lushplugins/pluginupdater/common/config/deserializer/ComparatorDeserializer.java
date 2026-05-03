@@ -1,4 +1,4 @@
-package org.lushplugins.pluginupdater.common.config.serializer;
+package org.lushplugins.pluginupdater.common.config.deserializer;
 
 import com.electronwill.nightconfig.core.Config;
 import org.lushplugins.pluginupdater.api.version.comparator.BuildNumComparator;

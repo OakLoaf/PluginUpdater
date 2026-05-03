@@ -4,7 +4,7 @@ import com.electronwill.nightconfig.core.Config;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.lushplugins.pluginupdater.api.version.comparator.VersionComparator;
-import org.lushplugins.pluginupdater.common.config.serializer.ComparatorDeserializer;
+import org.lushplugins.pluginupdater.common.config.deserializer.ComparatorDeserializer;
 
 import java.util.HashMap;
 import java.util.Map;
