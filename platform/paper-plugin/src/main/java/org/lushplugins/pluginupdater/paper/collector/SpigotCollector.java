@@ -4,10 +4,10 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import org.jetbrains.annotations.Nullable;
+import org.lushplugins.pluginupdater.api.source.type.SpigotSource;
 import org.lushplugins.pluginupdater.api.updater.PluginInfo;
 import org.lushplugins.pluginupdater.common.collector.PluginDataCollector;
 import org.lushplugins.pluginupdater.paper.PluginUpdater;
-import org.lushplugins.pluginupdater.api.source.spigot.SpigotData;
 import org.lushplugins.pluginupdater.api.updater.PluginData;
 import org.lushplugins.pluginupdater.api.util.HttpUtil;
 import org.lushplugins.pluginupdater.api.util.UpdaterConstants;
@@ -59,7 +59,7 @@ public class SpigotCollector implements PluginDataCollector {
 
         JsonObject resultJson = resultsJson.get(0).getAsJsonObject();
         return PluginData.builder(unknownPlugin)
-            .sourceData(new SpigotData(resultJson.get("id").getAsString()))
+            .sourceData(new SpigotSource.Data(resultJson.get("id").getAsString()))
             .blockDownloads()
             .build();
     }

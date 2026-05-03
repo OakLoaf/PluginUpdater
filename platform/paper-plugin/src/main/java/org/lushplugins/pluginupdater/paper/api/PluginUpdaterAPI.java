@@ -6,8 +6,6 @@ import org.lushplugins.pluginupdater.api.source.Source;
 import org.lushplugins.pluginupdater.api.source.SourceRegistry;
 import org.bukkit.plugin.Plugin;
 
-import java.util.concurrent.Callable;
-
 @SuppressWarnings("unused")
 public class PluginUpdaterAPI {
 
@@ -47,11 +45,10 @@ public class PluginUpdaterAPI {
 
     /**
      * Register support for a source
-     * @param name Name of source
      * @param source Source to register
      */
-    public static void registerSource(String name, Source source) {
-        SourceRegistry.register(name, source);
+    public static void registerSource(Source source) {
+        SourceRegistry.register(source);
     }
 
     /**

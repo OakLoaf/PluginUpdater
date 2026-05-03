@@ -1,14 +1,14 @@
 package org.lushplugins.pluginupdater.paper.collector;
 
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.lushplugins.pluginupdater.api.source.type.GithubSource;
+import org.lushplugins.pluginupdater.api.source.type.HangarSource;
+import org.lushplugins.pluginupdater.api.source.type.ModrinthSource;
+import org.lushplugins.pluginupdater.api.source.type.SpigotSource;
 import org.lushplugins.pluginupdater.api.updater.PluginInfo;
 import org.lushplugins.pluginupdater.common.collector.PluginDataCollector;
 import org.lushplugins.pluginupdater.paper.PluginUpdater;
 import org.lushplugins.pluginupdater.api.source.SourceData;
-import org.lushplugins.pluginupdater.api.source.github.GithubData;
-import org.lushplugins.pluginupdater.api.source.hangar.HangarData;
-import org.lushplugins.pluginupdater.api.source.modrinth.ModrinthData;
-import org.lushplugins.pluginupdater.api.source.spigot.SpigotData;
 import org.lushplugins.pluginupdater.api.updater.PluginData;
 import org.lushplugins.pluginupdater.common.config.ConfigManager;
 
@@ -37,22 +37,23 @@ public class PluginYamlCollector implements PluginDataCollector {
 
                 SourceData sourceData = null;
                 if (pluginYml.contains("modrinth-project-id")) {
-                    sourceData = new ModrinthData(
-                        pluginYml.getString("modrinth-project-id")
+                    sourceData = new ModrinthSource.Data(
+                        pluginYml.getString("modrinth-project-id"),
+                        ModrinthSource.ReleaseChannel.ALL
                     );
                 }
                 else if (pluginYml.contains("spigot-resource-id")) {
-                    sourceData = new SpigotData(
+                    sourceData = new SpigotSource.Data(
                         pluginYml.getString("spigot-resource-id")
                     );
                 }
                 else if (pluginYml.contains("hangar-project-slug")) {
-                    sourceData = new HangarData(
+                    sourceData = new HangarSource.Data(
                         pluginYml.getString("hangar-project-slug")
                     );
                 }
                 else if (pluginYml.contains("github-repo")) {
-                    sourceData = new GithubData(
+                    sourceData = new GithubSource.Data(
                         pluginYml.getString("github-repo"),
                         null
                     );

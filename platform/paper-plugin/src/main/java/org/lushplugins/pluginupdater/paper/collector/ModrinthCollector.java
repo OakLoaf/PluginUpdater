@@ -5,10 +5,10 @@ import com.google.common.hash.Hashing;
 import com.google.common.io.Files;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import org.lushplugins.pluginupdater.api.source.type.ModrinthSource;
 import org.lushplugins.pluginupdater.api.updater.PluginInfo;
 import org.lushplugins.pluginupdater.common.collector.PluginDataCollector;
 import org.lushplugins.pluginupdater.paper.PluginUpdater;
-import org.lushplugins.pluginupdater.api.source.modrinth.ModrinthData;
 import org.lushplugins.pluginupdater.api.updater.PluginData;
 import org.lushplugins.pluginupdater.api.util.HttpUtil;
 import org.lushplugins.pluginupdater.api.util.UpdaterConstants;
@@ -71,7 +71,7 @@ public class ModrinthCollector implements PluginDataCollector {
 
             String projectId = versionJson.get("project_id").getAsString();
             pluginDataList.add(PluginData.builder(plugin)
-                .sourceData(new ModrinthData(projectId))
+                .sourceData(new ModrinthSource.Data(projectId, ModrinthSource.ReleaseChannel.ALL))
                 .build());
         });
 
