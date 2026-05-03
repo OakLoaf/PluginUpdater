@@ -2,7 +2,7 @@ package org.lushplugins.pluginupdater.api.updater;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.lushplugins.pluginupdater.api.listener.NotificationHandler;
+import org.lushplugins.pluginupdater.api.listener.UpdateNotifier;
 import org.lushplugins.pluginupdater.api.source.SourceData;
 import org.lushplugins.pluginupdater.api.source.type.GithubSource;
 import org.lushplugins.pluginupdater.api.source.type.HangarSource;
@@ -26,13 +26,21 @@ public class Updater {
     private final PluginInfo plugin;
     private final PluginData pluginData;
     private final File downloadDir;
-    private final NotificationHandler notificationHandler;
+    private final UpdateNotifier<?> notifier;
 
-    private Updater(@NotNull PluginInfo plugin, @NotNull PluginData pluginData, File downloadDir, boolean notify, String notificationPermission, String notificationMessage) {
+    private Updater(
+        @NotNull PluginInfo plugin,
+        @NotNull PluginData pluginData,
+        File downloadDir,
+        boolean notify,
+        String notificationPermission,
+        String notificationMessage,
+        UpdateNotifier.Constructor notifierConstructor
+    ) {
         this.plugin = plugin;
         this.pluginData = pluginData;
         this.downloadDir = downloadDir;
-        this.notificationHandler = notify ? new NotificationHandler(this, notificationPermission, notificationMessage) : null;
+        this.notifier = notify ? notifierConstructor.apply(this, notificationMessage, notificationPermission) : null;
     }
 
     public ScheduledExecutorService getScheduler() {
@@ -51,8 +59,8 @@ public class Updater {
         return downloadDir;
     }
 
-    public NotificationHandler getNotificationHandler() {
-        return notificationHandler;
+    public UpdateNotifier<?> getNotifier() {
+        return notifier;
     }
 
     /**
@@ -139,6 +147,7 @@ public class Updater {
         private boolean notify = true;
         private String notificationPermission = "pluginupdater.notifications";
         private String notificationMessage = "&#ffe27aA new &#e0c01b%plugin% &#ffe27aupdate is now available! &#e0c01b%current_version% &#ffe27a-> &#e0c01b%latest_version%";
+        private UpdateNotifier.Constructor notifierConstructor;
         private File downloadLogFile;
 
         private Builder(PluginInfo plugin, File downloadDir) {
@@ -229,7 +238,7 @@ public class Updater {
         /**
          * Sets the required permission for players to receive update notifications
          * @param permission The permission that players need to receive notifications.
-         *                   Defaults to 'pluginupdater.notifications'.
+         *                   Defaults to {@code pluginupdater.notifications}
          */
         public Builder notificationPermission(@Nullable String permission) {
             this.notificationPermission = permission;
@@ -242,6 +251,16 @@ public class Updater {
          */
         public Builder notificationMessage(@NotNull String message) {
             this.notificationMessage = message;
+            return this;
+        }
+
+        /**
+         * Sets the notification handler constructor, this is mainly to
+         * allow for supporting multiple different platforms
+         * @param notifierConstructor The notification handler constructor
+         */
+        public Builder notifier(@NotNull UpdateNotifier.Constructor notifierConstructor) {
+            this.notifierConstructor = notifierConstructor;
             return this;
         }
 
@@ -264,7 +283,15 @@ public class Updater {
             }
 
             DownloadLogger.setLogFile(downloadLogFile);
-            Updater updater = new Updater(plugin, pluginData, downloadDir, notify, notificationPermission, notificationMessage);
+            Updater updater = new Updater(
+                plugin,
+                pluginData,
+                downloadDir,
+                notify,
+                notificationPermission,
+                notificationMessage,
+                notifierConstructor
+            );
 
             if (checkFrequency > 0) {
                 updater.getScheduler().scheduleAtFixedRate(updater::checkForUpdate, 0, checkFrequency, TimeUnit.SECONDS);
