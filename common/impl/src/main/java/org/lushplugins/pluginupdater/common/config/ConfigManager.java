@@ -5,10 +5,10 @@ import com.electronwill.nightconfig.core.file.FileConfig;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.lushplugins.pluginupdater.api.source.SourceData;
-import org.lushplugins.pluginupdater.api.source.SourceRegistry;
 import org.lushplugins.pluginupdater.api.updater.PluginData;
 import org.lushplugins.pluginupdater.api.updater.PluginInfo;
 import org.lushplugins.pluginupdater.api.version.comparator.VersionComparator;
+import org.lushplugins.pluginupdater.common.config.deserializer.SourceDataDeserializer;
 import org.lushplugins.pluginupdater.common.platform.UpdaterPlatform;
 import org.lushplugins.pluginupdater.common.updater.UpdateHandler;
 import org.lushplugins.pluginupdater.common.util.ConfigUtil;
@@ -25,7 +25,7 @@ public class ConfigManager {
 
     public ConfigManager(UpdaterPlatform instance) {
         this.instance = instance;
-        PluginUpdater.getInstance().saveDefaultConfig();
+        // TODO: Save default config if not there
     }
 
     public void reloadConfig() {
@@ -59,12 +59,6 @@ public class ConfigManager {
                     return;
                 }
 
-                String source = ConfigUtil.getOrAlias(config, "source", "platform",
-                    () -> instance.getLogger().log(Level.WARNING, "Deprecated: The config option 'platform' has been renamed to 'source'"));
-                if (source == null) {
-                    return;
-                }
-
                 PluginInfo currPlugin = instance.getPlugin(pluginName);
                 if (currPlugin == null) {
                     return;
@@ -81,7 +75,7 @@ public class ConfigManager {
 
                 boolean allowDownloads = pluginConfig.getOrElse("allow-downloads", true);
                 try {
-                    SourceData sourceData = SourceRegistry.getSourceData(source, pluginConfig);
+                    SourceData sourceData = SourceDataDeserializer.deserialize(instance, pluginConfig);
                     if (sourceData != null) {
                         addPlugin(pluginName, PluginData.builder(currPlugin)
                             .sourceData(sourceData)
