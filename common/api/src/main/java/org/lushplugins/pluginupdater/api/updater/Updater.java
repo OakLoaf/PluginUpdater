@@ -9,7 +9,7 @@ import org.lushplugins.pluginupdater.api.source.hangar.HangarData;
 import org.lushplugins.pluginupdater.api.source.modrinth.ModrinthData;
 import org.lushplugins.pluginupdater.api.source.spigot.SpigotData;
 import org.lushplugins.pluginupdater.api.util.DownloadLogger;
-import org.lushplugins.pluginupdater.api.version.VersionChecker;
+import org.lushplugins.pluginupdater.api.source.Source;
 import org.lushplugins.pluginupdater.api.version.VersionDifference;
 
 import java.io.File;
@@ -70,7 +70,7 @@ public class Updater {
 
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
             try {
-                future.complete(VersionChecker.isUpdateAvailable(pluginData));
+                future.complete(Source.isUpdateAvailable(pluginData));
             } catch (IOException e) {
                 plugin.getLogger().log(Level.SEVERE, e.getMessage(), e);
                 future.complete(false);
@@ -107,7 +107,7 @@ public class Updater {
 
         Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
             try {
-                if (VersionChecker.download(pluginData, downloadDir)) {
+                if (Source.download(pluginData, downloadDir)) {
                     pluginData.setVersionDifference(VersionDifference.UNKNOWN);
                     pluginData.setAlreadyDownloaded(true);
                     completableFuture.complete(true);

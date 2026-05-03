@@ -22,7 +22,7 @@ public class PluginYamlCollector implements PluginDataCollector {
 
     @Override
     public List<PluginData> collectPluginData(Collection<PluginInfo> unknownPlugins) {
-        ConfigManager configManager = PluginUpdater.getInstance().getUpdaterImpl().getConfig();
+        ConfigManager configManager = PluginUpdater.getInstance().getUpdater().getConfig();
         List<PluginData> pluginDataList = new ArrayList<>();
 
         for (PluginInfo plugin : unknownPlugins) {

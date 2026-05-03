@@ -9,20 +9,21 @@ import org.lushplugins.pluginupdater.api.source.SourceRegistry;
 import org.lushplugins.pluginupdater.api.updater.PluginData;
 import org.lushplugins.pluginupdater.api.updater.PluginInfo;
 import org.lushplugins.pluginupdater.api.version.comparator.VersionComparator;
-import org.lushplugins.pluginupdater.common.platform.UpdaterImpl;
+import org.lushplugins.pluginupdater.common.platform.UpdaterPlatform;
 import org.lushplugins.pluginupdater.common.updater.UpdateHandler;
+import org.lushplugins.pluginupdater.common.util.ConfigUtil;
 
 import java.util.*;
 import java.util.logging.Level;
 
 public class ConfigManager {
-    private final UpdaterImpl instance;
+    private final UpdaterPlatform instance;
     private boolean allowDownloads;
     private final Map<String, PluginData> plugins = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
     private final Set<String> disabledPlugins = new HashSet<>();
     private Messages messages;
 
-    public ConfigManager(UpdaterImpl instance) {
+    public ConfigManager(UpdaterPlatform instance) {
         this.instance = instance;
         PluginUpdater.getInstance().saveDefaultConfig();
     }
@@ -32,14 +33,10 @@ public class ConfigManager {
         FileConfig config = FileConfig.of("");
         config.load();
 
-        boolean checkOnReload = config.getOrElse("check-updates-on-reload", () -> {
-            if (config.contains("check-updates-on-start")) {
-                instance.getLogger().log(Level.WARNING, "Deprecated: The config section 'check-updates-on-start' has been renamed to 'check-updates-on-reload'");
-                return config.get("check-updates-on-start");
-            } else {
-                return true;
-            }
-        });
+        boolean checkOnReload = ConfigUtil.getOrAliasOrElse(
+            config, "check-updates-on-reload", "check-updates-on-start", true,
+            () -> instance.getLogger().log(Level.WARNING, "Deprecated: The config section 'check-updates-on-start' has been renamed to 'check-updates-on-reload'")
+        );
 
         this.allowDownloads = config.getOrElse("allow-downloads", true);
         this.messages = config.getOrElse("messages", () -> new Messages(new HashMap<>()));
@@ -62,16 +59,8 @@ public class ConfigManager {
                     return;
                 }
 
-                String source = pluginConfig.getOrElse("source", () -> {
-                    String deprecatedSource = pluginConfig.get("platform");
-                    if (deprecatedSource != null) {
-                        instance.getLogger().log(Level.WARNING, "Deprecated: The config option 'platform' has been renamed to 'source'");
-                    }
-
-                    return deprecatedSource;
-                });
-
-                boolean allowDownloads = pluginConfig.getOrElse("allow-downloads", true);
+                String source = ConfigUtil.getOrAlias(config, "source", "platform",
+                    () -> instance.getLogger().log(Level.WARNING, "Deprecated: The config option 'platform' has been renamed to 'source'"));
                 if (source == null) {
                     return;
                 }
@@ -90,6 +79,7 @@ public class ConfigManager {
                     comparator = null;
                 }
 
+                boolean allowDownloads = pluginConfig.getOrElse("allow-downloads", true);
                 try {
                     SourceData sourceData = SourceRegistry.getSourceData(source, pluginConfig);
                     if (sourceData != null) {

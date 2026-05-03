@@ -2,9 +2,9 @@ package org.lushplugins.pluginupdater.common.updater;
 
 import org.lushplugins.pluginupdater.api.source.SourceData;
 import org.lushplugins.pluginupdater.api.updater.PluginData;
-import org.lushplugins.pluginupdater.api.version.VersionChecker;
+import org.lushplugins.pluginupdater.api.source.Source;
 import org.lushplugins.pluginupdater.api.version.VersionDifference;
-import org.lushplugins.pluginupdater.common.platform.UpdaterImpl;
+import org.lushplugins.pluginupdater.common.platform.UpdaterPlatform;
 
 import java.io.IOException;
 import java.util.ArrayDeque;
@@ -14,12 +14,12 @@ import java.util.concurrent.*;
 import java.util.logging.Level;
 
 public class UpdateHandler {
-    private final UpdaterImpl instance;
+    private final UpdaterPlatform instance;
     private final ScheduledExecutorService threads = Executors.newScheduledThreadPool(1);
     private final ArrayDeque<ProcessingData> queue = new ArrayDeque<>();
     private final Map<ProcessingData.State, Integer> currentlyProcessing = new HashMap<>();
 
-    public UpdateHandler(UpdaterImpl instance) {
+    public UpdateHandler(UpdaterPlatform instance) {
         this.instance = instance;
     }
 
@@ -85,14 +85,14 @@ public class UpdateHandler {
                 PluginData pluginData = processingData.getPluginData();
 
                 try {
-                    processingData.getFuture().complete(VersionChecker.isUpdateAvailable(pluginData));
+                    processingData.getFuture().complete(Source.isUpdateAvailable(pluginData));
                     pluginData.setCheckRan(true);
                     return;
                 } catch (Exception e) {
                     instance.getLogger().log(Level.SEVERE, e.getMessage(), e);
                 }
 
-                String sourceNames = String.join(", ", pluginData.getSourceData().stream().map(SourceData::getName).toList());
+                String sourceNames = String.join(", ", pluginData.getSourceData().stream().map(SourceData::name).toList());
                 processingData.getFuture().completeExceptionally(new IOException("Failed to run check for plugin '" + pluginData.getPluginName() + "' using defined sources: '" + sourceNames + "'"));
             }
             case DOWNLOAD -> {
@@ -103,7 +103,7 @@ public class UpdateHandler {
                 }
 
                 try {
-                    if (VersionChecker.download(pluginData, instance.getDownloadDir())) {
+                    if (Source.download(pluginData, instance.getDownloadDir())) {
                         pluginData.setVersionDifference(VersionDifference.UNKNOWN);
                         pluginData.setAlreadyDownloaded(true);
                         processingData.getFuture().complete(true);
@@ -115,7 +115,7 @@ public class UpdateHandler {
                     processingData.getFuture().completeExceptionally(e);
                 }
 
-                String sourceNames = String.join(", ", pluginData.getSourceData().stream().map(SourceData::getName).toList());
+                String sourceNames = String.join(", ", pluginData.getSourceData().stream().map(SourceData::name).toList());
                 processingData.getFuture().completeExceptionally(new IOException("Failed to download update for plugin '%s' using defined sources: '%s'".formatted(pluginData.getPluginName(), sourceNames)));
             }
         }
@@ -126,12 +126,12 @@ public class UpdateHandler {
     }
 
     public static class ProcessingData {
-        private final UpdaterImpl instance;
+        private final UpdaterPlatform instance;
         private final String pluginName;
         private final State state;
         private final CompletableFuture<Boolean> future;
 
-        public ProcessingData(UpdaterImpl instance, String pluginName, State state) {
+        public ProcessingData(UpdaterPlatform instance, String pluginName, State state) {
             this.instance = instance;
             this.pluginName = pluginName;
             this.state = state;

@@ -4,17 +4,17 @@ import org.jetbrains.annotations.NotNull;
 import org.lushplugins.pluginupdater.api.updater.PluginData;
 import org.lushplugins.pluginupdater.api.updater.PluginInfo;
 import org.lushplugins.pluginupdater.common.config.ConfigManager;
-import org.lushplugins.pluginupdater.common.platform.UpdaterImpl;
+import org.lushplugins.pluginupdater.common.platform.UpdaterPlatform;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 public class CollectorRegistry {
-    private final UpdaterImpl instance;
+    private final UpdaterPlatform instance;
     private final Map<String, PluginDataCollector> collectors = new LinkedHashMap<>();
 
-    public CollectorRegistry(UpdaterImpl instance) {
+    public CollectorRegistry(UpdaterPlatform instance) {
         this.instance = instance;
     }
 

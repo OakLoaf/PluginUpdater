@@ -9,29 +9,31 @@ import java.io.File;
 public final class PluginUpdater extends JavaPlugin {
     private static PluginUpdater plugin;
 
-    private PaperUpdaterImpl updaterImpl;
+    private PaperUpdaterPlatform updater;
+
+    @Override
+    public void onLoad() {
+        plugin = this;
+    }
 
     @Override
     public void onEnable() {
-        plugin = this;
-
-        DownloadLogger.setLogFile(new File(plugin.getDataFolder(), "downloads.log"));
-
-        updaterImpl = new PaperUpdaterImpl(this);
+        DownloadLogger.setLogFile(new File(getDataFolder(), "downloads.log"));
+        updater = new PaperUpdaterPlatform(this);
 
         getServer().getPluginManager().registerEvents(new PlayerListener(), this);
     }
 
     @Override
     public void onDisable() {
-        if (updaterImpl != null) {
-            updaterImpl.shutdown();
-            updaterImpl = null;
+        if (updater != null) {
+            updater.shutdown();
+            updater = null;
         }
     }
 
-    public PaperUpdaterImpl getUpdaterImpl() {
-        return updaterImpl;
+    public PaperUpdaterPlatform getUpdater() {
+        return updater;
     }
 
     public static PluginUpdater getInstance() {

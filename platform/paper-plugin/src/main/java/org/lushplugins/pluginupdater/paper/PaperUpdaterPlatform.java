@@ -6,7 +6,7 @@ import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.Nullable;
 import org.lushplugins.chatcolorhandler.paper.PaperColor;
 import org.lushplugins.pluginupdater.api.updater.PluginInfo;
-import org.lushplugins.pluginupdater.common.platform.UpdaterImpl;
+import org.lushplugins.pluginupdater.common.platform.UpdaterPlatform;
 import org.lushplugins.pluginupdater.common.updater.UpdateHandler;
 import org.lushplugins.pluginupdater.paper.api.plugin.PaperPluginInfo;
 import revxrsal.commands.Lamp;
@@ -20,10 +20,10 @@ import java.util.List;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-public class PaperUpdaterImpl extends UpdaterImpl {
+public class PaperUpdaterPlatform extends UpdaterPlatform {
     private final Plugin plugin;
 
-    public PaperUpdaterImpl(Plugin plugin) {
+    public PaperUpdaterPlatform(Plugin plugin) {
         super();
         this.plugin = plugin;
     }

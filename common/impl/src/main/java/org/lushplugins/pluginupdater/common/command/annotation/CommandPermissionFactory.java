@@ -2,15 +2,15 @@ package org.lushplugins.pluginupdater.common.command.annotation;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.lushplugins.pluginupdater.common.platform.UpdaterImpl;
+import org.lushplugins.pluginupdater.common.platform.UpdaterPlatform;
 import revxrsal.commands.Lamp;
 import revxrsal.commands.annotation.list.AnnotationList;
 import revxrsal.commands.command.CommandActor;
 
 public class CommandPermissionFactory implements revxrsal.commands.command.CommandPermission.Factory<CommandActor> {
-    private final UpdaterImpl instance;
+    private final UpdaterPlatform instance;
 
-    public CommandPermissionFactory(UpdaterImpl instance) {
+    public CommandPermissionFactory(UpdaterPlatform instance) {
         this.instance = instance;
     }
 

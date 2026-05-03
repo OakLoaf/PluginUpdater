@@ -1,7 +1,7 @@
 package org.lushplugins.pluginupdater.common.command;
 
 import org.lushplugins.pluginupdater.common.command.annotation.CommandPermission;
-import org.lushplugins.pluginupdater.common.platform.UpdaterImpl;
+import org.lushplugins.pluginupdater.common.platform.UpdaterPlatform;
 import org.lushplugins.pluginupdater.common.updater.UpdateHandler;
 import org.lushplugins.pluginupdater.api.updater.PluginData;
 import org.lushplugins.pluginupdater.api.version.VersionDifference;
@@ -13,7 +13,7 @@ import revxrsal.commands.command.CommandActor;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @SuppressWarnings("unused")
-public record UpdateCommand(UpdaterImpl instance) {
+public record UpdateCommand(UpdaterPlatform instance) {
 
     @Command("updater update")
     @CommandPermission("pluginupdater.downloadupdates")

@@ -1,7 +1,7 @@
 package org.lushplugins.pluginupdater.common.command;
 
 import org.lushplugins.pluginupdater.common.command.annotation.CommandPermission;
-import org.lushplugins.pluginupdater.common.platform.UpdaterImpl;
+import org.lushplugins.pluginupdater.common.platform.UpdaterPlatform;
 import org.lushplugins.pluginupdater.api.updater.PluginInfo;
 import org.lushplugins.pluginupdater.api.version.VersionDifference;
 import org.lushplugins.pluginupdater.common.config.ConfigManager;
@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @SuppressWarnings("unused")
-public record UpdatesCommand(UpdaterImpl instance) {
+public record UpdatesCommand(UpdaterPlatform instance) {
 
     @Command({ "updater updates", "updates" })
     @CommandPermission("pluginupdater.checkupdates")

@@ -1,11 +1,12 @@
-package org.lushplugins.pluginupdater.api.source.github;
+package org.lushplugins.pluginupdater.api.source.type;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import org.jetbrains.annotations.Nullable;
 import org.lushplugins.pluginupdater.api.source.SourceData;
 import org.lushplugins.pluginupdater.api.util.HttpUtil;
 import org.lushplugins.pluginupdater.api.util.UpdaterConstants;
-import org.lushplugins.pluginupdater.api.version.VersionChecker;
+import org.lushplugins.pluginupdater.api.source.Source;
 import org.lushplugins.pluginupdater.api.updater.PluginData;
 
 import java.io.IOException;
@@ -17,11 +18,11 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-public class GithubVersionChecker implements VersionChecker {
+public class GithubSource implements Source {
 
     @Override
     public String getLatestVersion(PluginData pluginData, SourceData sourceData) throws IOException, InterruptedException {
-        if (!(sourceData instanceof GithubData githubData)) {
+        if (!(sourceData instanceof Data githubData)) {
             return null;
         }
 
@@ -31,7 +32,7 @@ public class GithubVersionChecker implements VersionChecker {
 
     @Override
     public String getDownloadUrl(PluginData pluginData, SourceData sourceData) throws IOException, InterruptedException {
-        if (!(sourceData instanceof GithubData githubData)) {
+        if (!(sourceData instanceof Data githubData)) {
             return null;
         }
 
@@ -48,11 +49,11 @@ public class GithubVersionChecker implements VersionChecker {
 
     @Override
     public Map<String, String> getDownloadHeaders(PluginData pluginData, SourceData sourceData) {
-        if (!(sourceData instanceof GithubData githubData)) {
+        if (!(sourceData instanceof Data githubData)) {
             return Collections.emptyMap();
         }
 
-        String token = githubData.getToken();
+        String token = githubData.token();
         if (token == null || token.isEmpty()) {
             return Collections.emptyMap();
         }
@@ -63,23 +64,33 @@ public class GithubVersionChecker implements VersionChecker {
         return headers;
     }
 
-    private JsonObject getLatestRelease(PluginData pluginData, GithubData githubData) throws IOException, InterruptedException {
+    private JsonObject getLatestRelease(PluginData pluginData, Data githubData) throws IOException, InterruptedException {
         HttpRequest.Builder requestBuilder = HttpUtil.prepareRequestBuilder(URI.create("%s/repos/%s/releases/latest"
-                .formatted(UpdaterConstants.Endpoint.GITHUB, githubData.getRepo())), null);
+                .formatted(UpdaterConstants.Endpoint.GITHUB, githubData.repo())), null);
 
-        String token = githubData.getToken();
+        String token = githubData.token();
         if (token != null && !token.isEmpty()) {
             requestBuilder.header("Authorization", "Bearer " + token);
         }
 
-        HttpResponse<String> response = HttpClient.newHttpClient().send(
+        HttpClient client = HttpClient.newHttpClient();
+        HttpResponse<String> response = client.send(
             requestBuilder.build(),
             HttpResponse.BodyHandlers.ofString());
+        client.close();
 
         if (response.statusCode() != 200) {
             throw new IllegalStateException("Received invalid response code (%s) whilst checking '%s' for updates.".formatted(response.statusCode(), pluginData.getPluginName()));
         }
 
         return JsonParser.parseString(response.body()).getAsJsonObject();
+    }
+
+    public record Data(String repo, @Nullable String token) implements SourceData {
+
+        @Override
+        public String name() {
+            return "github";
+        }
     }
 }

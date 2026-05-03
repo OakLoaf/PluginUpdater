@@ -18,12 +18,12 @@ import java.io.File;
 import java.util.List;
 import java.util.logging.Logger;
 
-public abstract class UpdaterImpl {
+public abstract class UpdaterPlatform {
     private final CollectorRegistry collectorRegistry;
     private final UpdateHandler updateHandler;
     private final ConfigManager config;
 
-    public UpdaterImpl() {
+    public UpdaterPlatform() {
         collectorRegistry = new CollectorRegistry(this);
         updateHandler = new UpdateHandler(this);
         updateHandler.enable();

@@ -2,7 +2,7 @@ package org.lushplugins.pluginupdater.common.command;
 
 import org.lushplugins.pluginupdater.common.command.annotation.CommandPermission;
 import org.lushplugins.pluginupdater.common.command.annotation.PluginName;
-import org.lushplugins.pluginupdater.common.platform.UpdaterImpl;
+import org.lushplugins.pluginupdater.common.platform.UpdaterPlatform;
 import revxrsal.commands.annotation.Command;
 import revxrsal.commands.annotation.Subcommand;
 
@@ -11,7 +11,7 @@ import java.util.logging.Level;
 
 @Command("updater")
 @SuppressWarnings("unused")
-public record UpdaterCommand(UpdaterImpl instance) {
+public record UpdaterCommand(UpdaterPlatform instance) {
 
     @Subcommand("reload")
     @CommandPermission("pluginupdater.reload")

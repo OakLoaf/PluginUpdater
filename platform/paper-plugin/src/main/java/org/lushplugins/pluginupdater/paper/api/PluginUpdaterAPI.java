@@ -2,7 +2,7 @@ package org.lushplugins.pluginupdater.paper.api;
 
 import org.lushplugins.pluginupdater.paper.PluginUpdater;
 import org.lushplugins.pluginupdater.api.updater.PluginData;
-import org.lushplugins.pluginupdater.api.version.VersionChecker;
+import org.lushplugins.pluginupdater.api.source.Source;
 import org.lushplugins.pluginupdater.api.source.SourceRegistry;
 import org.bukkit.plugin.Plugin;
 
@@ -17,7 +17,7 @@ public class PluginUpdaterAPI {
      * @param pluginData Relevant update data
      */
     public static void addPlugin(String pluginName, PluginData pluginData) {
-        PluginUpdater.getInstance().getUpdaterImpl().getConfig().addPlugin(pluginName, pluginData);
+        PluginUpdater.getInstance().getUpdater().getConfig().addPlugin(pluginName, pluginData);
     }
 
     /**
@@ -42,7 +42,7 @@ public class PluginUpdaterAPI {
      * @param pluginName Name of plugin to be removed
      */
     public static void removePlugin(String pluginName) {
-        PluginUpdater.getInstance().getUpdaterImpl().getConfig().removePlugin(pluginName);
+        PluginUpdater.getInstance().getUpdater().getConfig().removePlugin(pluginName);
     }
 
     /**
@@ -51,7 +51,7 @@ public class PluginUpdaterAPI {
      * @param sourceUpdater Constructor for updater
      * @param dataConstructor Constructor for source data
      */
-    public static void registerSource(String source, Callable<VersionChecker> sourceUpdater, SourceRegistry.SourceDataConstructor dataConstructor) {
+    public static void registerSource(String source, Callable<Source> sourceUpdater, SourceRegistry.SourceDataConstructor dataConstructor) {
         SourceRegistry.register(source, sourceUpdater, dataConstructor);
     }
 
