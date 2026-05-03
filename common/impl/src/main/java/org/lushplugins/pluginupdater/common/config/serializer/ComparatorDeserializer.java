@@ -8,7 +8,7 @@ import org.lushplugins.pluginupdater.api.version.comparator.SemVerComparator;
 import java.time.format.DateTimeFormatter;
 import java.util.regex.Pattern;
 
-public class ComparatorSerializer {
+public class ComparatorDeserializer {
 
     public static BuildNumComparator buildNum(Config config) {
         Pattern pattern = config.contains("pattern") ? Pattern.compile(config.get("pattern")) : BuildNumComparator.DEFAULT_PATTERN;

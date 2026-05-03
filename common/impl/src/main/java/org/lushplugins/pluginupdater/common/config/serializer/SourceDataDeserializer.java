@@ -10,7 +10,7 @@ import org.lushplugins.pluginupdater.common.util.ConfigUtil;
 import java.util.Collections;
 import java.util.List;
 
-public class SourceDataSerializer {
+public class SourceDataDeserializer {
 
     public static GithubSource.Data githubSourceData(Config config) {
         return new GithubSource.Data(
