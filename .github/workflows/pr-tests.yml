@@ -18,7 +18,6 @@ jobs:
   build-paper:
     name: 'Build Paper modules'
     needs: build-common
-    if: always()
     uses: ./.github/workflows/build-platform.yml
     with:
       display-name: 'Build Paper platform'
@@ -27,7 +26,6 @@ jobs:
   build-velocity:
     name: 'Build Velocity modules'
     needs: build-common
-    if: always()
     uses: ./.github/workflows/build-platform.yml
     with:
       display-name: 'Build Velocity platform'
