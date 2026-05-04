@@ -3,6 +3,7 @@ package org.lushplugins.pluginupdater.velocity.api.plugin;
 import com.velocitypowered.api.plugin.PluginContainer;
 import org.jetbrains.annotations.Nullable;
 import org.lushplugins.pluginupdater.api.updater.PluginInfo;
+import org.lushplugins.pluginupdater.api.util.UpdaterConstants;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -21,7 +22,7 @@ public record VelocityPluginInfo(PluginContainer plugin, @Nullable Logger logger
     }
 
     @Override
-    public File getFile() {
+    public @Nullable File getFile() {
         Path path = plugin.getDescription().getSource().orElse(null);
         return path != null ? path.toFile() : null;
     }

@@ -1,5 +1,7 @@
 package org.lushplugins.pluginupdater.api.updater;
 
+import org.jetbrains.annotations.Nullable;
+
 import java.io.File;
 import java.util.logging.Logger;
 
@@ -18,7 +20,7 @@ public interface PluginInfo {
     /**
      * @return The jar file that represents this plugin
      */
-    File getFile();
+    @Nullable File getFile();
 
     /**
      * @return The plugin's logger instance

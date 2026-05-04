@@ -2,6 +2,7 @@ package org.lushplugins.pluginupdater.paper.api.plugin;
 
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.Nullable;
 import org.lushplugins.pluginupdater.api.updater.PluginInfo;
 import org.lushplugins.pluginupdater.api.util.UpdaterConstants;
 
@@ -24,7 +25,7 @@ public record PaperPluginInfo(Plugin plugin) implements PluginInfo {
     }
 
     @Override
-    public File getFile() {
+    public @Nullable File getFile() {
         try {
             Method method = JavaPlugin.class.getDeclaredMethod("getFile");
             method.setAccessible(true);
