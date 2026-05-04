@@ -29,6 +29,6 @@ public record VelocityPluginInfo(PluginContainer plugin, @Nullable Logger logger
 
     @Override
     public Logger getLogger() {
-        return logger;
+        return logger != null ? logger : UpdaterConstants.LOGGER;
     }
 }
