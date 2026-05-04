@@ -32,7 +32,7 @@ public record PaperPluginInfo(Plugin plugin) implements PluginInfo {
 
             return (File) method.invoke(plugin);
         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-            UpdaterConstants.LOGGER.log(Level.WARNING, "[PluginUpdater] Caught error whilst getting plugin file: ", e);
+            UpdaterConstants.LOGGER.log(Level.WARNING, "Caught error whilst getting plugin file: ", e);
             return null;
         }
     }
