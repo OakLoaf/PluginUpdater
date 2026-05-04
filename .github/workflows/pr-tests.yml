@@ -9,14 +9,14 @@ on:
 
 jobs:
   build-common:
-    name: 'Build common modules'
+    name: 'Common Modules'
     uses: ./.github/workflows/build-platform.yml
     with:
       display-name: 'Build common'
       gradle-tasks: 'common:impl:build'
 
   build-paper:
-    name: 'Build Paper modules'
+    name: 'Paper Platform'
     needs: build-common
     uses: ./.github/workflows/build-platform.yml
     with:
@@ -24,7 +24,7 @@ jobs:
       gradle-tasks: 'platform:paper-plugin:build'
 
   build-velocity:
-    name: 'Build Velocity modules'
+    name: 'Velocity Platform'
     needs: build-common
     uses: ./.github/workflows/build-platform.yml
     with:
