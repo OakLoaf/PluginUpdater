@@ -9,7 +9,7 @@ import org.lushplugins.pluginupdater.api.updater.PluginData;
 import org.lushplugins.pluginupdater.api.updater.PluginInfo;
 import org.lushplugins.pluginupdater.api.version.comparator.VersionComparator;
 import org.lushplugins.pluginupdater.common.config.deserializer.SourceDataDeserializer;
-import org.lushplugins.pluginupdater.common.platform.UpdaterPlatform;
+import org.lushplugins.pluginupdater.common.UpdaterImpl;
 import org.lushplugins.pluginupdater.common.updater.UpdateHandler;
 import org.lushplugins.pluginupdater.common.util.ConfigUtil;
 
@@ -17,25 +17,25 @@ import java.util.*;
 import java.util.logging.Level;
 
 public class ConfigManager {
-    private final UpdaterPlatform instance;
+    private final UpdaterImpl updater;
     private boolean allowDownloads;
     private final Map<String, PluginData> plugins = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
     private final Set<String> disabledPlugins = new HashSet<>();
     private Messages messages;
 
-    public ConfigManager(UpdaterPlatform instance) {
-        this.instance = instance;
+    public ConfigManager(UpdaterImpl updater) {
+        this.updater = updater;
         // TODO: Save default config if not there
     }
 
-    public void reloadConfig() {
+    public void reload() {
         // TODO: Access file location
         FileConfig config = FileConfig.of("");
         config.load();
 
         boolean checkOnReload = ConfigUtil.getOrAliasOrElse(
             config, "check-updates-on-reload", "check-updates-on-start", true,
-            () -> instance.getLogger().log(Level.WARNING, "Deprecated: The config section 'check-updates-on-start' has been renamed to 'check-updates-on-reload'")
+            () -> updater.platform().getLogger().log(Level.WARNING, "Deprecated: The config section 'check-updates-on-start' has been renamed to 'check-updates-on-reload'")
         );
 
         this.allowDownloads = config.getOrElse("allow-downloads", true);
@@ -59,7 +59,7 @@ public class ConfigManager {
                     return;
                 }
 
-                PluginInfo currPlugin = instance.getPlugin(pluginName);
+                PluginInfo currPlugin = updater.platform().getPlugin(pluginName);
                 if (currPlugin == null) {
                     return;
                 }
@@ -75,7 +75,7 @@ public class ConfigManager {
 
                 boolean allowDownloads = pluginConfig.getOrElse("allow-downloads", true);
                 try {
-                    SourceData sourceData = SourceDataDeserializer.deserialize(instance, pluginConfig);
+                    SourceData sourceData = SourceDataDeserializer.deserialize(updater.platform(), pluginConfig);
                     if (sourceData != null) {
                         addPlugin(pluginName, PluginData.builder(currPlugin)
                             .sourceData(sourceData)
@@ -84,18 +84,18 @@ public class ConfigManager {
                             .build());
                     }
                 } catch (Exception e) {
-                    instance.getLogger().log(Level.SEVERE, "Caught error whilst collecting data for '%s'".formatted(pluginName), e);
+                    updater.platform().getLogger().log(Level.SEVERE, "Caught error whilst collecting data for '%s'".formatted(pluginName), e);
                 }
             });
         }
 
-        instance.getCollectorRegistry().collectUnknownPlugins().thenAccept(collectedPluginData -> {
+        updater.collectUnknownPlugins().thenAccept(collectedPluginData -> {
             for (PluginData pluginData : collectedPluginData) {
                 addPlugin(pluginData);
             }
 
             if (checkOnReload) {
-                UpdateHandler updateHandler = instance.getUpdateHandler();
+                UpdateHandler updateHandler = updater.updateHandler();
                 getPlugins().forEach(updateHandler::queueUpdateCheck);
             }
         });

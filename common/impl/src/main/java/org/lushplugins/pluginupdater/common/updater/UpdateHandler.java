@@ -4,7 +4,7 @@ import org.lushplugins.pluginupdater.api.source.SourceData;
 import org.lushplugins.pluginupdater.api.updater.PluginData;
 import org.lushplugins.pluginupdater.api.source.Source;
 import org.lushplugins.pluginupdater.api.version.VersionDifference;
-import org.lushplugins.pluginupdater.common.platform.UpdaterPlatform;
+import org.lushplugins.pluginupdater.common.UpdaterImpl;
 
 import java.io.IOException;
 import java.util.ArrayDeque;
@@ -14,13 +14,13 @@ import java.util.concurrent.*;
 import java.util.logging.Level;
 
 public class UpdateHandler {
-    private final UpdaterPlatform instance;
+    private final UpdaterImpl updater;
     private final ScheduledExecutorService threads = Executors.newScheduledThreadPool(1);
     private final ArrayDeque<ProcessingData> queue = new ArrayDeque<>();
     private final Map<ProcessingData.State, Integer> currentlyProcessing = new HashMap<>();
 
-    public UpdateHandler(UpdaterPlatform instance) {
-        this.instance = instance;
+    public UpdateHandler(UpdaterImpl updater) {
+        this.updater = updater;
     }
 
     public ScheduledExecutorService getThreads() {
@@ -54,13 +54,13 @@ public class UpdateHandler {
     }
 
     public ProcessingData queueUpdateCheck(String pluginName) {
-        ProcessingData processingData = new ProcessingData(instance, pluginName, ProcessingData.State.UPDATE_CHECK);
+        ProcessingData processingData = new ProcessingData(updater, pluginName, ProcessingData.State.UPDATE_CHECK);
         queue(processingData);
         return processingData;
     }
 
     public ProcessingData queueDownload(String pluginName) {
-        ProcessingData processingData = new ProcessingData(instance, pluginName, ProcessingData.State.DOWNLOAD);
+        ProcessingData processingData = new ProcessingData(updater, pluginName, ProcessingData.State.DOWNLOAD);
         queue(processingData);
         return processingData;
     }
@@ -89,7 +89,7 @@ public class UpdateHandler {
                     pluginData.setCheckRan(true);
                     return;
                 } catch (Exception e) {
-                    instance.getLogger().log(Level.SEVERE, e.getMessage(), e);
+                    updater.platform().getLogger().log(Level.SEVERE, e.getMessage(), e);
                 }
 
                 String sourceNames = String.join(", ", pluginData.getSourceData().stream().map(SourceData::sourceName).toList());
@@ -103,7 +103,7 @@ public class UpdateHandler {
                 }
 
                 try {
-                    if (Source.download(pluginData, instance.getDownloadDir())) {
+                    if (Source.download(pluginData, updater.platform().getDownloadDir())) {
                         pluginData.setVersionDifference(VersionDifference.UNKNOWN);
                         pluginData.setAlreadyDownloaded(true);
                         processingData.getFuture().complete(true);
@@ -122,17 +122,17 @@ public class UpdateHandler {
     }
 
     public void sendNotification(ProcessingData.State state) {
-
+        // TODO
     }
 
     public static class ProcessingData {
-        private final UpdaterPlatform instance;
+        private final UpdaterImpl updater;
         private final String pluginName;
         private final State state;
         private final CompletableFuture<Boolean> future;
 
-        public ProcessingData(UpdaterPlatform instance, String pluginName, State state) {
-            this.instance = instance;
+        public ProcessingData(UpdaterImpl updater, String pluginName, State state) {
+            this.updater = updater;
             this.pluginName = pluginName;
             this.state = state;
             this.future = new CompletableFuture<>();
@@ -147,7 +147,7 @@ public class UpdateHandler {
         }
 
         public PluginData getPluginData() {
-            return instance.getConfig().getPluginData(pluginName);
+            return updater.config().getPluginData(pluginName);
         }
 
         public CompletableFuture<Boolean> getFuture() {

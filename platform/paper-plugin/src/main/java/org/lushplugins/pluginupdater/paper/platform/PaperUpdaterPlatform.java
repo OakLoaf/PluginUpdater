@@ -1,4 +1,4 @@
-package org.lushplugins.pluginupdater.paper;
+package org.lushplugins.pluginupdater.paper.platform;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -8,6 +8,7 @@ import org.lushplugins.chatcolorhandler.paper.PaperColor;
 import org.lushplugins.pluginupdater.api.updater.PluginInfo;
 import org.lushplugins.pluginupdater.common.platform.UpdaterPlatform;
 import org.lushplugins.pluginupdater.common.updater.UpdateHandler;
+import org.lushplugins.pluginupdater.paper.PaperUpdaterPlugin;
 import org.lushplugins.pluginupdater.paper.api.plugin.PaperPluginInfo;
 import revxrsal.commands.Lamp;
 import revxrsal.commands.bukkit.BukkitLamp;
@@ -20,11 +21,10 @@ import java.util.List;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-public class PaperUpdaterPlatform extends UpdaterPlatform {
+public class PaperUpdaterPlatform implements UpdaterPlatform {
     private final Plugin plugin;
 
     public PaperUpdaterPlatform(Plugin plugin) {
-        super();
         this.plugin = plugin;
     }
 
@@ -47,8 +47,13 @@ public class PaperUpdaterPlatform extends UpdaterPlatform {
     }
 
     @Override
+    public Logger getLogger() {
+        return plugin.getLogger();
+    }
+
+    @Override
     public Lamp.Builder<?> prepareLamp() {
-        return BukkitLamp.builder(PluginUpdater.getInstance());
+        return BukkitLamp.builder(PaperUpdaterPlugin.getInstance());
     }
 
     @Override
@@ -71,10 +76,5 @@ public class PaperUpdaterPlatform extends UpdaterPlatform {
 
         PaperColor.handler().sendActionBarMessage(players, "&#b7faa2Updater processing: &#66b04f%s&#b7faa2/&#66b04f%s"
             .formatted(processed, total));
-    }
-
-    @Override
-    public Logger getLogger() {
-        return plugin.getLogger();
     }
 }

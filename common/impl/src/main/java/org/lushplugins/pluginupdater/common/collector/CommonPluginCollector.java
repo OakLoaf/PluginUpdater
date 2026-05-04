@@ -1,26 +1,28 @@
-package org.lushplugins.pluginupdater.paper.collector;
+package org.lushplugins.pluginupdater.common.collector;
 
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.YamlConfiguration;
-import org.lushplugins.pluginupdater.common.collector.PluginDataCollector;
 import org.lushplugins.pluginupdater.common.config.ComparatorRegistry;
 import org.lushplugins.pluginupdater.common.config.ConfigManager;
 import org.lushplugins.pluginupdater.api.updater.PluginInfo;
-import org.lushplugins.pluginupdater.paper.PluginUpdater;
 import org.lushplugins.pluginupdater.api.source.SourceData;
 import org.lushplugins.pluginupdater.api.source.SourceRegistry;
 import org.lushplugins.pluginupdater.api.updater.PluginData;
 import org.lushplugins.pluginupdater.api.version.comparator.VersionComparator;
+import org.lushplugins.pluginupdater.common.UpdaterImpl;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.*;
 
 public class CommonPluginCollector implements PluginDataCollector {
+    private final UpdaterImpl updater;
+
+    public CommonPluginCollector(UpdaterImpl updater) {
+        this.updater = updater;
+    }
 
     @Override
-    public List<PluginData> collectPluginData(Collection<PluginInfo> unknownPlugins) {
-        ConfigManager configManager = PluginUpdater.getInstance().updater().getConfig();
+    public List<PluginData> collect(Collection<PluginInfo> plugins) {
+        ConfigManager config = updater.config();
         List<PluginData> pluginDataList = new ArrayList<>();
 
         InputStream commonPluginsInputStream = PluginUpdater.getInstance().getResource("common-plugins.yml");
@@ -29,9 +31,9 @@ public class CommonPluginCollector implements PluginDataCollector {
         }
 
         YamlConfiguration commonPluginsYml = YamlConfiguration.loadConfiguration(new InputStreamReader(commonPluginsInputStream));
-        for (PluginInfo plugin : unknownPlugins) {
+        for (PluginInfo plugin : plugins) {
             String pluginName = plugin.getName();
-            if (!configManager.canRegisterPluginData(pluginName)) {
+            if (!config.canRegisterPluginData(pluginName)) {
                 continue;
             }
 

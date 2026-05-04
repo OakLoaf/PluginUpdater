@@ -1,7 +1,7 @@
 package org.lushplugins.pluginupdater.common.command;
 
 import org.lushplugins.pluginupdater.common.command.annotation.CommandPermission;
-import org.lushplugins.pluginupdater.common.platform.UpdaterPlatform;
+import org.lushplugins.pluginupdater.common.UpdaterImpl;
 import org.lushplugins.pluginupdater.api.updater.PluginInfo;
 import org.lushplugins.pluginupdater.api.version.VersionDifference;
 import org.lushplugins.pluginupdater.common.config.ConfigManager;
@@ -11,12 +11,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 @SuppressWarnings("unused")
-public record UpdatesCommand(UpdaterPlatform instance) {
+public record UpdatesCommand(UpdaterImpl updater) {
 
     @Command({ "updater updates", "updates" })
     @CommandPermission("pluginupdater.checkupdates")
     public String updates() {
-        ConfigManager configManager = instance.getConfig();
+        ConfigManager configManager = updater.config();
         List<String> plugins = configManager.getAllPluginData().stream()
             .map(pluginData -> {
                 String pluginName = pluginData.getPluginName();
@@ -52,7 +52,7 @@ public record UpdatesCommand(UpdaterPlatform instance) {
     @Command({ "updater list updates", "updates list" })
     @CommandPermission("pluginupdater.checkupdates")
     public String list() {
-        ConfigManager configManager = instance.getConfig();
+        ConfigManager configManager = updater.config();
         String updateAvailableColor = configManager.getMessage("update-available-color", "&#ffda54");
         String majorUpdateAvailableColor = configManager.getMessage("major-update-available-color", "&#ff6969");
         String latestVersionColor = configManager.getMessage("latest-version-color", "&#b7faa2");
@@ -83,10 +83,9 @@ public record UpdatesCommand(UpdaterPlatform instance) {
     @Command("updater list unregistered")
     @CommandPermission("pluginupdater.unregisteredplugins")
     public String unregisteredPlugins() {
-        ConfigManager configManager = instance.getConfig();
-        List<String> unregisteredPlugins = instance.getPlugins().stream()
+        List<String> unregisteredPlugins = updater.platform().getPlugins().stream()
             .map(PluginInfo::getName)
-            .filter(pluginName -> configManager.getPluginData(pluginName) == null)
+            .filter(pluginName -> updater.config().getPluginData(pluginName) == null)
             .sorted(String.CASE_INSENSITIVE_ORDER)
             .toList();
 

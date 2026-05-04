@@ -6,14 +6,14 @@ import com.velocitypowered.api.proxy.Player;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.lushplugins.pluginupdater.api.updater.PluginData;
 import org.lushplugins.pluginupdater.common.config.ConfigManager;
-import org.lushplugins.pluginupdater.velocity.PluginUpdater;
+import org.lushplugins.pluginupdater.velocity.VelocityUpdaterPlugin;
 
 import java.util.concurrent.TimeUnit;
 
 public class PlayerListener {
-    private final PluginUpdater instance;
+    private final VelocityUpdaterPlugin instance;
 
-    public PlayerListener(PluginUpdater instance) {
+    public PlayerListener(VelocityUpdaterPlugin instance) {
         this.instance = instance;
     }
 
@@ -26,7 +26,7 @@ public class PlayerListener {
 
         instance.server().getScheduler()
             .buildTask(instance, () -> {
-                ConfigManager configManager = instance.updater().getConfig();
+                ConfigManager configManager = instance.updater().config();
 
                 int updatesAvailable = 0;
                 for (PluginData pluginData : configManager.getAllPluginData()) {

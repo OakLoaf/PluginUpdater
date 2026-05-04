@@ -2,7 +2,7 @@ package org.lushplugins.pluginupdater.common.command;
 
 import org.lushplugins.pluginupdater.common.command.annotation.CommandPermission;
 import org.lushplugins.pluginupdater.common.command.annotation.PluginName;
-import org.lushplugins.pluginupdater.common.platform.UpdaterPlatform;
+import org.lushplugins.pluginupdater.common.UpdaterImpl;
 import revxrsal.commands.annotation.Command;
 import revxrsal.commands.annotation.Subcommand;
 
@@ -11,15 +11,15 @@ import java.util.logging.Level;
 
 @Command("updater")
 @SuppressWarnings("unused")
-public record UpdaterCommand(UpdaterPlatform instance) {
+public record UpdaterCommand(UpdaterImpl updater) {
 
     @Subcommand("reload")
     @CommandPermission("pluginupdater.reload")
     public String reload() {
         try {
-            instance.reloadConfig();
+            updater.config().reload();
         } catch (Throwable e) {
-            instance.getLogger().log(Level.SEVERE, "Caught error whilst reloading: ", e);
+            updater.platform().getLogger().log(Level.SEVERE, "Caught error whilst reloading: ", e);
             return "&#ff6969Something went wrong whilst reloading the plugin, check the console for errors";
         }
 
@@ -29,7 +29,7 @@ public record UpdaterCommand(UpdaterPlatform instance) {
     @Subcommand("check")
     @CommandPermission("pluginupdater.checkupdates")
     public String check(@PluginName String pluginName) {
-        instance.getUpdateHandler().queueUpdateCheck(pluginName);
+        updater.updateHandler().queueUpdateCheck(pluginName);
 
         return "&#b7faa2Successfully queued check for %s".formatted(pluginName);
     }
@@ -38,8 +38,8 @@ public record UpdaterCommand(UpdaterPlatform instance) {
     @CommandPermission("pluginupdater.checkupdates")
     public String check() {
         AtomicInteger updateCount = new AtomicInteger(0);
-        instance.getConfig().getPlugins().forEach(pluginName -> {
-            instance.getUpdateHandler().queueUpdateCheck(pluginName);
+        updater.config().getPlugins().forEach(pluginName -> {
+            updater.updateHandler().queueUpdateCheck(pluginName);
             updateCount.incrementAndGet();
         });
 

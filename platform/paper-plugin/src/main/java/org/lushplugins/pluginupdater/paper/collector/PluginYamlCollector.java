@@ -7,7 +7,7 @@ import org.lushplugins.pluginupdater.api.source.type.ModrinthSource;
 import org.lushplugins.pluginupdater.api.source.type.SpigotSource;
 import org.lushplugins.pluginupdater.api.updater.PluginInfo;
 import org.lushplugins.pluginupdater.common.collector.PluginDataCollector;
-import org.lushplugins.pluginupdater.paper.PluginUpdater;
+import org.lushplugins.pluginupdater.paper.PaperUpdaterPlugin;
 import org.lushplugins.pluginupdater.api.source.SourceData;
 import org.lushplugins.pluginupdater.api.updater.PluginData;
 import org.lushplugins.pluginupdater.common.config.ConfigManager;
@@ -21,11 +21,11 @@ import java.util.List;
 public class PluginYamlCollector implements PluginDataCollector {
 
     @Override
-    public List<PluginData> collectPluginData(Collection<PluginInfo> unknownPlugins) {
-        ConfigManager configManager = PluginUpdater.getInstance().updater().getConfig();
+    public List<PluginData> collect(Collection<PluginInfo> plugins) {
+        ConfigManager configManager = PaperUpdaterPlugin.getInstance().updater().config();
         List<PluginData> pluginDataList = new ArrayList<>();
 
-        for (PluginInfo plugin : unknownPlugins) {
+        for (PluginInfo plugin : plugins) {
             String pluginName = plugin.getName();
             if (!configManager.canRegisterPluginData(pluginName)) {
                 continue;

@@ -3,11 +3,12 @@ package org.lushplugins.pluginupdater.common.platform;
 import org.lushplugins.pluginupdater.api.source.Source;
 import org.lushplugins.pluginupdater.api.source.SourceRegistry;
 import org.lushplugins.pluginupdater.api.updater.PluginData;
+import org.lushplugins.pluginupdater.common.UpdaterImpl;
 
 public class UpdaterAPI {
-    private final UpdaterPlatform updater;
+    private final UpdaterImpl updater;
 
-    public UpdaterAPI(UpdaterPlatform updater) {
+    public UpdaterAPI(UpdaterImpl updater) {
         this.updater = updater;
     }
 
@@ -17,7 +18,7 @@ public class UpdaterAPI {
      * @param pluginData Relevant update data
      */
     public void addPlugin(String pluginName, PluginData pluginData) {
-        updater.getConfig().addPlugin(pluginName, pluginData);
+        updater.config().addPlugin(pluginName, pluginData);
     }
 
     /**
@@ -25,7 +26,7 @@ public class UpdaterAPI {
      * @param pluginName Name of plugin to be removed
      */
     public void removePlugin(String pluginName) {
-        updater.getConfig().removePlugin(pluginName);
+        updater.config().removePlugin(pluginName);
     }
 
     /**

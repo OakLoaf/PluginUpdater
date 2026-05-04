@@ -15,9 +15,9 @@ import java.util.logging.Level;
 
 public class SourceDataDeserializer {
 
-    public static SourceData deserialize(UpdaterPlatform instance, Config config) {
+    public static SourceData deserialize(UpdaterPlatform platform, Config config) {
         String source = ConfigUtil.getOrAlias(config, "source", "platform",
-            () -> instance.getLogger().log(Level.WARNING, "Deprecated: The config option 'platform' has been renamed to 'source'"));
+            () -> platform.getLogger().log(Level.WARNING, "Deprecated: The config option 'updater' has been renamed to 'source'"));
 
         return switch (source) {
             case GithubSource.NAME -> githubSourceData(config);

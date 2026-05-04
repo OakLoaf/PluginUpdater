@@ -1,4 +1,4 @@
-package org.lushplugins.pluginupdater.velocity;
+package org.lushplugins.pluginupdater.velocity.platform;
 
 import com.velocitypowered.api.plugin.PluginContainer;
 import com.velocitypowered.api.proxy.Player;
@@ -6,8 +6,10 @@ import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.jetbrains.annotations.Nullable;
 import org.lushplugins.pluginupdater.api.updater.PluginInfo;
+import org.lushplugins.pluginupdater.common.UpdaterImpl;
 import org.lushplugins.pluginupdater.common.platform.UpdaterPlatform;
 import org.lushplugins.pluginupdater.common.updater.UpdateHandler;
+import org.lushplugins.pluginupdater.velocity.VelocityUpdaterPlugin;
 import org.lushplugins.pluginupdater.velocity.api.plugin.VelocityPluginInfo;
 import org.lushplugins.pluginupdater.velocity.api.util.VelocityUtil;
 import revxrsal.commands.Lamp;
@@ -20,11 +22,10 @@ import java.io.File;
 import java.util.List;
 import java.util.logging.Logger;
 
-public class VelocityUpdaterPlatform extends UpdaterPlatform {
-    private final PluginUpdater instance;
+public class VelocityUpdaterPlatform implements UpdaterPlatform {
+    private final VelocityUpdaterPlugin instance;
 
-    public VelocityUpdaterPlatform(PluginUpdater instance) {
-        super();
+    public VelocityUpdaterPlatform(VelocityUpdaterPlugin instance) {
         this.instance = instance;
     }
 
@@ -47,15 +48,20 @@ public class VelocityUpdaterPlatform extends UpdaterPlatform {
     }
 
     @Override
+    public Logger getLogger() {
+        return instance.logger();
+    }
+
+    @Override
     public Lamp.Builder<?> prepareLamp() {
         return VelocityLamp.builder(instance, instance.server());
     }
 
     @Override
-    public void registerLampCommands(Lamp<?> lamp) {
-        super.registerLampCommands(lamp);
+    public void registerLampCommands(UpdaterImpl updater, Lamp<?> lamp) {
+        UpdaterPlatform.super.registerLampCommands(updater, lamp);
 
-        ((Lamp<VelocityCommandActor>) lamp).accept(VelocityVisitors.brigadier(instance.server()));
+        ((Lamp<VelocityCommandActor>) lamp).accept(VelocityVisitors.brigadier(this.instance.server()));
     }
 
     @Override
@@ -79,10 +85,5 @@ public class VelocityUpdaterPlatform extends UpdaterPlatform {
         Audience.audience(players).sendActionBar(MiniMessage.miniMessage().deserialize(
             "&#b7faa2Updater processing: &#66b04f%s&#b7faa2/&#66b04f%s"
                 .formatted(processed, total)));
-    }
-
-    @Override
-    public Logger getLogger() {
-        return instance.logger();
     }
 }

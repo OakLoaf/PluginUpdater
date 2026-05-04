@@ -7,7 +7,7 @@ import org.jetbrains.annotations.Nullable;
 import org.lushplugins.pluginupdater.api.source.type.SpigotSource;
 import org.lushplugins.pluginupdater.api.updater.PluginInfo;
 import org.lushplugins.pluginupdater.common.collector.PluginDataCollector;
-import org.lushplugins.pluginupdater.paper.PluginUpdater;
+import org.lushplugins.pluginupdater.paper.PaperUpdaterPlugin;
 import org.lushplugins.pluginupdater.api.updater.PluginData;
 import org.lushplugins.pluginupdater.api.util.HttpUtil;
 import org.lushplugins.pluginupdater.api.util.UpdaterConstants;
@@ -22,9 +22,9 @@ import java.util.logging.Level;
 public class SpigotCollector implements PluginDataCollector {
 
     @Override
-    public List<PluginData> collectPluginData(Collection<PluginInfo> unknownPlugins) {
+    public List<PluginData> collect(Collection<PluginInfo> plugins) {
         List<PluginData> pluginDataList = new ArrayList<>();
-        for (PluginInfo unknownPlugin : unknownPlugins) {
+        for (PluginInfo unknownPlugin : plugins) {
             PluginData pluginData = collectPlugin(unknownPlugin);
             if (pluginData != null) {
                 pluginDataList.add(pluginData);
@@ -39,7 +39,7 @@ public class SpigotCollector implements PluginDataCollector {
         try {
             response = HttpUtil.sendRequest(String.format("%s/search/resources/%s", UpdaterConstants.Endpoint.SPIGET, unknownPlugin.getName()));
         } catch (IOException | InterruptedException e) {
-            PluginUpdater.getInstance().getLogger().log(Level.WARNING, "Caught error whilst searching for project on spiget: ", e);
+            PaperUpdaterPlugin.getInstance().getLogger().log(Level.WARNING, "Caught error whilst searching for project on spiget: ", e);
             return null;
         }
 
@@ -48,7 +48,7 @@ public class SpigotCollector implements PluginDataCollector {
         }
 
         if (response.statusCode() != 200) {
-            PluginUpdater.getInstance().getLogger().log(Level.WARNING, "Received invalid response code (%s) whilst searching for project on spiget (%s)".formatted(response.statusCode(), response.uri()));
+            PaperUpdaterPlugin.getInstance().getLogger().log(Level.WARNING, "Received invalid response code (%s) whilst searching for project on spiget (%s)".formatted(response.statusCode(), response.uri()));
             return null;
         }
 

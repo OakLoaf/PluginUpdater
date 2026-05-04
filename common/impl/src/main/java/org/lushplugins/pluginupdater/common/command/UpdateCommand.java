@@ -1,7 +1,7 @@
 package org.lushplugins.pluginupdater.common.command;
 
 import org.lushplugins.pluginupdater.common.command.annotation.CommandPermission;
-import org.lushplugins.pluginupdater.common.platform.UpdaterPlatform;
+import org.lushplugins.pluginupdater.common.UpdaterImpl;
 import org.lushplugins.pluginupdater.common.updater.UpdateHandler;
 import org.lushplugins.pluginupdater.api.updater.PluginData;
 import org.lushplugins.pluginupdater.api.version.VersionDifference;
@@ -13,16 +13,16 @@ import revxrsal.commands.command.CommandActor;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @SuppressWarnings("unused")
-public record UpdateCommand(UpdaterPlatform instance) {
+public record UpdateCommand(UpdaterImpl updater) {
 
     @Command("updater update")
     @CommandPermission("pluginupdater.downloadupdates")
     public String update(@PluginName String pluginName) {
-        if (!instance.getConfig().shouldAllowDownloads()) {
+        if (!updater.config().shouldAllowDownloads()) {
             return "&#ff6969Update downloads have been disabled in the config";
         }
 
-        PluginData pluginData = instance.getConfig().getPluginData(pluginName);
+        PluginData pluginData = updater.config().getPluginData(pluginName);
         if (pluginData == null) {
             return "&#ff6969That plugin is not registered";
         } else if (!pluginData.areDownloadsAllowed()) {
@@ -32,7 +32,7 @@ public record UpdateCommand(UpdaterPlatform instance) {
         } else if (!pluginData.isUpdateAvailable()) {
             return "&#ff6969No update has been found for this plugin";
         } else {
-            instance.getUpdateHandler().queueDownload(pluginData.getPluginName());
+            updater.updateHandler().queueDownload(pluginData.getPluginName());
             return "&#b7faa2Successfully queued an update for '%s'".formatted(pluginData.getPluginName());
         }
     }
@@ -40,10 +40,10 @@ public record UpdateCommand(UpdaterPlatform instance) {
     @Command("updater update all")
     @CommandPermission("pluginupdater.downloadupdates")
     public String updateAll(CommandActor actor, @Switch("force") boolean force) {
-        UpdateHandler updateHandler = instance.getUpdateHandler();
+        UpdateHandler updateHandler = updater.updateHandler();
         AtomicInteger updateCount = new AtomicInteger(0);
         AtomicInteger majorUpdateCount = new AtomicInteger(0);
-        instance.getConfig().getAllPluginData().forEach(pluginData -> {
+        updater.config().getAllPluginData().forEach(pluginData -> {
             if (!pluginData.areDownloadsAllowed()) {
                 return;
             }

@@ -6,7 +6,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.lushplugins.chatcolorhandler.paper.PaperColor;
-import org.lushplugins.pluginupdater.paper.PluginUpdater;
+import org.lushplugins.pluginupdater.paper.PaperUpdaterPlugin;
 import org.lushplugins.pluginupdater.api.updater.PluginData;
 import org.lushplugins.pluginupdater.common.config.ConfigManager;
 
@@ -16,8 +16,8 @@ public class PlayerListener implements Listener {
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
         if (player.hasPermission("pluginupdater.notify")) {
-            Bukkit.getScheduler().runTaskLaterAsynchronously(PluginUpdater.getInstance(), () -> {
-                ConfigManager configManager = PluginUpdater.getInstance().updater().getConfig();
+            Bukkit.getScheduler().runTaskLaterAsynchronously(PaperUpdaterPlugin.getInstance(), () -> {
+                ConfigManager configManager = PaperUpdaterPlugin.getInstance().updater().config();
 
                 int updatesAvailable = 0;
                 for (PluginData pluginData : configManager.getAllPluginData()) {

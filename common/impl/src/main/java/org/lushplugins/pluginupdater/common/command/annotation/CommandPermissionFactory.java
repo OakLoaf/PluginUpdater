@@ -2,16 +2,16 @@ package org.lushplugins.pluginupdater.common.command.annotation;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.lushplugins.pluginupdater.common.platform.UpdaterPlatform;
+import org.lushplugins.pluginupdater.common.UpdaterImpl;
 import revxrsal.commands.Lamp;
 import revxrsal.commands.annotation.list.AnnotationList;
 import revxrsal.commands.command.CommandActor;
 
 public class CommandPermissionFactory implements revxrsal.commands.command.CommandPermission.Factory<CommandActor> {
-    private final UpdaterPlatform instance;
+    private final UpdaterImpl updater;
 
-    public CommandPermissionFactory(UpdaterPlatform instance) {
-        this.instance = instance;
+    public CommandPermissionFactory(UpdaterImpl updater) {
+        this.updater = updater;
     }
 
     @Override
@@ -22,6 +22,6 @@ public class CommandPermissionFactory implements revxrsal.commands.command.Comma
         }
 
         String permission = annotation.value();
-        return actor -> instance.hasPermission(actor, permission);
+        return actor -> updater.platform().hasPermission(actor, permission);
     }
 }

@@ -8,11 +8,17 @@ import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.plugin.annotation.DataDirectory;
 import com.velocitypowered.api.proxy.ProxyServer;
 import org.lushplugins.pluginupdater.api.util.DownloadLogger;
+import org.lushplugins.pluginupdater.common.UpdaterImpl;
+import org.lushplugins.pluginupdater.common.collector.CommonPluginCollector;
+import org.lushplugins.pluginupdater.common.collector.ModrinthCollector;
+import org.lushplugins.pluginupdater.common.collector.PluginDataCollector;
 import org.lushplugins.pluginupdater.util.BuildParameters;
 import org.lushplugins.pluginupdater.velocity.api.VelocityUpdaterAPI;
 import org.lushplugins.pluginupdater.velocity.listener.PlayerListener;
+import org.lushplugins.pluginupdater.velocity.platform.VelocityUpdaterPlatform;
 
 import java.nio.file.Path;
+import java.util.List;
 import java.util.logging.Logger;
 
 @Plugin(
@@ -20,17 +26,17 @@ import java.util.logging.Logger;
     name = "PluginUpdater",
     version = BuildParameters.VERSION
 )
-public class PluginUpdater {
-    private static PluginUpdater instance;
+public class VelocityUpdaterPlugin {
+    private static VelocityUpdaterPlugin instance;
 
     private final ProxyServer server;
     private final Logger logger;
     private final Path dataFolder;
-    private VelocityUpdaterPlatform updater;
+    private UpdaterImpl updater;
     private VelocityUpdaterAPI api;
 
     @Inject
-    public PluginUpdater(ProxyServer server, Logger logger, @DataDirectory Path dataFolder) {
+    public VelocityUpdaterPlugin(ProxyServer server, Logger logger, @DataDirectory Path dataFolder) {
         instance = this;
 
         this.server = server;
@@ -41,7 +47,11 @@ public class PluginUpdater {
     @Subscribe
     public void onProxyInitialization(ProxyInitializeEvent event) {
         DownloadLogger.setLogFile(dataFolder.resolve("downloads.log").toFile());
-        this.updater = new VelocityUpdaterPlatform(this);
+        VelocityUpdaterPlatform platform = new VelocityUpdaterPlatform(this);
+        this.updater = new UpdaterImpl(platform, List.of(
+            CommonPluginCollector::new,
+            PluginDataCollector.of(new ModrinthCollector(platform))
+        ));
         this.api = new VelocityUpdaterAPI(updater);
 
         server.getEventManager().register(this, new PlayerListener(this));
@@ -63,7 +73,7 @@ public class PluginUpdater {
         return logger;
     }
 
-    public VelocityUpdaterPlatform updater() {
+    public UpdaterImpl updater() {
         return updater;
     }
 
@@ -71,7 +81,7 @@ public class PluginUpdater {
         return api;
     }
 
-    public static PluginUpdater getInstance() {
+    public static VelocityUpdaterPlugin getInstance() {
         return instance;
     }
 }

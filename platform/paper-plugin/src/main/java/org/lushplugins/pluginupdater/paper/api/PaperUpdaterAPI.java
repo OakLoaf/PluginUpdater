@@ -2,12 +2,12 @@ package org.lushplugins.pluginupdater.paper.api;
 
 import org.bukkit.plugin.Plugin;
 import org.lushplugins.pluginupdater.api.updater.PluginData;
+import org.lushplugins.pluginupdater.common.UpdaterImpl;
 import org.lushplugins.pluginupdater.common.platform.UpdaterAPI;
-import org.lushplugins.pluginupdater.paper.PaperUpdaterPlatform;
 
 public class PaperUpdaterAPI extends UpdaterAPI {
 
-    public PaperUpdaterAPI(PaperUpdaterPlatform updater) {
+    public PaperUpdaterAPI(UpdaterImpl updater) {
         super(updater);
     }
 
