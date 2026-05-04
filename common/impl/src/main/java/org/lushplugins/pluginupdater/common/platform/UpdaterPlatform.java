@@ -36,6 +36,5 @@ public interface UpdaterPlatform {
 
     boolean hasPermission(CommandActor actor, String permission);
 
-    // TODO: Reimplement
     void sendProcessingNotification(UpdateHandler handler, UpdateHandler.ProcessingData.State state);
 }

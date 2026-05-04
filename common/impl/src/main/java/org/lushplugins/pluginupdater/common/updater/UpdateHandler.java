@@ -78,7 +78,7 @@ public class UpdateHandler {
 
         ProcessingData.State state = processingData.getState();
         this.currentlyProcessing.compute(state, (key, oldValue) -> oldValue != null ? oldValue + 1 : 1);
-        sendNotification(state);
+        updater.platform().sendProcessingNotification(this, state);
 
         switch (state) {
             case UPDATE_CHECK -> {
@@ -119,10 +119,6 @@ public class UpdateHandler {
                 processingData.getFuture().completeExceptionally(new IOException("Failed to download update for plugin '%s' using defined sources: '%s'".formatted(pluginData.getPluginName(), sourceNames)));
             }
         }
-    }
-
-    public void sendNotification(ProcessingData.State state) {
-        // TODO
     }
 
     public static class ProcessingData {
