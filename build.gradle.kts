@@ -1,24 +1,18 @@
 plugins {
     `java-library`
     `maven-publish`
+    id("updater.build-logic")
 }
 
 group = "org.lushplugins"
 version = "2.2.0"
 
 allprojects {
-    apply(plugin = "java-library")
-    apply(plugin = "maven-publish")
+    plugins.apply("java-library")
+    plugins.apply("maven-publish")
 
     group = rootProject.group
     version = rootProject.version
-
-    repositories {
-        mavenLocal()
-        mavenCentral()
-        maven("https://repo.papermc.io/repository/maven-public/") // Paper
-        maven("https://repo.lushplugins.org/snapshots") // ChatColorHandler
-    }
 
     java {
         toolchain.languageVersion.set(JavaLanguageVersion.of(21))

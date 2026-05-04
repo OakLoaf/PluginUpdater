@@ -1,10 +1,7 @@
-import java.io.BufferedReader
-import java.io.InputStreamReader
-
 plugins {
-    id("com.gradleup.shadow") version("9.3.1")
-    id("com.modrinth.minotaur") version ("2.+")
-    id("xyz.jpenilla.run-paper") version ("3.0.2")
+    id("com.gradleup.shadow")
+    id("com.modrinth.minotaur")
+    id("xyz.jpenilla.run-paper")
 }
 
 dependencies {
@@ -50,9 +47,9 @@ modrinth {
     projectId.set("IBSpJfbm")
     if (System.getenv("RELEASE_TYPE") == "release") {
         versionNumber.set(rootProject.version.toString())
-        changelog.set(getChangelogSinceLastTag())
+        changelog.set(rootProject.getChangelogSinceLastTag())
     } else {
-        versionNumber.set("${rootProject.version}-${getCurrentCommitHash()}")
+        versionNumber.set("${rootProject.version}-${rootProject.getCurrentCommitHash()}")
     }
     uploadFile.set(file("build/libs/${project.name}-${project.version}.jar"))
     versionType.set(System.getenv("RELEASE_TYPE"))
@@ -67,27 +64,4 @@ modrinth {
 tasks.modrinth {
     dependsOn("shadowJar")
     dependsOn(tasks.modrinthSyncBody)
-}
-
-fun getCurrentCommitHash(): String {
-    val process = ProcessBuilder("git", "rev-parse", "--short", "HEAD").start()
-    val reader = BufferedReader(InputStreamReader(process.inputStream))
-    val commitHash = reader.readLine()
-    reader.close()
-    process.waitFor()
-    if (process.exitValue() == 0) {
-        return commitHash ?: ""
-    } else {
-        throw IllegalStateException("Failed to retrieve the commit hash.")
-    }
-}
-
-fun getLastTag(): String {
-    return ProcessBuilder("git", "describe", "--tags", "--abbrev=0")
-        .start().inputStream.bufferedReader().readText().trim()
-}
-
-fun getChangelogSinceLastTag(): String {
-    return ProcessBuilder("git", "log", "${getLastTag()}..HEAD", "--pretty=format:* %s ([#%h](https://github.com/OakLoaf/PluginUpdater/commit/%H))")
-        .start().inputStream.bufferedReader().readText().trim()
 }

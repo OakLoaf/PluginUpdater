@@ -1,15 +1,21 @@
+plugins {
+    id("net.kyori.blossom")
+    id("org.jetbrains.gradle.plugin.idea-ext")
+}
+
+sourceSets {
+    main {
+        blossom {
+            javaSources {
+                property("version", project.version.toString())
+            }
+        }
+    }
+}
+
 dependencies {
     implementation("com.google.code.gson:gson:2.14.0")
     compileOnlyApi("org.jetbrains:annotations:26.1.0")
-}
-
-tasks {
-    processResources{
-        inputs.property("version", rootProject.version)
-        filesMatching("settings.properties") {
-            expand("version" to rootProject.version)
-        }
-    }
 }
 
 publishing {

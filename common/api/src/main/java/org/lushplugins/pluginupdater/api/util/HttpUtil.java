@@ -2,6 +2,7 @@ package org.lushplugins.pluginupdater.api.util;
 
 import com.google.gson.JsonElement;
 import org.jetbrains.annotations.Nullable;
+import org.lushplugins.pluginupdater.util.BuildParameters;
 
 import java.io.IOException;
 import java.net.URI;
@@ -27,7 +28,7 @@ public class HttpUtil {
 
     public static HttpRequest.Builder prepareRequestBuilder(URI uri, @Nullable String payload) {
         HttpRequest.Builder requestBuilder = HttpRequest.newBuilder(uri)
-            .header("User-Agent", "PluginUpdater/" + UpdaterConstants.VERSION);
+            .header("User-Agent", "PluginUpdater/" + BuildParameters.VERSION);
 
         if (payload != null) {
             requestBuilder

@@ -6,6 +6,7 @@ import org.lushplugins.pluginupdater.api.util.DownloadLogger;
 import org.lushplugins.pluginupdater.api.util.UpdaterConstants;
 import org.lushplugins.pluginupdater.api.version.VersionDifference;
 import org.lushplugins.pluginupdater.api.version.comparator.VersionComparator;
+import org.lushplugins.pluginupdater.util.BuildParameters;
 
 import java.io.*;
 import java.net.HttpURLConnection;
@@ -64,7 +65,7 @@ public interface Source {
 
         URL url = URI.create(downloadUrl).toURL();
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-        connection.addRequestProperty("User-Agent", "PluginUpdater/" + UpdaterConstants.VERSION);
+        connection.addRequestProperty("User-Agent", "PluginUpdater/" + BuildParameters.VERSION);
         for (Map.Entry<String, String> header : getDownloadHeaders(pluginData, sourceData).entrySet()) {
             connection.addRequestProperty(header.getKey(), header.getValue());
         }
