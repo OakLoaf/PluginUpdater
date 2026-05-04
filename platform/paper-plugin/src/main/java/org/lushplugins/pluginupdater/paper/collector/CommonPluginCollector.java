@@ -20,7 +20,7 @@ public class CommonPluginCollector implements PluginDataCollector {
 
     @Override
     public List<PluginData> collectPluginData(Collection<PluginInfo> unknownPlugins) {
-        ConfigManager configManager = PluginUpdater.getInstance().getUpdater().getConfig();
+        ConfigManager configManager = PluginUpdater.getInstance().updater().getConfig();
         List<PluginData> pluginDataList = new ArrayList<>();
 
         InputStream commonPluginsInputStream = PluginUpdater.getInstance().getResource("common-plugins.yml");

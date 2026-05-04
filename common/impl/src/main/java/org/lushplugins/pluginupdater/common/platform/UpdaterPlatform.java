@@ -40,11 +40,8 @@ public abstract class UpdaterPlatform {
             })
             .responseHandler(String.class, new StringMessageResponseHandler())
             .build();
-        lamp.register(new UpdaterCommand(this), new UpdatesCommand(this));
 
-        if (config.shouldAllowDownloads()) {
-            lamp.register(new UpdateCommand(this));
-        }
+        registerLampCommands(lamp);
     }
 
     public void shutdown() {
@@ -74,6 +71,14 @@ public abstract class UpdaterPlatform {
     public abstract File getDownloadDir();
 
     public abstract Lamp.Builder<?> prepareLamp();
+
+    public void registerLampCommands(Lamp<?> lamp) {
+        lamp.register(new UpdaterCommand(this), new UpdatesCommand(this));
+
+        if (config.shouldAllowDownloads()) {
+            lamp.register(new UpdateCommand(this));
+        }
+    }
 
     public abstract boolean hasPermission(CommandActor actor, String permission);
 

@@ -17,7 +17,7 @@ public class PlayerListener implements Listener {
         Player player = event.getPlayer();
         if (player.hasPermission("pluginupdater.notify")) {
             Bukkit.getScheduler().runTaskLaterAsynchronously(PluginUpdater.getInstance(), () -> {
-                ConfigManager configManager = PluginUpdater.getInstance().getUpdater().getConfig();
+                ConfigManager configManager = PluginUpdater.getInstance().updater().getConfig();
 
                 int updatesAvailable = 0;
                 for (PluginData pluginData : configManager.getAllPluginData()) {

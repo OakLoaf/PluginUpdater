@@ -1,5 +1,6 @@
 package org.lushplugins.pluginupdater.paper.api.notification;
 
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -26,8 +27,7 @@ public class PaperUpdateNotifier extends UpdateNotifier<Player> implements Liste
 
     @Override
     public void sendMessage(Player user, String message) {
-        // TODO: Add colour support
-        user.sendMessage(message);
+        user.sendMessage(MiniMessage.miniMessage().deserialize(message));
     }
 
     @EventHandler
