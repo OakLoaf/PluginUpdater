@@ -15,9 +15,16 @@ import java.io.IOException;
 import java.net.http.HttpResponse;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class ModrinthSource implements Source {
     public static final String NAME = "modrinth";
+
+    private final List<String> loaders;
+
+    public ModrinthSource(List<String> loaders) {
+        this.loaders = loaders;
+    }
 
     @Override
     public String getName() {
@@ -47,8 +54,11 @@ public class ModrinthSource implements Source {
     private JsonArray getVersions(PluginData pluginData, Data modrinthData) throws IOException, InterruptedException {
         StringBuilder uriBuilder = new StringBuilder("%s/project/%s/version"
             .formatted(UpdaterConstants.Endpoint.MODRINTH, modrinthData.projectId()))
-            .append("?loaders=[%22bukkit%22,%22spigot%22,%22paper%22,%22purpur%22,%22folia%22]")
+            .append("?loaders=").append(this.loaders.stream()
+                .map(s -> "%22" + s + "%22")
+                .collect(Collectors.joining(",", "[", "]")))
             .append("&include_changelog=false");
+
 
         if (modrinthData.filtersReleaseChannel()) {
             uriBuilder.append("&version_type=").append(modrinthData.releaseChannel());

@@ -16,12 +16,10 @@ public class SourceRegistry {
     static {
         register(new GithubSource());
         register(new HangarSource());
-        register(new ModrinthSource());
         register(new SpigotSource());
     }
 
-    @Nullable
-    public static Source get(String name) {
+    public static @Nullable Source get(String name) {
         return sources.get(name);
     }
 
