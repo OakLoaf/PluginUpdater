@@ -15,8 +15,30 @@ allprojects {
     group = rootProject.group
     version = rootProject.version
 
+    dependencies {
+        components.all {
+            withVariant("apiElements") {
+                attributes {
+                    attribute(TargetJvmVersion.TARGET_JVM_VERSION_ATTRIBUTE, 21)
+                }
+            }
+            withVariant("runtimeElements") {
+                attributes {
+                    attribute(TargetJvmVersion.TARGET_JVM_VERSION_ATTRIBUTE, 21)
+                }
+            }
+        }
+    }
+
     java {
-        toolchain.languageVersion.set(JavaLanguageVersion.of(21))
+        // Ensures all code is written against Java 21
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
+
+        // Allows compileOnly dependencies that require Java 25
+        toolchain {
+            languageVersion.set(JavaLanguageVersion.of(25))
+        }
 
         withSourcesJar()
     }
@@ -24,6 +46,9 @@ allprojects {
     tasks {
         withType<JavaCompile> {
             options.encoding = "UTF-8"
+
+            // Ensures the output jar is compatible with Java 21
+            options.release.set(21)
         }
     }
 
