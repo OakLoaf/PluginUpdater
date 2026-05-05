@@ -2,6 +2,7 @@ plugins {
     `java-library`
     `maven-publish`
     id("updater.build-logic")
+    id("updater.sync-modrinth-page")
 }
 
 group = "org.lushplugins"

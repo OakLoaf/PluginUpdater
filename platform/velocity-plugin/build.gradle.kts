@@ -1,7 +1,7 @@
 plugins {
     id("com.gradleup.shadow")
-    id("com.modrinth.minotaur")
     id("xyz.jpenilla.run-paper")
+    id("updater.publish-modrinth")
 }
 
 dependencies {
@@ -11,4 +11,8 @@ dependencies {
     implementation(project(":platform:velocity-api"))
     implementation("io.github.revxrsal:lamp.velocity:4.0.0-rc.16")
     implementation("io.github.revxrsal:lamp.brigadier:4.0.0-rc.16")
+}
+
+modrinth {
+    loaders.addAll("velocity")
 }
