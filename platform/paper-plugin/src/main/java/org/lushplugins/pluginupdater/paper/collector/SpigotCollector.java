@@ -22,7 +22,7 @@ import java.util.logging.Level;
 public class SpigotCollector implements PluginDataCollector {
     private final UpdaterPlatform platform;
 
-    public  SpigotCollector(UpdaterPlatform platform) {
+    public SpigotCollector(UpdaterPlatform platform) {
         this.platform = platform;
     }
 
