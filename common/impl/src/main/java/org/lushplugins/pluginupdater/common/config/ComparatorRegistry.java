@@ -19,7 +19,7 @@ public class ComparatorRegistry {
         register("sem-ver", ComparatorDeserializer::semVer);
     }
 
-    public static @Nullable VersionComparator readVersionComparator(String id, Config config) {
+    public static @Nullable VersionComparator deserializeVersionComparator(String id, Config config) {
         try {
             return comparators.containsKey(id) ? comparators.get(id).apply(config) : null;
         } catch (Exception e) {

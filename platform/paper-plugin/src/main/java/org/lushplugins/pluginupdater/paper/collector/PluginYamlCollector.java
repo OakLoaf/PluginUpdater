@@ -1,72 +1,73 @@
 package org.lushplugins.pluginupdater.paper.collector;
 
-import org.bukkit.configuration.file.YamlConfiguration;
+import com.electronwill.nightconfig.core.file.FileConfig;
 import org.lushplugins.pluginupdater.api.source.type.GithubSource;
 import org.lushplugins.pluginupdater.api.source.type.HangarSource;
 import org.lushplugins.pluginupdater.api.source.type.ModrinthSource;
 import org.lushplugins.pluginupdater.api.source.type.SpigotSource;
 import org.lushplugins.pluginupdater.api.updater.PluginInfo;
+import org.lushplugins.pluginupdater.common.UpdaterImpl;
 import org.lushplugins.pluginupdater.common.collector.PluginDataCollector;
-import org.lushplugins.pluginupdater.paper.PaperUpdaterPlugin;
 import org.lushplugins.pluginupdater.api.source.SourceData;
 import org.lushplugins.pluginupdater.api.updater.PluginData;
-import org.lushplugins.pluginupdater.common.config.ConfigManager;
 
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 public class PluginYamlCollector implements PluginDataCollector {
+    private final UpdaterImpl updater;
+
+    public PluginYamlCollector(UpdaterImpl updater) {
+        this.updater = updater;
+    }
 
     @Override
     public List<PluginData> collect(Collection<PluginInfo> plugins) {
-        ConfigManager configManager = PaperUpdaterPlugin.getInstance().updater().config();
-        List<PluginData> pluginDataList = new ArrayList<>();
-
+        List<PluginData> collectedPluginData = new ArrayList<>();
         for (PluginInfo plugin : plugins) {
             String pluginName = plugin.getName();
-            if (!configManager.canRegisterPluginData(pluginName)) {
+            if (!updater.config().canRegisterPluginData(pluginName)) {
                 continue;
             }
 
-            InputStream pluginInputStream = plugin.getResource("plugin.yml");
-            if (pluginInputStream != null) {
-                YamlConfiguration pluginYml = YamlConfiguration.loadConfiguration(new InputStreamReader(pluginInputStream));
+            // TODO: Access resource location (not file)
+            FileConfig config = FileConfig.of("plugin.yml");
+            config.load();
 
-                SourceData sourceData = null;
-                if (pluginYml.contains("modrinth-project-id")) {
-                    sourceData = new ModrinthSource.Data(
-                        pluginYml.getString("modrinth-project-id"),
-                        ModrinthSource.ReleaseChannel.ALL
-                    );
-                }
-                else if (pluginYml.contains("spigot-resource-id")) {
-                    sourceData = new SpigotSource.Data(
-                        pluginYml.getString("spigot-resource-id")
-                    );
-                }
-                else if (pluginYml.contains("hangar-project-slug")) {
-                    sourceData = new HangarSource.Data(
-                        pluginYml.getString("hangar-project-slug")
-                    );
-                }
-                else if (pluginYml.contains("github-repo")) {
-                    sourceData = new GithubSource.Data(
-                        pluginYml.getString("github-repo"),
-                        null
-                    );
-                }
-
-                if (sourceData != null) {
-                    pluginDataList.add(PluginData.builder(plugin)
-                        .sourceData(sourceData)
-                        .build());
-                }
+            SourceData sourceData = null;
+            if (config.contains("modrinth-project-id")) {
+                sourceData = new ModrinthSource.Data(
+                    config.get("modrinth-project-id"),
+                    ModrinthSource.ReleaseChannel.ALL
+                );
             }
+            else if (config.contains("spigot-resource-id")) {
+                sourceData = new SpigotSource.Data(
+                    config.get("spigot-resource-id")
+                );
+            }
+            else if (config.contains("hangar-project-slug")) {
+                sourceData = new HangarSource.Data(
+                    config.get("hangar-project-slug")
+                );
+            }
+            else if (config.contains("github-repo")) {
+                sourceData = new GithubSource.Data(
+                    config.get("github-repo"),
+                    null
+                );
+            }
+
+            if (sourceData != null) {
+                collectedPluginData.add(PluginData.builder(plugin)
+                    .sourceData(sourceData)
+                    .build());
+            }
+
+            config.close();
         }
 
-        return pluginDataList;
+        return collectedPluginData;
     }
 }

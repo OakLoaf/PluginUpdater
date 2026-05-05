@@ -32,9 +32,9 @@ public final class PaperUpdaterPlugin extends JavaPlugin {
         PaperUpdaterPlatform platform = new PaperUpdaterPlatform(this);
         this.updater = new UpdaterImpl(platform, List.of(
             CommonPluginCollector::new,
-            PluginDataCollector.of(new PluginYamlCollector()),
+            PluginYamlCollector::new,
             PluginDataCollector.of(new ModrinthCollector(platform)),
-            PluginDataCollector.of(new SpigotCollector())
+            PluginDataCollector.of(new SpigotCollector(platform))
         ));
         this.api = new PaperUpdaterAPI(updater);
 

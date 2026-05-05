@@ -8,6 +8,7 @@ import org.lushplugins.pluginupdater.api.source.SourceData;
 import org.lushplugins.pluginupdater.api.updater.PluginData;
 import org.lushplugins.pluginupdater.api.updater.PluginInfo;
 import org.lushplugins.pluginupdater.api.version.comparator.VersionComparator;
+import org.lushplugins.pluginupdater.common.config.deserializer.PluginDataDeserializer;
 import org.lushplugins.pluginupdater.common.config.deserializer.SourceDataDeserializer;
 import org.lushplugins.pluginupdater.common.UpdaterImpl;
 import org.lushplugins.pluginupdater.common.updater.UpdateHandler;
@@ -59,32 +60,9 @@ public class ConfigManager {
                     return;
                 }
 
-                PluginInfo currPlugin = updater.platform().getPlugin(pluginName);
-                if (currPlugin == null) {
-                    return;
-                }
-
-                VersionComparator comparator;
-                Config comparatorConfig = pluginConfig.get("comparator");
-                if (comparatorConfig != null) {
-                    String comparatorType = comparatorConfig.getOrElse("type", "sem-ver");
-                    comparator = ComparatorRegistry.readVersionComparator(comparatorType, comparatorConfig);
-                } else {
-                    comparator = null;
-                }
-
-                boolean allowDownloads = pluginConfig.getOrElse("allow-downloads", true);
-                try {
-                    SourceData sourceData = SourceDataDeserializer.deserialize(updater.platform(), pluginConfig);
-                    if (sourceData != null) {
-                        addPlugin(pluginName, PluginData.builder(currPlugin)
-                            .sourceData(sourceData)
-                            .comparator(comparator)
-                            .allowDownloads(allowDownloads)
-                            .build());
-                    }
-                } catch (Exception e) {
-                    updater.platform().getLogger().log(Level.SEVERE, "Caught error whilst collecting data for '%s'".formatted(pluginName), e);
+                PluginData pluginData = PluginDataDeserializer.deserialize(updater, pluginName, pluginConfig);
+                if (pluginData != null) {
+                    addPlugin(pluginName, pluginData);
                 }
             });
         }

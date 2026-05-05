@@ -1,16 +1,12 @@
 package org.lushplugins.pluginupdater.common.collector;
 
-import org.lushplugins.pluginupdater.common.config.ComparatorRegistry;
-import org.lushplugins.pluginupdater.common.config.ConfigManager;
+import com.electronwill.nightconfig.core.Config;
+import com.electronwill.nightconfig.core.file.FileConfig;
 import org.lushplugins.pluginupdater.api.updater.PluginInfo;
-import org.lushplugins.pluginupdater.api.source.SourceData;
-import org.lushplugins.pluginupdater.api.source.SourceRegistry;
 import org.lushplugins.pluginupdater.api.updater.PluginData;
-import org.lushplugins.pluginupdater.api.version.comparator.VersionComparator;
 import org.lushplugins.pluginupdater.common.UpdaterImpl;
+import org.lushplugins.pluginupdater.common.config.deserializer.PluginDataDeserializer;
 
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.*;
 
 public class CommonPluginCollector implements PluginDataCollector {
@@ -22,48 +18,29 @@ public class CommonPluginCollector implements PluginDataCollector {
 
     @Override
     public List<PluginData> collect(Collection<PluginInfo> plugins) {
-        ConfigManager config = updater.config();
-        List<PluginData> pluginDataList = new ArrayList<>();
+        // TODO: Access resource location (not file)
+        FileConfig config = FileConfig.of("common-plugins.yml");
+        config.load();
 
-        InputStream commonPluginsInputStream = PluginUpdater.getInstance().getResource("common-plugins.yml");
-        if (commonPluginsInputStream == null) {
-            return Collections.emptyList();
-        }
-
-        YamlConfiguration commonPluginsYml = YamlConfiguration.loadConfiguration(new InputStreamReader(commonPluginsInputStream));
+        List<PluginData> collectedPluginData = new ArrayList<>();
         for (PluginInfo plugin : plugins) {
             String pluginName = plugin.getName();
-            if (!config.canRegisterPluginData(pluginName)) {
+            if (!updater.config().canRegisterPluginData(pluginName)) {
                 continue;
             }
 
-            if (!commonPluginsYml.contains(pluginName)) {
+            if (!config.contains(pluginName)) {
                 continue;
             }
 
-            ConfigurationSection pluginSection = commonPluginsYml.getConfigurationSection(pluginName);
-            if (pluginSection == null) {
-                continue;
-            }
-
-            VersionComparator comparator;
-            ConfigurationSection comparatorSection = pluginSection.getConfigurationSection("comparator");
-            if (comparatorSection != null) {
-                String comparatorType = comparatorSection.getString("type", "sem-ver");
-                comparator = ComparatorRegistry.readVersionComparator(comparatorType, comparatorSection);
-            } else {
-                comparator = null;
-            }
-
-            SourceData sourceData = SourceRegistry.getSourceData(pluginSection.getString("source"), pluginSection);
-            if (sourceData != null) {
-                pluginDataList.add(PluginData.builder(plugin)
-                    .sourceData(sourceData)
-                    .comparator(comparator)
-                    .build());
+            Config pluginConfig = config.get(pluginName);
+            PluginData pluginData = PluginDataDeserializer.deserialize(updater, pluginName, pluginConfig);
+            if (pluginData != null) {
+                collectedPluginData.add(pluginData);
             }
         }
 
-        return pluginDataList;
+        config.close();
+        return collectedPluginData;
     }
 }
