@@ -43,9 +43,9 @@ public record UpdatesCommand(UpdaterImpl updater) {
             .toList();
 
         if (!plugins.isEmpty()) {
-            return "&fRegistered Plugins (%s):\n%s".formatted(plugins.size(), String.join("&7, ", plugins));
+            return "<white>Registered Plugins (%s):\n%s".formatted(plugins.size(), String.join("<gray>, ", plugins));
         } else {
-            return "&#ff6969Could not find any registered plugins in PluginUpdater";
+            return "<#ff6969>Could not find any registered plugins in PluginUpdater";
         }
     }
 
@@ -53,9 +53,9 @@ public record UpdatesCommand(UpdaterImpl updater) {
     @CommandPermission("pluginupdater.checkupdates")
     public String list() {
         ConfigManager configManager = updater.config();
-        String updateAvailableColor = configManager.getMessage("update-available-color", "&#ffda54");
-        String majorUpdateAvailableColor = configManager.getMessage("major-update-available-color", "&#ff6969");
-        String latestVersionColor = configManager.getMessage("latest-version-color", "&#b7faa2");
+        String updateAvailableColor = configManager.getMessage("update-available-color", "<#ffda54>");
+        String majorUpdateAvailableColor = configManager.getMessage("major-update-available-color", "<#ff6969>");
+        String latestVersionColor = configManager.getMessage("latest-version-color", "<#b7faa2>");
 
         List<String> plugins = new ArrayList<>();
         configManager.getAllPluginData().forEach(pluginData -> {
@@ -64,7 +64,7 @@ public record UpdatesCommand(UpdaterImpl updater) {
                 return;
             }
 
-            String message = "&f" + pluginData.getPluginName() + ": &7" + pluginData.getCurrentVersion() + " &f-> " + (versionDifference.equals(VersionDifference.MAJOR) ? majorUpdateAvailableColor : updateAvailableColor) + pluginData.getLatestVersion();
+            String message = "<white>" + pluginData.getPluginName() + ": <gray>" + pluginData.getCurrentVersion() + " <white>-> " + (versionDifference.equals(VersionDifference.MAJOR) ? majorUpdateAvailableColor : updateAvailableColor) + pluginData.getLatestVersion();
 
             if (pluginData.isAlreadyDownloaded()) {
                 message += latestVersionColor + " ᴅᴏᴡɴʟᴏᴀᴅᴇᴅ";
@@ -76,7 +76,7 @@ public record UpdatesCommand(UpdaterImpl updater) {
         if (!plugins.isEmpty()) {
             return String.join("&r\n", plugins);
         } else {
-            return "&#ff6969No updates found";
+            return "<#ff6969>No updates found";
         }
     }
 
@@ -90,9 +90,9 @@ public record UpdatesCommand(UpdaterImpl updater) {
             .toList();
 
         if (!unregisteredPlugins.isEmpty()) {
-            return "&fUnregistered Plugins (%s):\n&#ff6969%s".formatted(unregisteredPlugins.size(), String.join("&7, &#ff6969", unregisteredPlugins));
+            return "<white>Unregistered Plugins (%s):\n<#ff6969>%s".formatted(unregisteredPlugins.size(), String.join("<gray>, <#ff6969>", unregisteredPlugins));
         } else {
-            return "&#ff6969No unregistered plugins found";
+            return "<#ff6969>No unregistered plugins found";
         }
     }
 }

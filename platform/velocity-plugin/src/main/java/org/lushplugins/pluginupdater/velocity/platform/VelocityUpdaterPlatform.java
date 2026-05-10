@@ -72,7 +72,10 @@ public class VelocityUpdaterPlatform implements UpdaterPlatform {
 
     @Override
     public Lamp.Builder<?> prepareLamp() {
-        return VelocityLamp.builder(instance, instance.server());
+        return VelocityLamp.builder(instance, instance.server())
+            .defaultMessageSender((actor, message) -> {
+                actor.source().sendMessage(MiniMessage.miniMessage().deserialize(message));
+            });
     }
 
     @Override

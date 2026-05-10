@@ -19,21 +19,21 @@ public record UpdateCommand(UpdaterImpl updater) {
     @CommandPermission("pluginupdater.downloadupdates")
     public String update(@PluginName String pluginName) {
         if (!updater.config().shouldAllowDownloads()) {
-            return "&#ff6969Update downloads have been disabled in the config";
+            return "<#ff6969>Update downloads have been disabled in the config";
         }
 
         PluginData pluginData = updater.config().getPluginData(pluginName);
         if (pluginData == null) {
-            return "&#ff6969That plugin is not registered";
+            return "<#ff6969>That plugin is not registered";
         } else if (!pluginData.areDownloadsAllowed()) {
-            return "&#ff6969Downloads are disabled for that plugin, to allow downloads manually add it to your config";
+            return "<#ff6969>Downloads are disabled for that plugin, to allow downloads manually add it to your config";
         } else if (pluginData.isAlreadyDownloaded()) {
-            return "&#ffda54You have already downloaded an update for this plugin - please restart your server";
+            return "<#ffda54>You have already downloaded an update for this plugin - please restart your server";
         } else if (!pluginData.isUpdateAvailable()) {
-            return "&#ff6969No update has been found for this plugin";
+            return "<#ff6969>No update has been found for this plugin";
         } else {
             updater.updateHandler().queueDownload(pluginData.getPluginName());
-            return "&#b7faa2Successfully queued an update for '%s'".formatted(pluginData.getPluginName());
+            return "<#b7faa2>Successfully queued an update for '%s'".formatted(pluginData.getPluginName());
         }
     }
 
@@ -65,13 +65,13 @@ public record UpdateCommand(UpdaterImpl updater) {
         int finalMajorCount = majorUpdateCount.get();
 
         if (finalCount == 0 && finalMajorCount == 0) {
-            actor.reply("&#ff6969No updates found");
+            actor.reply("<#ff6969>No updates found");
         } else if (finalCount > 0) {
-            actor.reply("&#b7faa2Successfully queued an update for %s plugins".formatted(finalCount));
+            actor.reply("<#b7faa2>Successfully queued an update for %s plugins".formatted(finalCount));
         }
 
         if (finalMajorCount > 0) {
-            actor.reply("&#e0c01b%s &#ffe27aplugins require major updates, run &#e0c01b/updater update all --force &#ffe27ato force all possible updates".formatted(finalMajorCount));
+            actor.reply("<#e0c01b>%s <#ffe27a>plugins require major updates, run <#e0c01b>/updater update all --force <#ffe27a>to force all possible updates".formatted(finalMajorCount));
         }
 
         return null;

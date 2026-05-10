@@ -70,7 +70,10 @@ public class PaperUpdaterPlatform implements UpdaterPlatform {
 
     @Override
     public Lamp.Builder<?> prepareLamp() {
-        return BukkitLamp.builder(PaperUpdaterPlugin.getInstance());
+        return BukkitLamp.builder(PaperUpdaterPlugin.getInstance())
+            .defaultMessageSender((actor, message) -> {
+                PaperColor.handler().sendMessage(actor.sender(), message);
+            });
     }
 
     @Override

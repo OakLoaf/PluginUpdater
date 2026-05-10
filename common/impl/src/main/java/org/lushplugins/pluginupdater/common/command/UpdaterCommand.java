@@ -20,10 +20,10 @@ public record UpdaterCommand(UpdaterImpl updater) {
             updater.config().reload();
         } catch (Throwable e) {
             updater.platform().getLogger().log(Level.SEVERE, "Caught error whilst reloading: ", e);
-            return "&#ff6969Something went wrong whilst reloading the plugin, check the console for errors";
+            return "<#ff6969>Something went wrong whilst reloading the plugin, check the console for errors";
         }
 
-        return "&#b7faa2Successfully reloaded PluginUpdater";
+        return "<#b7faa2>Successfully reloaded PluginUpdater";
     }
 
     @Subcommand("check")
@@ -31,7 +31,7 @@ public record UpdaterCommand(UpdaterImpl updater) {
     public String check(@PluginName String pluginName) {
         updater.updateHandler().queueUpdateCheck(pluginName);
 
-        return "&#b7faa2Successfully queued check for %s".formatted(pluginName);
+        return "<#b7faa2>Successfully queued check for %s".formatted(pluginName);
     }
 
     @Subcommand("check all")
@@ -43,6 +43,6 @@ public record UpdaterCommand(UpdaterImpl updater) {
             updateCount.incrementAndGet();
         });
 
-        return "&#b7faa2Successfully queued checks for %s plugins".formatted(updateCount.get());
+        return "<#b7faa2>Successfully queued checks for %s plugins".formatted(updateCount.get());
     }
 }
