@@ -56,7 +56,7 @@ public class VelocityUpdaterPlatform implements UpdaterPlatform {
 
     @Override
     public InputStream getResourceStream(String path) {
-        return instance.getClass().getResourceAsStream(path);
+        return instance.getClass().getResourceAsStream("/" + path);
     }
 
     @Override
