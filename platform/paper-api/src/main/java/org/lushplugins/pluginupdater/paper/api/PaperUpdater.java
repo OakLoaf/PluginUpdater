@@ -12,12 +12,6 @@ import java.util.List;
 
 public class PaperUpdater {
 
-    static {
-        SourceRegistry.register(new ModrinthSource(List.of(
-            "bukkit", "spigot", "paper", "purpur", "folia"
-        )));
-    }
-
     public static Updater.Builder builder(Plugin plugin) {
         return Updater.builder(new PaperPluginInfo(plugin), Bukkit.getUpdateFolderFile())
             .notifier(PaperUpdateNotifier::new);

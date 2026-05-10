@@ -111,7 +111,7 @@ public interface Source {
                 return versionChecker.getLatestVersion(pluginData, sourceData);
             });
         } catch (IOException e) {
-            throw new IOException("Failed to check plugin '" + pluginData.getPluginName() + "' for latest version.");
+            throw new IOException("Failed to check plugin '" + pluginData.getPluginName() + "' for latest version.", e);
         }
     }
 
@@ -121,7 +121,7 @@ public interface Source {
                 return versionChecker.getDownloadUrl(pluginData, sourceData);
             });
         } catch (IOException e) {
-            throw new IOException("Failed to get download url for plugin '" + pluginData.getPluginName() + "'.");
+            throw new IOException("Failed to get download url for plugin '" + pluginData.getPluginName() + "'.", e);
         }
     }
 
@@ -131,7 +131,7 @@ public interface Source {
                 return versionChecker.isUpdateAvailable(pluginData, sourceData);
             });
         } catch (IOException e) {
-            throw new IOException("Failed to check if update is available for plugin '" + pluginData.getPluginName() + "'.");
+            throw new IOException("Failed to check if update is available for plugin '" + pluginData.getPluginName() + "'.", e);
         }
     }
 
@@ -141,7 +141,7 @@ public interface Source {
                 return versionChecker.download(pluginData, sourceData, destinationDir);
             });
         } catch (IOException e) {
-            throw new IOException("Failed to download update for plugin '" + pluginData.getPluginName() + "'.");
+            throw new IOException("Failed to download update for plugin '" + pluginData.getPluginName() + "'.", e);
         }
     }
 

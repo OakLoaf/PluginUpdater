@@ -14,10 +14,6 @@ import java.util.logging.Logger;
 
 public class VelocityUpdater {
 
-    static {
-        SourceRegistry.register(new ModrinthSource(List.of("velocity")));
-    }
-
     public static Updater.Builder builder(ProxyServer server, PluginContainer plugin, Logger logger) {
         return Updater.builder(new VelocityPluginInfo(plugin, logger), VelocityUtil.getUpdateFolderFile())
             .notifier((updater, permission, message) -> {

@@ -1,6 +1,7 @@
 package org.lushplugins.pluginupdater.common.config;
 
 import com.electronwill.nightconfig.core.Config;
+import com.electronwill.nightconfig.core.UnmodifiableConfig;
 import com.electronwill.nightconfig.core.file.FileConfig;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -10,10 +11,9 @@ import org.lushplugins.pluginupdater.common.UpdaterImpl;
 import org.lushplugins.pluginupdater.common.updater.UpdateHandler;
 import org.lushplugins.pluginupdater.common.util.ConfigUtil;
 
-import java.io.IOException;
-import java.nio.file.Files;
 import java.util.*;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 
 public class ConfigManager {
     private final UpdaterImpl updater;
@@ -40,7 +40,13 @@ public class ConfigManager {
         );
 
         this.allowDownloads = config.getOrElse("allow-downloads", true);
-        this.messages = config.getOrElse("messages", () -> new Messages(new HashMap<>()));
+
+        Config messagesConfig = config.get("messages");
+        if (messagesConfig != null) {
+            this.messages = new Messages(messagesConfig);
+        } else {
+            this.messages = new Messages();
+        }
 
         Collection<PluginData> dataSnapshot = new ArrayList<>(plugins.values());
         for (PluginData snapshot : dataSnapshot) {
@@ -123,6 +129,18 @@ public class ConfigManager {
 
 
     public record Messages(Map<String, String> messages) {
+
+        public Messages() {
+            this(new HashMap<>());
+        }
+
+        public Messages(Config config) {
+            this(config.entrySet().stream()
+                .collect(Collectors.toMap(
+                    UnmodifiableConfig.Entry::getKey,
+                    UnmodifiableConfig.Entry::getValue
+                )));
+        }
 
         public String get(String key) {
             return messages.get(key);
