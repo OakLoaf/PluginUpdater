@@ -73,6 +73,10 @@ public class VelocityUpdaterPlugin {
         return logger;
     }
 
+    public Path dataFolder() {
+        return dataFolder;
+    }
+
     public UpdaterImpl updater() {
         return updater;
     }

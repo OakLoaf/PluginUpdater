@@ -15,7 +15,7 @@ public class VelocityUpdateNotifier extends UpdateNotifier<Player> {
         super(updater, message, permission);
 
         VelocityPluginInfo pluginInfo = (VelocityPluginInfo) updater.getPluginInfo();
-        server.getEventManager().register(this, pluginInfo.plugin());
+        server.getEventManager().register(this, pluginInfo.container());
     }
 
     @Override

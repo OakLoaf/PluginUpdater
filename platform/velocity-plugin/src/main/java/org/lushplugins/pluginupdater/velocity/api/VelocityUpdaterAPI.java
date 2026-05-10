@@ -12,7 +12,7 @@ public class VelocityUpdaterAPI extends UpdaterAPI {
     }
 
     /**
-     * Make a plugin available to be checked/downloaded
+     * Make a container available to be checked/downloaded
      * @param plugin Plugin to be added
      * @param pluginData Relevant update data
      */
@@ -21,7 +21,7 @@ public class VelocityUpdaterAPI extends UpdaterAPI {
     }
 
     /**
-     * Stop a plugin from being checked/downloaded
+     * Stop a container from being checked/downloaded
      * @param plugin Plugin to be removed
      */
     public void removePlugin(PluginContainer plugin) {

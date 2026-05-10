@@ -1,12 +1,13 @@
 package org.lushplugins.pluginupdater.common.collector;
 
 import com.electronwill.nightconfig.core.Config;
-import com.electronwill.nightconfig.core.file.FileConfig;
+import com.electronwill.nightconfig.yaml.YamlFormat;
 import org.lushplugins.pluginupdater.api.updater.PluginInfo;
 import org.lushplugins.pluginupdater.api.updater.PluginData;
 import org.lushplugins.pluginupdater.common.UpdaterImpl;
 import org.lushplugins.pluginupdater.common.config.deserializer.PluginDataDeserializer;
 
+import java.io.InputStream;
 import java.util.*;
 
 public class CommonPluginCollector implements PluginDataCollector {
@@ -18,9 +19,8 @@ public class CommonPluginCollector implements PluginDataCollector {
 
     @Override
     public List<PluginData> collect(Collection<PluginInfo> plugins) {
-        // TODO: Access resource location (not file)
-        FileConfig config = FileConfig.of("common-plugins.yml");
-        config.load();
+        InputStream resource = updater.platform().getResourceStream("common-plugins.yml");
+        Config config = YamlFormat.defaultInstance().createParser().parse(resource);
 
         List<PluginData> collectedPluginData = new ArrayList<>();
         for (PluginInfo plugin : plugins) {
@@ -40,7 +40,6 @@ public class CommonPluginCollector implements PluginDataCollector {
             }
         }
 
-        config.close();
         return collectedPluginData;
     }
 }

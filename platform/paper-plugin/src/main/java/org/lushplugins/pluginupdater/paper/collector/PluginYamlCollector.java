@@ -1,6 +1,7 @@
 package org.lushplugins.pluginupdater.paper.collector;
 
-import com.electronwill.nightconfig.core.file.FileConfig;
+import com.electronwill.nightconfig.core.Config;
+import com.electronwill.nightconfig.yaml.YamlFormat;
 import org.lushplugins.pluginupdater.api.source.type.GithubSource;
 import org.lushplugins.pluginupdater.api.source.type.HangarSource;
 import org.lushplugins.pluginupdater.api.source.type.ModrinthSource;
@@ -11,6 +12,7 @@ import org.lushplugins.pluginupdater.common.collector.PluginDataCollector;
 import org.lushplugins.pluginupdater.api.source.SourceData;
 import org.lushplugins.pluginupdater.api.updater.PluginData;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -31,9 +33,8 @@ public class PluginYamlCollector implements PluginDataCollector {
                 continue;
             }
 
-            // TODO: Access resource location (not file)
-            FileConfig config = FileConfig.of("plugin.yml");
-            config.load();
+            InputStream resource = updater.platform().getResourceStream("plugin.yml");
+            Config config = YamlFormat.defaultInstance().createParser().parse(resource);
 
             SourceData sourceData = null;
             if (config.contains("modrinth-project-id")) {
@@ -64,8 +65,6 @@ public class PluginYamlCollector implements PluginDataCollector {
                     .sourceData(sourceData)
                     .build());
             }
-
-            config.close();
         }
 
         return collectedPluginData;

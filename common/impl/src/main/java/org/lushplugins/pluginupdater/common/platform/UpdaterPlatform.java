@@ -11,6 +11,8 @@ import revxrsal.commands.Lamp;
 import revxrsal.commands.command.CommandActor;
 
 import java.io.File;
+import java.io.InputStream;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -20,7 +22,17 @@ public interface UpdaterPlatform {
 
     List<? extends PluginInfo> getPlugins();
 
+    Path getDataPath();
+
     File getDownloadDir();
+
+    InputStream getResourceStream(String path);
+
+    InputStream getResourceStream(PluginInfo pluginInfo, String path);
+
+    default InputStream getResourceStreamFor(String pluginName, String path) {
+        return getResourceStream(getPlugin(pluginName), path);
+    }
 
     Logger getLogger();
 

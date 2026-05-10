@@ -16,6 +16,8 @@ import revxrsal.commands.bukkit.actor.BukkitCommandActor;
 import revxrsal.commands.command.CommandActor;
 
 import java.io.File;
+import java.io.InputStream;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Logger;
@@ -42,8 +44,23 @@ public class PaperUpdaterPlatform implements UpdaterPlatform {
     }
 
     @Override
+    public Path getDataPath() {
+        return plugin.getDataPath();
+    }
+
+    @Override
     public File getDownloadDir() {
         return Bukkit.getUpdateFolderFile();
+    }
+
+    @Override
+    public InputStream getResourceStream(String path) {
+        return plugin.getResource(path);
+    }
+
+    @Override
+    public InputStream getResourceStream(PluginInfo pluginInfo, String path) {
+        return ((PaperPluginInfo) pluginInfo).plugin().getResource(path);
     }
 
     @Override

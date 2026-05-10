@@ -36,7 +36,6 @@ public class PluginData {
         return pluginName;
     }
 
-    // TODO: Ensure all uses do not get broken by version formatting not being applied here
     public String getCurrentVersion() {
         return currentVersion;
     }

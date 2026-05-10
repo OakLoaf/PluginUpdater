@@ -4,16 +4,14 @@ import com.electronwill.nightconfig.core.Config;
 import com.electronwill.nightconfig.core.file.FileConfig;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.lushplugins.pluginupdater.api.source.SourceData;
 import org.lushplugins.pluginupdater.api.updater.PluginData;
-import org.lushplugins.pluginupdater.api.updater.PluginInfo;
-import org.lushplugins.pluginupdater.api.version.comparator.VersionComparator;
 import org.lushplugins.pluginupdater.common.config.deserializer.PluginDataDeserializer;
-import org.lushplugins.pluginupdater.common.config.deserializer.SourceDataDeserializer;
 import org.lushplugins.pluginupdater.common.UpdaterImpl;
 import org.lushplugins.pluginupdater.common.updater.UpdateHandler;
 import org.lushplugins.pluginupdater.common.util.ConfigUtil;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.*;
 import java.util.logging.Level;
 
@@ -26,12 +24,14 @@ public class ConfigManager {
 
     public ConfigManager(UpdaterImpl updater) {
         this.updater = updater;
-        // TODO: Save default config if not there
     }
 
     public void reload() {
-        // TODO: Access file location
-        FileConfig config = FileConfig.of("");
+        updater.platform().getDataPath().toFile().mkdirs();
+
+        FileConfig config = FileConfig.builder(updater.platform().getDataPath().resolve("config.yml"))
+            .defaultData(updater.platform().getClass().getResource("/config.yml"))
+            .build();
         config.load();
 
         boolean checkOnReload = ConfigUtil.getOrAliasOrElse(

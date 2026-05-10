@@ -19,6 +19,8 @@ import revxrsal.commands.velocity.VelocityVisitors;
 import revxrsal.commands.velocity.actor.VelocityCommandActor;
 
 import java.io.File;
+import java.io.InputStream;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -43,8 +45,24 @@ public class VelocityUpdaterPlatform implements UpdaterPlatform {
     }
 
     @Override
+    public Path getDataPath() {
+        return instance.dataFolder();
+    }
+
+    @Override
     public File getDownloadDir() {
         return VelocityUtil.getUpdateFolderFile();
+    }
+
+    @Override
+    public InputStream getResourceStream(String path) {
+        return instance.getClass().getResourceAsStream(path);
+    }
+
+    @Override
+    public InputStream getResourceStream(PluginInfo pluginInfo, String path) {
+        PluginContainer container = ((VelocityPluginInfo) pluginInfo).container();
+        return container.getInstance().orElseThrow().getClass().getResourceAsStream(path);
     }
 
     @Override
