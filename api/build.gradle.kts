@@ -6,7 +6,7 @@ plugins {
 dependencies {
     compileOnly("org.spigotmc:spigot-api:26.1.2-R0.1-SNAPSHOT")
 
-    implementation("org.lushplugins.chatcolorhandler:paper:8.1.0")
+    implementation("org.lushplugins.chatcolorhandler:paper:8.1.1")
 
     compileOnlyApi("org.jetbrains:annotations:26.1.0")
 }
