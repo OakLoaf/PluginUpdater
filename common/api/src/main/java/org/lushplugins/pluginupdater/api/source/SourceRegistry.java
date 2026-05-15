@@ -8,6 +8,7 @@ import org.lushplugins.pluginupdater.api.source.type.SpigotSource;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Collection;
 import java.util.HashMap;
 
 public class SourceRegistry {
@@ -21,6 +22,10 @@ public class SourceRegistry {
 
     public static @Nullable Source get(String name) {
         return sources.get(name);
+    }
+
+    public static Collection<Source> values() {
+        return sources.values();
     }
 
     public static void register(@NotNull Source source) {

@@ -8,6 +8,8 @@ import org.lushplugins.pluginupdater.api.version.comparator.VersionComparator;
 import org.lushplugins.pluginupdater.common.UpdaterImpl;
 import org.lushplugins.pluginupdater.common.config.ComparatorRegistry;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.logging.Level;
 
 public class PluginDataDeserializer {
@@ -27,13 +29,16 @@ public class PluginDataDeserializer {
             comparator = null;
         }
 
+        List<String> tags = config.getOrElse("tags", Collections.emptyList());
         boolean allowDownloads = config.getOrElse("allow-downloads", true);
+
         try {
             SourceData sourceData = SourceDataDeserializer.deserialize(updater.platform(), config);
             if (sourceData != null) {
                 return PluginData.builder(currPlugin)
                     .sourceData(sourceData)
                     .comparator(comparator)
+                    .tags(tags)
                     .allowDownloads(allowDownloads)
                     .build();
             }

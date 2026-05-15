@@ -1,5 +1,6 @@
 package org.lushplugins.pluginupdater.common;
 
+import org.lushplugins.pluginupdater.api.source.SourceRegistry;
 import org.lushplugins.pluginupdater.api.updater.PluginData;
 import org.lushplugins.pluginupdater.api.updater.PluginInfo;
 import org.lushplugins.pluginupdater.common.collector.PluginDataCollector;
@@ -36,11 +37,28 @@ public class UpdaterImpl {
 
         Lamp<?> lamp = platform.prepareLamp()
             .permissionFactory(new CommandPermissionFactory(this))
-            .suggestionProviders(providers -> {
-                providers.addProviderForAnnotation(PluginName.class, (annotation) -> (context) -> {
+            .suggestionProviders(providers -> providers
+                .addProviderForAnnotation(PluginName.class, (annotation) -> (context) -> {
+                    if (annotation.includeTags()) {
+                        switch (context.input().peek()) {
+                            case '$' -> {
+                                return SourceRegistry.values().stream()
+                                    .map(source -> "$" + source.getName())
+                                    .toList();
+                            }
+                            case '#' -> {
+                                return config.getAllPluginData().stream()
+                                    .flatMap(plugin -> plugin.getTags().stream())
+                                    .distinct()
+                                    .map(tag -> "#" + tag)
+                                    .toList();
+                            }
+                        }
+                    }
+
                     return config.getPlugins();
-                });
-            })
+                })
+            )
             .responseHandler(String.class, new StringMessageResponseHandler())
             .build();
 
