@@ -1,0 +1,19 @@
+name: Setup Gradle Environment
+description: Checkout repository, setup Java and prepare Gradle
+
+runs:
+  using: composite
+  steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    - name: Setup Java
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'temurin'
+        java-version: '21'
+        cache: 'gradle'
+
+    - name: Prepare Gradle
+      shell : bash
+      run: chmod +x ./gradlew

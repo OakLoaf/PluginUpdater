@@ -8,20 +8,25 @@ on:
       - reopened
 
 jobs:
-  build-project:
-    runs-on: ubuntu-latest
+  build-common:
+    name: 'Common Modules'
+    uses: ./.github/workflows/build-platform.yml
+    with:
+      display-name: 'Build common'
+      gradle-tasks: 'common:impl:build'
 
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v2
+  build-paper:
+    name: 'Paper Platform'
+    needs: build-common
+    uses: ./.github/workflows/build-platform.yml
+    with:
+      display-name: 'Build Paper platform'
+      gradle-tasks: 'platform:paper-plugin:build'
 
-      - name: Setup Java
-        uses: actions/setup-java@v3
-        with:
-          distribution: 'adopt'
-          java-version: '21'
-
-      - name: Build with Gradle
-        run: |
-          chmod +x ./gradlew
-          ./gradlew shadowJar
+  build-velocity:
+    name: 'Velocity Platform'
+    needs: build-common
+    uses: ./.github/workflows/build-platform.yml
+    with:
+      display-name: 'Build Velocity platform'
+      gradle-tasks: 'platform:velocity-plugin:build'

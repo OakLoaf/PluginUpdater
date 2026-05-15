@@ -1,0 +1,25 @@
+name: Build Platform
+
+on:
+  workflow_call:
+    inputs:
+      gradle-tasks:
+        required: true
+        type: string
+      display-name:
+        required: true
+        type: string
+
+jobs:
+  build:
+    name: "Build"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Gradle Environment
+        uses: ./.github/actions/setup-gradle
+
+      - name: ${{ inputs.display-name }}
+        run: ./gradlew ${{ inputs.gradle-tasks }}
