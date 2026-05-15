@@ -1,15 +1,12 @@
 package org.lushplugins.pluginupdater.api.updater;
 
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.lushplugins.pluginupdater.api.source.SourceData;
 import org.lushplugins.pluginupdater.api.version.VersionDifference;
 import org.lushplugins.pluginupdater.api.version.comparator.SemVerComparator;
 import org.lushplugins.pluginupdater.api.version.comparator.VersionComparator;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 public class PluginData {
     private final String pluginName;
@@ -20,15 +17,24 @@ public class PluginData {
 
     private boolean enabled = true;
     private VersionDifference versionDifference = VersionDifference.UNKNOWN;
+    private final Collection<String> tags;
     private final boolean allowDownloads;
     private boolean alreadyDownloaded = false;
     private boolean checkRan = false;
 
-    private PluginData(@NotNull String pluginName, @NotNull String currentVersion, @NotNull List<SourceData> sourceData, @Nullable VersionComparator comparator, boolean allowDownloads) {
+    private PluginData(
+        String pluginName,
+        String currentVersion,
+        List<SourceData> sourceData,
+        @Nullable VersionComparator comparator,
+        Collection<String> tags,
+        boolean allowDownloads
+    ) {
         this.pluginName = pluginName;
         this.currentVersion = currentVersion;
         this.sourceData = sourceData;
         this.comparator = comparator;
+        this.tags = tags;
         this.allowDownloads = allowDownloads;
     }
 
@@ -80,8 +86,16 @@ public class PluginData {
         return versionDifference;
     }
 
-    public void setVersionDifference(@NotNull VersionDifference versionDifference) {
+    public void setVersionDifference(VersionDifference versionDifference) {
         this.versionDifference = versionDifference;
+    }
+
+    public boolean hasTag(String tag) {
+        return tags.contains(tag);
+    }
+
+    public Collection<String> getTags() {
+        return tags;
     }
 
     public boolean areDownloadsAllowed() {
@@ -121,6 +135,7 @@ public class PluginData {
         private final String currentVersion;
         private List<SourceData> sourceData = Collections.emptyList();
         private VersionComparator comparator = SemVerComparator.INSTANCE;
+        private Collection<String> tags = Collections.emptyList();
         private boolean allowDownloads = true;
 
         private Builder(String pluginName, String currentVersion) {
@@ -143,6 +158,15 @@ public class PluginData {
             return this;
         }
 
+        public Builder tags(Collection<String> tags) {
+            this.tags = tags;
+            return this;
+        }
+
+        public Builder tag(String tag) {
+            return tags(Collections.singletonList(tag));
+        }
+
         public Builder allowDownloads(boolean allow) {
             this.allowDownloads = allow;
             return this;
@@ -162,6 +186,7 @@ public class PluginData {
                 this.currentVersion,
                 this.sourceData,
                 this.comparator,
+                this.tags,
                 this.allowDownloads
             );
         }
