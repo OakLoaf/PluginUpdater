@@ -22,7 +22,7 @@ tasks {
     }
 
     shadowJar {
-        archiveFileName.set("${rootProject.name}-${project.version}.jar")
+        archiveFileName.set("${rootProject.name}-paper-${project.version}.jar")
 
         relocate("com.electronwill.nightconfig", "org.lushplugins.pluginupdater.libraries.nightconfig")
     }

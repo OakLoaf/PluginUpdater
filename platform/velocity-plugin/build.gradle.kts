@@ -16,7 +16,7 @@ dependencies {
 
 tasks {
     shadowJar {
-        archiveFileName.set("${rootProject.name}-${project.version}.jar")
+        archiveFileName.set("${rootProject.name}-velocity-${project.version}.jar")
 
         relocate("com.electronwill.nightconfig", "org.lushplugins.pluginupdater.libraries.nightconfig")
     }
