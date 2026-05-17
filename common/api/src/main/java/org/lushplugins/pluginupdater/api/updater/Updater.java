@@ -1,0 +1,303 @@
+package org.lushplugins.pluginupdater.api.updater;
+
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.lushplugins.pluginupdater.api.listener.UpdateNotifier;
+import org.lushplugins.pluginupdater.api.source.SourceData;
+import org.lushplugins.pluginupdater.api.source.type.GithubSource;
+import org.lushplugins.pluginupdater.api.source.type.HangarSource;
+import org.lushplugins.pluginupdater.api.source.type.ModrinthSource;
+import org.lushplugins.pluginupdater.api.source.type.SpigotSource;
+import org.lushplugins.pluginupdater.api.util.DownloadLogger;
+import org.lushplugins.pluginupdater.api.source.Source;
+import org.lushplugins.pluginupdater.api.version.VersionDifference;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+
+@SuppressWarnings("unused")
+public class Updater {
+    private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
+    private final PluginInfo plugin;
+    private final PluginData pluginData;
+    private final File downloadDir;
+    private final UpdateNotifier<?> notifier;
+
+    private Updater(
+        @NotNull PluginInfo plugin,
+        @NotNull PluginData pluginData,
+        File downloadDir,
+        boolean notify,
+        String notificationPermission,
+        String notificationMessage,
+        UpdateNotifier.Constructor notifierConstructor
+    ) {
+        this.plugin = plugin;
+        this.pluginData = pluginData;
+        this.downloadDir = downloadDir;
+        this.notifier = notify ? notifierConstructor.apply(this, notificationMessage, notificationPermission) : null;
+    }
+
+    public ScheduledExecutorService getScheduler() {
+        return scheduler;
+    }
+
+    public PluginInfo getPluginInfo() {
+        return plugin;
+    }
+
+    public PluginData getPluginData() {
+        return pluginData;
+    }
+
+    public File getDownloadDir() {
+        return downloadDir;
+    }
+
+    public UpdateNotifier<?> getNotifier() {
+        return notifier;
+    }
+
+    /**
+     * @return Whether an update is available (Returns false if version has not been checked)
+     */
+    public boolean isUpdateAvailable() {
+        return pluginData.isUpdateAvailable();
+    }
+
+    /**
+     * @return Whether an update has already been downloaded
+     */
+    public boolean isAlreadyDownloaded() {
+        return pluginData.isAlreadyDownloaded();
+    }
+
+    /**
+     * Checks if an update for the plugin is available.
+     * @return A future containing whether an update is available.
+     */
+    public CompletableFuture<Boolean> checkForUpdate() {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                return Source.isUpdateAvailable(pluginData);
+            } catch (IOException e) {
+                plugin.getLogger().log(Level.SEVERE, e.getMessage(), e);
+                return false;
+            }
+        });
+    }
+
+    /**
+     * Downloads the latest version available version of the plugin.
+     * The download will not be attempted if no update is detected as available or if an update has already been
+     * downloaded.
+     * @return A future containing whether the download was successful.
+     */
+    public CompletableFuture<Boolean> attemptDownload() {
+        if (!pluginData.isEnabled() || !pluginData.isUpdateAvailable() || pluginData.isAlreadyDownloaded()) {
+            return CompletableFuture.completedFuture(false);
+        }
+
+        return download();
+    }
+
+    /**
+     * Forcefully downloads the latest version available version of the plugin.
+     * @return A future containing whether the download was successful.
+     */
+    public CompletableFuture<Boolean> forceDownload() {
+        return download();
+    }
+
+    private CompletableFuture<Boolean> download() {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                if (Source.download(pluginData, downloadDir)) {
+                    pluginData.setVersionDifference(VersionDifference.UNKNOWN);
+                    pluginData.setAlreadyDownloaded(true);
+                    return true;
+                } else {
+                    return false;
+                }
+            } catch (IOException e) {
+                plugin.getLogger().log(Level.SEVERE, e.getMessage(), e);
+                return false;
+            }
+        });
+    }
+
+    public void shutdown() {
+        scheduler.shutdown();
+    }
+
+    public static Builder builder(PluginInfo plugin, File downloadDir) {
+        return new Builder(plugin,  downloadDir);
+    }
+
+    public static class Builder {
+        private final PluginInfo plugin;
+        private final PluginData pluginData;
+        private File downloadDir;
+        private long checkFrequency = 600;
+        private boolean notify = true;
+        private String notificationPermission = "pluginupdater.notifications";
+        private String notificationMessage = "&#ffe27aA new &#e0c01b%plugin% &#ffe27aupdate is now available! &#e0c01b%current_version% &#ffe27a-> &#e0c01b%latest_version%";
+        private UpdateNotifier.Constructor notifierConstructor;
+        private File downloadLogFile;
+
+        private Builder(PluginInfo plugin, File downloadDir) {
+            this.plugin = plugin;
+            this.pluginData = PluginData.of(plugin);
+            this.downloadDir = downloadDir;
+        }
+
+        public Builder downloadDir(File downloadDir) {
+            this.downloadDir = downloadDir;
+            return this;
+        }
+
+        /**
+         * Add GitHub plugin data to be used for collecting update information
+         * (Sources should be added in order of priority).
+         * @param repo The plugin's GitHub repo (e.g. 'OakLoaf/PluginUpdater')
+         * @param token The GitHub access token (if required)
+         */
+        public Builder github(String repo, @Nullable String token) {
+            return source(new GithubSource.Data(repo, token));
+        }
+
+        /**
+         * Add GitHub plugin data to be used for collecting update information
+         * (Sources should be added in order of priority).
+         * @param repo The plugin's GitHub repo (e.g. 'OakLoaf/PluginUpdater')
+         */
+        public Builder github(String repo) {
+            return github(repo, null);
+        }
+
+        /**
+         * Add Hangar plugin data to be used for collecting update information
+         * (Sources should be added in order of priority).
+         * @param projectSlug The plugin's hangar project slug.
+         */
+        public Builder hangar(String projectSlug) {
+            return source(new HangarSource.Data(projectSlug));
+        }
+
+        /**
+         * Add Modrinth plugin data to be used for collecting update information
+         * (Sources should be added in order of priority).
+         * @param projectId The plugin's modrinth project id.
+         */
+        public Builder modrinth(String projectId) {
+            return source(new ModrinthSource.Data(projectId, ModrinthSource.ReleaseChannel.ALL));
+        }
+
+        /**
+         * Add Spigot plugin data to be used for collecting update information
+         * (Sources should be added in order of priority).
+         * @param resourceId The plugin's spigot resource id.
+         */
+        public Builder spigot(String resourceId) {
+            return source(new SpigotSource.Data(resourceId));
+        }
+
+        /**
+         * Add a plugin's source data to be used for collecting update information
+         * (Sources should be added in order of priority).
+         * @param sourceData The source data.
+         */
+        public Builder source(SourceData sourceData) {
+            this.pluginData.addSource(sourceData);
+            return this;
+        }
+
+        /**
+         * Sets whether a version check should be run upon building
+         * @param seconds Number of seconds between checks (Default: 600 seconds. Set to -1 to disable)
+         */
+        public Builder checkSchedule(long seconds) {
+            this.checkFrequency = seconds;
+            return this;
+        }
+
+        /**
+         * Sets whether notifications should be sent for this
+         * @param shouldSend Whether notifications should be sent.
+         */
+        public Builder notify(boolean shouldSend) {
+            this.notify = shouldSend;
+            return this;
+        }
+
+        /**
+         * Sets the required permission for players to receive update notifications
+         * @param permission The permission that players need to receive notifications.
+         *                   Defaults to {@code pluginupdater.notifications}
+         */
+        public Builder notificationPermission(@Nullable String permission) {
+            this.notificationPermission = permission;
+            return this;
+        }
+
+        /**
+         * Sets the update notification message.
+         * @param message The notification message.
+         */
+        public Builder notificationMessage(@NotNull String message) {
+            this.notificationMessage = message;
+            return this;
+        }
+
+        /**
+         * Sets the notification handler constructor, this is mainly to
+         * allow for supporting multiple different platforms
+         * @param notifierConstructor The notification handler constructor
+         */
+        public Builder notifier(@NotNull UpdateNotifier.Constructor notifierConstructor) {
+            this.notifierConstructor = notifierConstructor;
+            return this;
+        }
+
+        /**
+         * Sets the log file to log downloads in
+         * @param logFile The log file. Defaults to null.
+         */
+        public Builder logDownloads(@Nullable File logFile) {
+            this.downloadLogFile = logFile;
+            return this;
+        }
+
+        /**
+         * Builds and starts the Updater.
+         * @return The created Updater instance.
+         */
+        public Updater build() {
+            if (pluginData.getSourceData().isEmpty()) {
+                throw new IllegalStateException("At least 1 source must be registered before building the Updater.");
+            }
+
+            DownloadLogger.setLogFile(downloadLogFile);
+            Updater updater = new Updater(
+                plugin,
+                pluginData,
+                downloadDir,
+                notify,
+                notificationPermission,
+                notificationMessage,
+                notifierConstructor
+            );
+
+            if (checkFrequency > 0) {
+                updater.getScheduler().scheduleAtFixedRate(updater::checkForUpdate, 0, checkFrequency, TimeUnit.SECONDS);
+            }
+
+            return updater;
+        }
+    }
+}

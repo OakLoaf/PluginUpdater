@@ -1,0 +1,30 @@
+name: Sync Modrinth Page
+
+permissions:
+  contents: write
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - README.md
+
+jobs:
+  create_release:
+    runs-on: ubuntu-latest
+
+    env:
+      MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Sync Modrinth Page
+        if: env.MODRINTH_TOKEN != ''
+        run: |
+          chmod +x ./gradlew
+          ./gradlew modrinthSyncBody

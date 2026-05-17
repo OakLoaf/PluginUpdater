@@ -1,0 +1,159 @@
+BlueMap:
+  source: modrinth
+  modrinth-project-id: swbUV1cr
+Chunky:
+  source: modrinth
+  modrinth-project-id: fALzjamp
+ChunkyBorder:
+  source: modrinth
+  modrinth-project-id: s86X568j
+commandtimer:
+  source: github
+  github-repo: titivermeesch/CommandTimer
+CommandPanels:
+  source: spigot
+  spigot-resource-id: 67788
+CoreProtect:
+  source: modrinth
+  modrinth-project-id: Lu3KuzdV
+CrazyCrates:
+  source: modrinth
+  modrinth-project-id: r3BBZyf3
+DecentHolograms:
+  source: spigot
+  spigot-resource-id: 96927
+DeluxeMenus:
+  source: spigot
+  spigot-resource-id: 11734
+DiscordSRV:
+  source: modrinth
+  modrinth-project-id: UmLGoGij
+Dynmap:
+  source: modrinth
+  modrinth-project-id: fRQREgAc
+EpicRename:
+  source: spigot
+  spigot-resource-id: 4341
+EternalTags:
+  source: spigot
+  spigot-resource-id: 91842
+ExcellentCrates:
+  source: spigot
+  spigot-resource-id: 48732
+ExcellentEnchants:
+  source: spigot
+  spigot-resource-id: 61693
+FastAsyncWorldEdit:
+  source: modrinth
+  modrinth-project-id: z4HZZnLr
+ForcePack:
+  source: spigot
+  spigot-resource-id: 45439
+GPFlags:
+  source: spigot
+  spigot-resource-id: 55773
+GriefPrevention:
+  source: modrinth
+  modrinth-project-id: O4o4mKaq
+GSit:
+  source: spigot
+  spigot-resource-id: 62325
+HuskChat:
+  source: spigot
+  spigot-resource-id: 94496
+HuskHomes:
+  source: spigot
+  spigot-resource-id: 83767
+Multiverse-Core:
+  source: modrinth
+  modrinth-project-id: 3wmN97b8
+Multiverse-Inventories:
+  source: modrinth
+  modrinth-project-id: qvdtDX3s
+Multiverse-NetherPortals:
+  source: modrinth
+  modrinth-project-id: vtawPsTo
+Multiverse-Portals:
+  source: modrinth
+  modrinth-project-id: 8VMk6P0I
+Multiverse-SignPortals:
+  source: modrinth
+  modrinth-project-id: WuErDeI1
+NametagEdit:
+  source: spigot
+  spigot-resource-id: 3836
+nightcore:
+  source: github
+  github-repo: nulli0n/nightcore-spigot
+LuckPerms:
+  source: spigot
+  spigot-resource-id: 28140
+packetevents:
+  source: modrinth
+  modrinth-project-id: HYKaKraK
+PlaceholderAPI:
+  source: spigot
+  spigot-resource-id: 6245
+Plan:
+  source: github
+  github-repo: "plan-player-analytics/Plan"
+PlayerParticles:
+  source: spigot
+  spigot-resource-id: 40261
+SimplePortals:
+  source: spigot
+  spigot-resource-id: 56772
+SimpleVoiceChat:
+  source: modrinth
+  modrinth-project-id: 9eGKb6K1
+SkinsRestorer:
+  source: spigot
+  spigot-resource-id: 2124
+Skulls:
+  source: spigot
+  spigot-resource-id: 90098
+spark:
+  source: spigot
+  spigot-resource-id: 57242
+squaremap:
+  source: modrinth
+  modrinth-project-id: PFb7ZqK6
+SunLight:
+  source: spigot
+  spigot-resource-id: 67733
+TAB:
+  source: github
+  github-repo: "NEZNAMY/TAB"
+TabTPS:
+  source: modrinth
+  modrinth-project-id: cUhi3iB2
+Tebex:
+  source: modrinth
+  modrinth-project-id: nRA0jiJt
+Tweakin:
+  source: spigot
+  spigot-resource-id: 93444
+UltraCosmetics:
+  source: spigot
+  spigot-resource-id: 10905
+Vault:
+  source: spigot
+  spigot-resource-id: 34315
+VentureChat:
+  source: spigot
+  spigot-resource-id: 771
+ViaBackwards:
+  source: modrinth
+  modrinth-project-id: NpvuJQoq
+ViaRewind:
+  source: modrinth
+  modrinth-project-id: TbHIxhx5
+ViaVersion:
+  source: modrinth
+  modrinth-project-id: P1OZGk5p
+VillagerMarket:
+  source: spigot
+  spigot-resource-id: 82965
+WorldEdit:
+  source: modrinth
+  modrinth-project-id: 1u6JkXh5

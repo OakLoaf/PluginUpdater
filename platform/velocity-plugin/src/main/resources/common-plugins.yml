@@ -1,0 +1,33 @@
+ForcePack:
+  source: spigot
+  spigot-resource-id: 45439
+LuckPerms:
+  source: spigot
+  spigot-resource-id: 28140
+packetevents:
+  source: modrinth
+  modrinth-project-id: HYKaKraK
+Plan:
+  source: github
+  github-repo: "plan-player-analytics/Plan"
+spark:
+  source: spigot
+  spigot-resource-id: 57242
+TAB:
+  source: github
+  github-repo: "NEZNAMY/TAB"
+Tebex:
+  source: modrinth
+  modrinth-project-id: nRA0jiJt
+VentureChat:
+  source: spigot
+  spigot-resource-id: 771
+ViaBackwards:
+  source: modrinth
+  modrinth-project-id: NpvuJQoq
+ViaRewind:
+  source: modrinth
+  modrinth-project-id: TbHIxhx5
+ViaVersion:
+  source: modrinth
+  modrinth-project-id: P1OZGk5p
