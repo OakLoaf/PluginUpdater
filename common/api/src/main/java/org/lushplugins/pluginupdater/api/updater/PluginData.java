@@ -32,7 +32,7 @@ public class PluginData {
     ) {
         this.pluginName = pluginName;
         this.currentVersion = currentVersion;
-        this.sourceData = sourceData;
+        this.sourceData = new ArrayList<>(sourceData);
         this.comparator = comparator;
         this.tags = tags;
         this.allowDownloads = allowDownloads;
