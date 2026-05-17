@@ -76,3 +76,9 @@ allprojects {
         }
     }
 }
+
+subprojects {
+    tasks.matching { it.name == "modrinthSyncBody" }.configureEach {
+        enabled = false
+    }
+}
