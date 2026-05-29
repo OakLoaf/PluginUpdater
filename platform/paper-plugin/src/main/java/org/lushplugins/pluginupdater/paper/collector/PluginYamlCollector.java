@@ -33,7 +33,12 @@ public class PluginYamlCollector implements PluginDataCollector {
                 continue;
             }
 
-            InputStream resource = updater.platform().getResourceStream("plugin.yml");
+            InputStream resource = updater.platform().getResourceStream(plugin, "plugin.yml");
+            if (resource == null) {
+                // No plugin.yml (Likely uses paper-plugin.yml)
+                continue;
+            }
+
             Config config = YamlFormat.defaultInstance().createParser().parse(resource);
 
             SourceData sourceData = null;
