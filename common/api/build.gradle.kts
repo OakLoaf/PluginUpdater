@@ -8,6 +8,7 @@ sourceSets {
         blossom {
             javaSources {
                 property("version", project.version.toString())
+                property("commit", rootProject.getCurrentCommitHash())
             }
         }
     }

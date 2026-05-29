@@ -16,8 +16,13 @@ dependencies {
 tasks {
     processResources {
         inputs.property("version", rootProject.version)
+        inputs.property("commit", rootProject.getCurrentCommitHash())
+
         filesMatching("plugin.yml") {
-            expand("version" to rootProject.version)
+            expand(
+                "version" to rootProject.version,
+                "commit" to rootProject.getCurrentCommitHash()
+            )
         }
     }
 
