@@ -83,8 +83,8 @@ NametagEdit:
   source: spigot
   spigot-resource-id: 3836
 nightcore:
-  source: github
-  github-repo: nulli0n/nightcore-spigot
+  source: modrinth
+  modrinth-project-id: Y4NRwMW5
 LuckPerms:
   source: spigot
   spigot-resource-id: 28140
