@@ -10,7 +10,7 @@ dependencies {
     implementation(project(":common:impl"))
     implementation(project(":platform:paper-api"))
     implementation("org.lushplugins.chatcolorhandler:paper:8.1.1")
-    implementation("io.github.revxrsal:lamp.bukkit:4.0.0-rc.16")
+    implementation("io.github.revxrsal:lamp.bukkit:4.0.0-rc.17")
 }
 
 tasks {
