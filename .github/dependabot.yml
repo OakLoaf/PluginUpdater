@@ -4,3 +4,6 @@ updates:
     directory: "/"
     schedule:
       interval: daily
+    ignore:
+      - dependency-name: "io.papermc.paper:paper-api"
+        update-types: [ "version-update:semver-patch" ]
