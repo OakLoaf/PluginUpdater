@@ -2,10 +2,7 @@ package org.lushplugins.pluginupdater.common.config.deserializer;
 
 import com.electronwill.nightconfig.core.Config;
 import org.lushplugins.pluginupdater.api.source.SourceData;
-import org.lushplugins.pluginupdater.api.source.type.GithubSource;
-import org.lushplugins.pluginupdater.api.source.type.HangarSource;
-import org.lushplugins.pluginupdater.api.source.type.ModrinthSource;
-import org.lushplugins.pluginupdater.api.source.type.SpigotSource;
+import org.lushplugins.pluginupdater.api.source.type.*;
 import org.lushplugins.pluginupdater.common.platform.UpdaterPlatform;
 import org.lushplugins.pluginupdater.common.util.ConfigUtil;
 
@@ -20,12 +17,19 @@ public class SourceDataDeserializer {
             () -> platform.getLogger().log(Level.WARNING, "Deprecated: The config option 'updater' has been renamed to 'source'"));
 
         return switch (source) {
+            case GeyserSource.NAME -> geyserSourceData(config);
             case GithubSource.NAME -> githubSourceData(config);
             case HangarSource.NAME -> hangarSourceData(config);
             case ModrinthSource.NAME -> modrinthSourceData(config);
             case SpigotSource.NAME -> spigotSourceData(config);
             default -> null;
         };
+    }
+
+    public static GeyserSource.Data geyserSourceData(Config config) {
+        return new GeyserSource.Data(
+            config.get("project-name")
+        );
     }
 
     public static GithubSource.Data githubSourceData(Config config) {

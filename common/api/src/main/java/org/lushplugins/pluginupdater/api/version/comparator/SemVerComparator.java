@@ -7,7 +7,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class SemVerComparator implements VersionComparator {
-    public static final Pattern DEFAULT_PATTERN = Pattern.compile("(\\d+(\\.\\d+)*)");
+    public static final Pattern DEFAULT_PATTERN = Pattern.compile("(\\d+(?:\\.\\d+)*)");
     public static final SemVerComparator INSTANCE = new SemVerComparator(DEFAULT_PATTERN);
 
     private final Pattern pattern;
@@ -61,6 +61,11 @@ public class SemVerComparator implements VersionComparator {
                 .formatted(versionString, this.pattern.toString()));
         }
 
-        return matcher.group();
+        StringBuilder formatted = new StringBuilder(matcher.group(1));
+        for (int i = 2; i <= matcher.groupCount(); i++) {
+            formatted.append('.').append(matcher.group(i));
+        }
+
+        return formatted.toString();
     }
 }

@@ -4,6 +4,7 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.Nullable;
 import org.lushplugins.pluginupdater.api.source.SourceRegistry;
+import org.lushplugins.pluginupdater.api.source.type.GeyserSource;
 import org.lushplugins.pluginupdater.api.source.type.ModrinthSource;
 import org.lushplugins.pluginupdater.api.updater.PluginInfo;
 import org.lushplugins.pluginupdater.api.util.UpdaterConstants;
@@ -18,6 +19,7 @@ import java.util.logging.Logger;
 public record PaperPluginInfo(Plugin plugin) implements PluginInfo {
 
     static {
+        SourceRegistry.register(new GeyserSource("spigot"));
         SourceRegistry.register(new ModrinthSource(List.of(
             "bukkit", "spigot", "paper", "purpur", "folia"
         )));

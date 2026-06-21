@@ -21,9 +21,12 @@ public class HttpUtil {
     }
 
     public static HttpResponse<String> sendRequest(URI uri, @Nullable String payload) throws IOException, InterruptedException {
-        return HttpClient.newHttpClient().send(
-            prepareRequestBuilder(uri, payload).build(),
-            HttpResponse.BodyHandlers.ofString());
+        return HttpClient.newBuilder()
+            .followRedirects(HttpClient.Redirect.ALWAYS)
+            .build()
+            .send(
+                prepareRequestBuilder(uri, payload).build(),
+                HttpResponse.BodyHandlers.ofString());
     }
 
     public static HttpRequest.Builder prepareRequestBuilder(URI uri, @Nullable String payload) {
