@@ -10,6 +10,9 @@ import org.lushplugins.pluginupdater.api.util.HttpUtil;
 import org.lushplugins.pluginupdater.api.util.UpdaterConstants;
 import org.lushplugins.pluginupdater.api.source.Source;
 import org.lushplugins.pluginupdater.api.updater.PluginData;
+import org.lushplugins.pluginupdater.api.version.DownloadableRelease;
+import org.lushplugins.pluginupdater.api.version.Version;
+import org.lushplugins.pluginupdater.api.version.parser.RegexVersionParser;
 
 import java.io.IOException;
 import java.net.http.HttpResponse;
@@ -32,23 +35,27 @@ public class ModrinthSource implements Source {
     }
 
     @Override
-    public String getLatestVersion(PluginData pluginData, SourceData sourceData) throws IOException, InterruptedException {
+    public Version getLatestVersion(PluginData pluginData, SourceData sourceData) throws IOException, InterruptedException {
         if (!(sourceData instanceof Data modrinthData)) {
             return null;
         }
 
         JsonObject currVersionJson = getLatestVersion(pluginData, modrinthData);
-        return currVersionJson.get("version_number").getAsString();
+        String version = currVersionJson.get("version_number").getAsString();
+
+        return RegexVersionParser.INSTANCE.parse(version);
     }
 
     @Override
-    public String getDownloadUrl(PluginData pluginData, SourceData sourceData) throws IOException, InterruptedException {
+    public DownloadableRelease getDownloadableRelease(PluginData pluginData, SourceData sourceData) throws IOException, InterruptedException {
         if (!(sourceData instanceof Data modrinthData)) {
             return null;
         }
 
         JsonObject currVersionJson = getLatestVersion(pluginData, modrinthData);
-        return currVersionJson.get("files").getAsJsonArray().get(0).getAsJsonObject().get("url").getAsString();
+        String downloadUrl = currVersionJson.get("files").getAsJsonArray().get(0).getAsJsonObject().get("url").getAsString();
+
+        return new DownloadableRelease(downloadUrl, null, null);
     }
 
     private JsonArray getVersions(PluginData pluginData, Data modrinthData) throws IOException, InterruptedException {

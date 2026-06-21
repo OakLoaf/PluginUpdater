@@ -8,13 +8,15 @@ import org.lushplugins.pluginupdater.api.util.HttpUtil;
 import org.lushplugins.pluginupdater.api.util.UpdaterConstants;
 import org.lushplugins.pluginupdater.api.source.Source;
 import org.lushplugins.pluginupdater.api.updater.PluginData;
+import org.lushplugins.pluginupdater.api.version.DownloadableRelease;
+import org.lushplugins.pluginupdater.api.version.Version;
+import org.lushplugins.pluginupdater.api.version.parser.RegexVersionParser;
 
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -27,17 +29,19 @@ public class GithubSource implements Source {
     }
 
     @Override
-    public String getLatestVersion(PluginData pluginData, SourceData sourceData) throws IOException, InterruptedException {
+    public Version getLatestVersion(PluginData pluginData, SourceData sourceData) throws IOException, InterruptedException {
         if (!(sourceData instanceof Data githubData)) {
             return null;
         }
 
         JsonObject releaseJson = getLatestRelease(pluginData, githubData);
-        return releaseJson.get("tag_name").getAsString();
+        String version = releaseJson.get("tag_name").getAsString();
+
+        return RegexVersionParser.INSTANCE.parse(version);
     }
 
     @Override
-    public String getDownloadUrl(PluginData pluginData, SourceData sourceData) throws IOException, InterruptedException {
+    public DownloadableRelease getDownloadableRelease(PluginData pluginData, SourceData sourceData) throws IOException, InterruptedException {
         if (!(sourceData instanceof Data githubData)) {
             return null;
         }
@@ -46,28 +50,20 @@ public class GithubSource implements Source {
         JsonObject assetJson = releaseJson.get("assets").getAsJsonArray().get(0).getAsJsonObject();
 
         String token = githubData.token();
+        String downloadUrl;
+        Map<String, String> downloadHeaders;
         if (token != null && !token.isEmpty()) {
-            return assetJson.get("url").getAsString();
+            downloadUrl = assetJson.get("url").getAsString();
+
+            downloadHeaders = new HashMap<>();
+            downloadHeaders.put("Authorization", "Bearer " + token);
+            downloadHeaders.put("Accept", "application/octet-stream");
+        } else {
+            downloadUrl = assetJson.get("browser_download_url").getAsString();
+            downloadHeaders = null;
         }
 
-        return assetJson.get("browser_download_url").getAsString();
-    }
-
-    @Override
-    public Map<String, String> getDownloadHeaders(PluginData pluginData, SourceData sourceData) {
-        if (!(sourceData instanceof Data githubData)) {
-            return Collections.emptyMap();
-        }
-
-        String token = githubData.token();
-        if (token == null || token.isEmpty()) {
-            return Collections.emptyMap();
-        }
-
-        Map<String, String> headers = new HashMap<>();
-        headers.put("Authorization", "Bearer " + token);
-        headers.put("Accept", "application/octet-stream");
-        return headers;
+        return new DownloadableRelease(downloadUrl, downloadHeaders, null);
     }
 
     private JsonObject getLatestRelease(PluginData pluginData, Data githubData) throws IOException, InterruptedException {

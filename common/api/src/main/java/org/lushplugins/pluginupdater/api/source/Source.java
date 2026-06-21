@@ -4,6 +4,8 @@ import org.lushplugins.pluginupdater.api.exception.InvalidVersionFormatException
 import org.lushplugins.pluginupdater.api.updater.PluginData;
 import org.lushplugins.pluginupdater.api.util.DownloadLogger;
 import org.lushplugins.pluginupdater.api.util.UpdaterConstants;
+import org.lushplugins.pluginupdater.api.version.DownloadableRelease;
+import org.lushplugins.pluginupdater.api.version.Version;
 import org.lushplugins.pluginupdater.api.version.VersionDifference;
 import org.lushplugins.pluginupdater.api.version.comparator.VersionComparator;
 import org.lushplugins.pluginupdater.util.BuildParameters;
@@ -14,7 +16,6 @@ import java.net.URI;
 import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
-import java.util.Collections;
 import java.util.Map;
 import java.util.logging.Level;
 
@@ -23,17 +24,13 @@ public interface Source {
 
     String getName();
 
-    String getLatestVersion(PluginData pluginData, SourceData sourceData) throws IOException, InterruptedException;
+    Version getLatestVersion(PluginData pluginData, SourceData sourceData) throws IOException, InterruptedException;
 
-    String getDownloadUrl(PluginData pluginData, SourceData sourceData) throws IOException, InterruptedException;
-
-    default Map<String, String> getDownloadHeaders(PluginData pluginData, SourceData sourceData) throws IOException, InterruptedException {
-        return Collections.emptyMap();
-    }
+    DownloadableRelease getDownloadableRelease(PluginData pluginData, SourceData sourceData) throws IOException, InterruptedException;
 
     default boolean isUpdateAvailable(PluginData pluginData, SourceData sourceData) throws IOException, InterruptedException {
-        String currentVersion = pluginData.getCurrentVersion();
-        String latestVersion = getLatestVersion(pluginData, sourceData);
+        Version currentVersion = pluginData.getCurrentVersion();
+        Version latestVersion = getLatestVersion(pluginData, sourceData);
 
         VersionComparator comparator = pluginData.getOptionalComparator().orElse(sourceData.getDefaultComparator());
         VersionDifference versionDifference;
@@ -56,17 +53,17 @@ public interface Source {
     }
 
     default boolean download(PluginData pluginData, SourceData sourceData, File destinationDir) throws IOException, InterruptedException {
-        String pluginName = pluginData.getPluginName();
-        String latestVersion = pluginData.getLatestVersion();
-        String downloadUrl = getDownloadUrl(pluginData, sourceData);
-        if (downloadUrl == null) {
+        Version latestVersion = pluginData.getLatestVersion();
+        DownloadableRelease release = getDownloadableRelease(pluginData, sourceData);
+        if (release == null) {
             return false;
         }
 
+        String downloadUrl = release.downloadUrl();
         URL url = URI.create(downloadUrl).toURL();
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.addRequestProperty("User-Agent", "PluginUpdater/" + BuildParameters.VERSION);
-        for (Map.Entry<String, String> header : getDownloadHeaders(pluginData, sourceData).entrySet()) {
+        for (Map.Entry<String, String> header : release.downloadHeaders().entrySet()) {
             connection.addRequestProperty(header.getKey(), header.getValue());
         }
         connection.setInstanceFollowRedirects(true);
@@ -79,7 +76,7 @@ public interface Source {
         // Get file name or default to PluginName-Version.jar
         String fileName = url.getFile();
         if (fileName.isEmpty() || fileName.contains("/") || fileName.contains("\\")) {
-            fileName = pluginName + "-" + latestVersion + ".jar";
+            fileName = pluginData.getPluginName() + "-" + latestVersion.version() + ".jar";
         }
 
         // Ensures update folder exists
@@ -105,7 +102,7 @@ public interface Source {
         return -1;
     }
 
-    static String getLatestVersion(PluginData pluginData) throws IOException {
+    static Version getLatestVersion(PluginData pluginData) throws IOException {
         try {
             return attemptOnSources(pluginData, (versionChecker, sourceData) -> {
                 return versionChecker.getLatestVersion(pluginData, sourceData);
@@ -115,10 +112,10 @@ public interface Source {
         }
     }
 
-    static String getDownloadUrl(PluginData pluginData) throws IOException {
+    static DownloadableRelease getDownloadableRelease(PluginData pluginData) throws IOException {
         try {
-            return attemptOnSources(pluginData, (versionChecker, sourceData) -> {
-                return versionChecker.getDownloadUrl(pluginData, sourceData);
+            return attemptOnSources(pluginData, (source, sourceData) -> {
+                return source.getDownloadableRelease(pluginData, sourceData);
             });
         } catch (IOException e) {
             throw new IOException("Failed to get download url for plugin '" + pluginData.getPluginName() + "'.", e);

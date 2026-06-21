@@ -7,6 +7,9 @@ import org.lushplugins.pluginupdater.api.updater.PluginData;
 import org.lushplugins.pluginupdater.api.util.HttpUtil;
 import org.lushplugins.pluginupdater.api.util.UpdaterConstants;
 import org.lushplugins.pluginupdater.api.source.Source;
+import org.lushplugins.pluginupdater.api.version.DownloadableRelease;
+import org.lushplugins.pluginupdater.api.version.Version;
+import org.lushplugins.pluginupdater.api.version.parser.RegexVersionParser;
 
 import java.io.IOException;
 import java.net.http.HttpResponse;
@@ -20,7 +23,7 @@ public class SpigotSource implements Source {
     }
 
     @Override
-    public String getLatestVersion(PluginData pluginData, SourceData sourceData) throws IOException, InterruptedException {
+    public Version getLatestVersion(PluginData pluginData, SourceData sourceData) throws IOException, InterruptedException {
         if (!(sourceData instanceof Data(String resourceId))) {
             return null;
         }
@@ -33,14 +36,22 @@ public class SpigotSource implements Source {
         }
 
         JsonObject pluginJson = JsonParser.parseString(response.body()).getAsJsonObject();
-        return pluginJson.get("name").getAsString();
+        String version = pluginJson.get("name").getAsString();
+
+        return RegexVersionParser.INSTANCE.parse(version);
     }
 
     @Override
-    public String getDownloadUrl(PluginData pluginData, SourceData sourceData) {
-        return sourceData instanceof Data(String resourceId) ?
-            String.format("%s/resources/%s/download", UpdaterConstants.Endpoint.SPIGET, resourceId) :
-            null;
+    public DownloadableRelease getDownloadableRelease(PluginData pluginData, SourceData sourceData) {
+        if (!(sourceData instanceof Data(String resourceId))) {
+            return null;
+        }
+
+        String downloadUrl = "%s/resources/%s/download".formatted(
+            UpdaterConstants.Endpoint.SPIGET,
+            resourceId);
+
+        return new DownloadableRelease(downloadUrl, null, null);
     }
 
     @Override
