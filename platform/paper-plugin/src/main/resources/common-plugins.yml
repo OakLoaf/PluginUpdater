@@ -51,16 +51,13 @@ floodgate:
   project-name: floodgate
   comparator:
     type: sem-ver
-    pattern: "(\d+(?:\.\d+)*).+\(?b?(\d+)?\D?"
+    pattern: "(\\d+(?:\\.\\d+)*).+\\(?b?(\\d+)?\\D?"
 ForcePack:
   source: spigot
   spigot-resource-id: 45439
 Geyser-Spigot:
   source: geyser
   project-name: geyser
-  comparator:
-    type: sem-ver
-    pattern: "(\d+(?:\.\d+)*).+\(?b?(\d+)?\D?"
 GPFlags:
   source: spigot
   spigot-resource-id: 55773

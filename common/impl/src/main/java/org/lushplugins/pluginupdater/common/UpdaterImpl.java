@@ -17,6 +17,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 public class UpdaterImpl {
@@ -99,7 +100,13 @@ public class UpdaterImpl {
                 .toList();
             List<PluginData> collectedPluginData = new ArrayList<>();
             for (PluginDataCollector collector : collectors) {
-                List<PluginData> foundPluginData = collector.collect(unknownPlugins.values());
+                List<PluginData> foundPluginData;
+                try {
+                    foundPluginData = collector.collect(unknownPlugins.values());
+                } catch (Throwable e) {
+                    platform.getLogger().log(Level.WARNING, "Caught exception whilst collecting unknown plugin data: ", e);
+                    continue;
+                }
 
                 collectedPluginData.addAll(foundPluginData);
                 for (PluginData pluginData : foundPluginData) {

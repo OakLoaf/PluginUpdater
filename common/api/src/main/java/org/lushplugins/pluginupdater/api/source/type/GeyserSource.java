@@ -7,6 +7,9 @@ import org.lushplugins.pluginupdater.api.source.SourceData;
 import org.lushplugins.pluginupdater.api.updater.PluginData;
 import org.lushplugins.pluginupdater.api.util.HttpUtil;
 import org.lushplugins.pluginupdater.api.util.UpdaterConstants;
+import org.lushplugins.pluginupdater.api.version.DownloadableRelease;
+import org.lushplugins.pluginupdater.api.version.Version;
+import org.lushplugins.pluginupdater.api.version.parser.RegexVersionParser;
 
 import java.io.IOException;
 import java.net.http.HttpResponse;
@@ -26,7 +29,7 @@ public class GeyserSource implements Source {
     }
 
     @Override
-    public String getLatestVersion(PluginData pluginData, SourceData sourceData) throws IOException, InterruptedException {
+    public Version getLatestVersion(PluginData pluginData, SourceData sourceData) throws IOException, InterruptedException {
         if (!(sourceData instanceof GeyserSource.Data(String projectName))) {
             return null;
         }
@@ -42,17 +45,25 @@ public class GeyserSource implements Source {
         String version = releaseJson.get("version").getAsString();
         int buildNum = releaseJson.get("build").getAsInt();
 
-        return "%s-SNAPSHOT (b%s)".formatted(version, buildNum);
+        return RegexVersionParser.INSTANCE.parse(version)
+            .withBuildNum(buildNum);
     }
 
     @Override
-    public String getDownloadUrl(PluginData pluginData, SourceData sourceData) {
-        return sourceData instanceof GeyserSource.Data(String projectName) ?
-            "%s/projects/%s/versions/latest/builds/latest/downloads/%s".formatted(
-                UpdaterConstants.Endpoint.GEYSER,
-                projectName,
-                this.platform) :
-            null;
+    public DownloadableRelease getDownloadableRelease(PluginData pluginData, SourceData sourceData) {
+        if (!(sourceData instanceof Data(String projectName))) {
+            return null;
+        }
+
+        Version version = pluginData.getLatestVersion();
+        String downloadUrl = "%s/projects/%s/versions/%s/builds/%s/downloads/%s".formatted(
+            UpdaterConstants.Endpoint.GEYSER,
+            projectName,
+            version.version(),
+            version.buildNum(),
+            this.platform);
+
+        return new DownloadableRelease(downloadUrl, null, null);
     }
 
     @Override

@@ -26,8 +26,8 @@ public abstract class UpdateNotifier<T> {
             if (pluginData.isUpdateAvailable() && !pluginData.isAlreadyDownloaded()) {
                 String message = this.message
                     .replace("%plugin%", pluginData.getPluginName())
-                    .replace("%current_version%", pluginData.getCurrentVersion())
-                    .replace("%latest_version%", pluginData.getLatestVersion());
+                    .replace("%current_version%", pluginData.getCurrentVersion().rawVersionString())
+                    .replace("%latest_version%", pluginData.getLatestVersion().rawVersionString());
 
                 updater.getScheduler().schedule(() -> sendMessage(user, message), 3, TimeUnit.SECONDS);
             }

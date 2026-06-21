@@ -14,7 +14,6 @@ public class ComparatorRegistry {
     private static final Map<String, Function<Config, VersionComparator>> comparators = new HashMap<>();
 
     static {
-        register("build", ComparatorDeserializer::buildNum);
         register("cal-ver", ComparatorDeserializer::calVer);
         register("sem-ver", ComparatorDeserializer::semVer);
     }

@@ -5,6 +5,9 @@ import org.lushplugins.pluginupdater.api.util.HttpUtil;
 import org.lushplugins.pluginupdater.api.util.UpdaterConstants;
 import org.lushplugins.pluginupdater.api.source.Source;
 import org.lushplugins.pluginupdater.api.updater.PluginData;
+import org.lushplugins.pluginupdater.api.version.DownloadableRelease;
+import org.lushplugins.pluginupdater.api.version.Version;
+import org.lushplugins.pluginupdater.api.version.parser.RegexVersionParser;
 
 import java.io.IOException;
 import java.net.http.HttpResponse;
@@ -18,7 +21,7 @@ public class HangarSource implements Source {
     }
 
     @Override
-    public String getLatestVersion(PluginData pluginData, SourceData sourceData) throws IOException, InterruptedException {
+    public Version getLatestVersion(PluginData pluginData, SourceData sourceData) throws IOException, InterruptedException {
         if (!(sourceData instanceof Data(String projectSlug))) {
             return null;
         }
@@ -29,17 +32,24 @@ public class HangarSource implements Source {
             throw new IllegalStateException("Received invalid response code (" + response.statusCode() + ") whilst checking '" + pluginData.getPluginName() + "' for updates.");
         }
 
-        return response.body();
+        String version = response.body();
+
+        return RegexVersionParser.INSTANCE.parse(version);
     }
 
     @Override
-    public String getDownloadUrl(PluginData pluginData, SourceData sourceData) {
-        return sourceData instanceof Data(String projectSlug) ?
-            "%s/projects/%s/versions/%s/PAPER/download".formatted(
-                UpdaterConstants.Endpoint.HANGAR,
-                projectSlug,
-                pluginData.getLatestVersion()) :
-            null;
+    public DownloadableRelease getDownloadableRelease(PluginData pluginData, SourceData sourceData) {
+        if (!(sourceData instanceof Data(String projectSlug))) {
+            return null;
+        }
+
+        Version version = pluginData.getLatestVersion();
+        String downloadUrl = "%s/projects/%s/versions/%s/PAPER/download".formatted(
+            UpdaterConstants.Endpoint.HANGAR,
+            projectSlug,
+            version.version());
+
+        return new DownloadableRelease(downloadUrl, null, null);
     }
 
     @Override

@@ -1,6 +1,7 @@
 package org.lushplugins.pluginupdater.api.version.comparator;
 
 import org.lushplugins.pluginupdater.api.exception.InvalidVersionFormatException;
+import org.lushplugins.pluginupdater.api.version.Version;
 import org.lushplugins.pluginupdater.api.version.VersionDifference;
 
 import java.time.LocalDate;
@@ -26,15 +27,15 @@ public class CalVerComparator implements VersionComparator {
      * <br> {@link VersionDifference#PATCH} if the latest version has the same date but later time
      */
     @Override
-    public VersionDifference getVersionDifference(String currentVersionString, String latestVersionString) throws InvalidVersionFormatException {
-        LocalDateTime currentVersion = parseDateTime(currentVersionString);
-        LocalDateTime latestVersion = parseDateTime(latestVersionString);
-        if (!latestVersion.isAfter(currentVersion)) {
-            return VersionDifference.LATEST;
+    public VersionDifference getVersionDifference(Version currentVersion, Version latestVersion) throws InvalidVersionFormatException {
+        LocalDateTime currentVersionDateTime = parseDateTime(currentVersion.rawVersionString());
+        LocalDateTime latestVersionDateTime = parseDateTime(latestVersion.rawVersionString());
+        if (!latestVersionDateTime.isAfter(currentVersionDateTime)) {
+            return getBuildDifference(currentVersion, latestVersion);
         }
 
-        LocalDate currentVersionDate = currentVersion.toLocalDate();
-        LocalDate latestVersionDate = latestVersion.toLocalDate();
+        LocalDate currentVersionDate = currentVersionDateTime.toLocalDate();
+        LocalDate latestVersionDate = latestVersionDateTime.toLocalDate();
         return latestVersionDate.isEqual(currentVersionDate) ? VersionDifference.PATCH : VersionDifference.MINOR;
     }
 

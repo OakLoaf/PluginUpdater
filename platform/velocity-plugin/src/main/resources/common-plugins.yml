@@ -3,7 +3,7 @@ floodgate:
   project-name: floodgate
   comparator:
     type: sem-ver
-    pattern: "(\\d+(?:\\.\\d+)*).+\\(b(\\d+)\\D"
+    pattern: "(\\d+(?:\\.\\d+)*).+\\(?b?(\\d+)?\\D?"
 ForcePack:
   source: spigot
   spigot-resource-id: 45439

@@ -64,7 +64,7 @@ public record UpdatesCommand(UpdaterImpl updater) {
                 return;
             }
 
-            String message = "<white>" + pluginData.getPluginName() + ": <gray>" + pluginData.getCurrentVersion() + " <white>-> " + (versionDifference.equals(VersionDifference.MAJOR) ? majorUpdateAvailableColor : updateAvailableColor) + pluginData.getLatestVersion();
+            String message = "<white>" + pluginData.getPluginName() + ": <gray>" + pluginData.getCurrentVersion().rawVersionString() + " <white>-> " + (versionDifference.equals(VersionDifference.MAJOR) ? majorUpdateAvailableColor : updateAvailableColor) + pluginData.getLatestVersion().rawVersionString();
 
             if (pluginData.isAlreadyDownloaded()) {
                 message += latestVersionColor + " ᴅᴏᴡɴʟᴏᴀᴅᴇᴅ";

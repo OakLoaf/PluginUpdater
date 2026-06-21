@@ -2,18 +2,20 @@ package org.lushplugins.pluginupdater.api.updater;
 
 import org.jetbrains.annotations.Nullable;
 import org.lushplugins.pluginupdater.api.source.SourceData;
+import org.lushplugins.pluginupdater.api.version.Version;
 import org.lushplugins.pluginupdater.api.version.VersionDifference;
 import org.lushplugins.pluginupdater.api.version.comparator.SemVerComparator;
 import org.lushplugins.pluginupdater.api.version.comparator.VersionComparator;
+import org.lushplugins.pluginupdater.api.version.parser.RegexVersionParser;
 
 import java.util.*;
 
 public class PluginData {
     private final String pluginName;
-    private final String currentVersion;
+    private final Version currentVersion;
     private final List<SourceData> sourceData;
     private final VersionComparator comparator;
-    private String latestVersion;
+    private Version latestVersion;
 
     private boolean enabled = true;
     private VersionDifference versionDifference = VersionDifference.UNKNOWN;
@@ -24,7 +26,7 @@ public class PluginData {
 
     private PluginData(
         String pluginName,
-        String currentVersion,
+        Version currentVersion,
         List<SourceData> sourceData,
         @Nullable VersionComparator comparator,
         Collection<String> tags,
@@ -42,7 +44,7 @@ public class PluginData {
         return pluginName;
     }
 
-    public String getCurrentVersion() {
+    public Version getCurrentVersion() {
         return currentVersion;
     }
 
@@ -62,11 +64,11 @@ public class PluginData {
         this.sourceData.add(sourceData);
     }
 
-    public String getLatestVersion() {
+    public Version getLatestVersion() {
         return latestVersion;
     }
 
-    public void setLatestVersion(String latestVersion) {
+    public void setLatestVersion(Version latestVersion) {
         this.latestVersion = latestVersion;
     }
 
@@ -132,7 +134,7 @@ public class PluginData {
 
     public static class Builder {
         private final String pluginName;
-        private final String currentVersion;
+        private final Version currentVersion;
         private List<SourceData> sourceData = Collections.emptyList();
         private VersionComparator comparator = SemVerComparator.INSTANCE;
         private Collection<String> tags = Collections.emptyList();
@@ -140,7 +142,7 @@ public class PluginData {
 
         private Builder(String pluginName, String currentVersion) {
             this.pluginName = pluginName;
-            this.currentVersion = currentVersion;
+            this.currentVersion = RegexVersionParser.INSTANCE.parse(currentVersion);
         }
 
         public Builder sourceData(SourceData sourceData) {
