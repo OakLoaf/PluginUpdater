@@ -16,7 +16,6 @@ import java.util.logging.Level;
 
 public class PluginDataDeserializer {
 
-    // TODO: Add VersionParser in root (for current version) and in source (for remote/latest version, default to current if not specified)
     public static PluginData deserialize(UpdaterImpl updater, String pluginName, Config config) {
         PluginInfo currPlugin = updater.platform().getPlugin(pluginName);
         if (currPlugin == null) {
