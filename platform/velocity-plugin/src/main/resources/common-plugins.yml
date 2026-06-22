@@ -1,9 +1,8 @@
 floodgate:
   source: geyser
   project-name: floodgate
-  comparator:
-    type: sem-ver
-    pattern: "(\\d+(?:\\.\\d+)*).+\\(?b?(\\d+)?\\D?"
+  version-format: "<version>-.+ (b<build>-<commit>)"
+  latest-version-format: "<version>"
 ForcePack:
   source: spigot
   spigot-resource-id: 45439

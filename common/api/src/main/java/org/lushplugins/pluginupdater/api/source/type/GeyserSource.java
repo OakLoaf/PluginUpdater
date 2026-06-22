@@ -45,7 +45,8 @@ public class GeyserSource implements Source {
         String version = releaseJson.get("version").getAsString();
         int buildNum = releaseJson.get("build").getAsInt();
 
-        return RegexVersionParser.INSTANCE.parse(version)
+        return pluginData.getLatestVersionParser().parse(version)
+            .withRawVersionString("%s (b%s)".formatted(version, buildNum))
             .withBuildNum(buildNum);
     }
 

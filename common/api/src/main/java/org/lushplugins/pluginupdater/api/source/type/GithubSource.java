@@ -37,7 +37,7 @@ public class GithubSource implements Source {
         JsonObject releaseJson = getLatestRelease(pluginData, githubData);
         String version = releaseJson.get("tag_name").getAsString();
 
-        return RegexVersionParser.INSTANCE.parse(version);
+        return pluginData.getLatestVersionParser().parse(version);
     }
 
     @Override

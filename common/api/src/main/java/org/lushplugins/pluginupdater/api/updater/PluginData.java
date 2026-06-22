@@ -7,12 +7,14 @@ import org.lushplugins.pluginupdater.api.version.VersionDifference;
 import org.lushplugins.pluginupdater.api.version.comparator.SemVerComparator;
 import org.lushplugins.pluginupdater.api.version.comparator.VersionComparator;
 import org.lushplugins.pluginupdater.api.version.parser.RegexVersionParser;
+import org.lushplugins.pluginupdater.api.version.parser.VersionParser;
 
 import java.util.*;
 
 public class PluginData {
     private final String pluginName;
     private final Version currentVersion;
+    private final VersionParser latestVersionParser;
     private final List<SourceData> sourceData;
     private final VersionComparator comparator;
     private Version latestVersion;
@@ -27,6 +29,7 @@ public class PluginData {
     private PluginData(
         String pluginName,
         Version currentVersion,
+        VersionParser latestVersionParser,
         List<SourceData> sourceData,
         @Nullable VersionComparator comparator,
         Collection<String> tags,
@@ -34,6 +37,7 @@ public class PluginData {
     ) {
         this.pluginName = pluginName;
         this.currentVersion = currentVersion;
+        this.latestVersionParser = latestVersionParser;
         this.sourceData = new ArrayList<>(sourceData);
         this.comparator = comparator;
         this.tags = tags;
@@ -46,6 +50,10 @@ public class PluginData {
 
     public Version getCurrentVersion() {
         return currentVersion;
+    }
+
+    public VersionParser getLatestVersionParser() {
+        return latestVersionParser;
     }
 
     public List<SourceData> getSourceData() {
@@ -70,6 +78,10 @@ public class PluginData {
 
     public void setLatestVersion(Version latestVersion) {
         this.latestVersion = latestVersion;
+    }
+
+    public void setLatestVersion(String latestVersion) {
+        setLatestVersion(this.latestVersionParser.parse(latestVersion));
     }
 
     public boolean isEnabled() {
@@ -134,7 +146,9 @@ public class PluginData {
 
     public static class Builder {
         private final String pluginName;
-        private final Version currentVersion;
+        private final String currentVersion;
+        private VersionParser versionParser = RegexVersionParser.INSTANCE;
+        private VersionParser latestVersionParser;
         private List<SourceData> sourceData = Collections.emptyList();
         private VersionComparator comparator = SemVerComparator.INSTANCE;
         private Collection<String> tags = Collections.emptyList();
@@ -142,7 +156,17 @@ public class PluginData {
 
         private Builder(String pluginName, String currentVersion) {
             this.pluginName = pluginName;
-            this.currentVersion = RegexVersionParser.INSTANCE.parse(currentVersion);
+            this.currentVersion = currentVersion;
+        }
+
+        public Builder versionParser(VersionParser versionParser) {
+            this.versionParser = versionParser;
+            return this;
+        }
+
+        public Builder latestVersionParser(VersionParser latestVersionParser) {
+            this.latestVersionParser = latestVersionParser;
+            return this;
         }
 
         public Builder sourceData(SourceData sourceData) {
@@ -185,7 +209,8 @@ public class PluginData {
         public PluginData build() {
             return new PluginData(
                 this.pluginName,
-                this.currentVersion,
+                this.versionParser.parse(this.currentVersion),
+                this.latestVersionParser != null ? this.latestVersionParser : this.versionParser,
                 this.sourceData,
                 this.comparator,
                 this.tags,

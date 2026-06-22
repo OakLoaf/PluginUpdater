@@ -5,6 +5,8 @@ import org.lushplugins.pluginupdater.api.source.SourceData;
 import org.lushplugins.pluginupdater.api.updater.PluginData;
 import org.lushplugins.pluginupdater.api.updater.PluginInfo;
 import org.lushplugins.pluginupdater.api.version.comparator.VersionComparator;
+import org.lushplugins.pluginupdater.api.version.parser.RegexVersionParser;
+import org.lushplugins.pluginupdater.api.version.parser.VersionParser;
 import org.lushplugins.pluginupdater.common.UpdaterImpl;
 import org.lushplugins.pluginupdater.common.config.ComparatorRegistry;
 
@@ -20,6 +22,9 @@ public class PluginDataDeserializer {
         if (currPlugin == null) {
             return null;
         }
+
+        VersionParser versionParser = config.contains("version-format") ? new RegexVersionParser(config.get("version-format")) : RegexVersionParser.INSTANCE;
+        VersionParser latestVersionParser = config.contains("latest-version-format") ? new RegexVersionParser(config.get("latest-version-format")) : versionParser;
 
         VersionComparator comparator;
         Config comparatorConfig = config.get("comparator");
@@ -37,6 +42,8 @@ public class PluginDataDeserializer {
             SourceData sourceData = SourceDataDeserializer.deserialize(updater.platform(), config);
             if (sourceData != null) {
                 return PluginData.builder(currPlugin)
+                    .versionParser(versionParser)
+                    .latestVersionParser(latestVersionParser)
                     .sourceData(sourceData)
                     .comparator(comparator)
                     .tags(tags)

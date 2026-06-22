@@ -43,7 +43,7 @@ public class ModrinthSource implements Source {
         JsonObject currVersionJson = getLatestVersion(pluginData, modrinthData);
         String version = currVersionJson.get("version_number").getAsString();
 
-        return RegexVersionParser.INSTANCE.parse(version);
+        return pluginData.getLatestVersionParser().parse(version);
     }
 
     @Override

@@ -34,7 +34,7 @@ public class HangarSource implements Source {
 
         String version = response.body();
 
-        return RegexVersionParser.INSTANCE.parse(version);
+        return pluginData.getLatestVersionParser().parse(version);
     }
 
     @Override

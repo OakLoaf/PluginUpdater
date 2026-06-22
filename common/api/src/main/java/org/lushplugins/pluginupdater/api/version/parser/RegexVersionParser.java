@@ -40,7 +40,7 @@ public class RegexVersionParser implements VersionParser {
             .replace("(", "\\(")
             .replace(")", "\\)")
             .replace("<version>", "(?<version>\\d+(?:\\.\\d+)*)")
-            .replace("<build>", "(?<build>\\d+")
+            .replace("<build>", "(?<build>\\d+)")
             .replace("<commit>", "(?<commit>.+)"));
     }
 

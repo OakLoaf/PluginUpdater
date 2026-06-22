@@ -9,6 +9,10 @@ public record Version(
     @Nullable String commitHash
 ) {
 
+    public Version withRawVersionString(String rawVersionString) {
+        return new Version(rawVersionString, version, buildNum, commitHash);
+    }
+
     public Version withBuildNum(@Nullable Integer buildNum) {
         return new Version(rawVersionString, version, buildNum, commitHash);
     }

@@ -38,7 +38,7 @@ public class SpigotSource implements Source {
         JsonObject pluginJson = JsonParser.parseString(response.body()).getAsJsonObject();
         String version = pluginJson.get("name").getAsString();
 
-        return RegexVersionParser.INSTANCE.parse(version);
+        return pluginData.getLatestVersionParser().parse(version);
     }
 
     @Override
