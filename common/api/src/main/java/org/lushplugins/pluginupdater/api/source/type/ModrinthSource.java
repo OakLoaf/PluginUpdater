@@ -1,6 +1,7 @@
 package org.lushplugins.pluginupdater.api.source.type;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import org.jetbrains.annotations.ApiStatus;
@@ -12,7 +13,6 @@ import org.lushplugins.pluginupdater.api.source.Source;
 import org.lushplugins.pluginupdater.api.updater.PluginData;
 import org.lushplugins.pluginupdater.api.version.DownloadableRelease;
 import org.lushplugins.pluginupdater.api.version.Version;
-import org.lushplugins.pluginupdater.api.version.parser.RegexVersionParser;
 
 import java.io.IOException;
 import java.net.http.HttpResponse;
@@ -22,6 +22,7 @@ import java.util.stream.Collectors;
 
 public class ModrinthSource implements Source {
     public static final String NAME = "modrinth";
+    public static final String VERSION_NUMBER = "version_number";
 
     private final List<String> loaders;
 
@@ -41,7 +42,7 @@ public class ModrinthSource implements Source {
         }
 
         JsonObject currVersionJson = getLatestVersion(pluginData, modrinthData);
-        String version = currVersionJson.get("version_number").getAsString();
+        String version = currVersionJson.get(VERSION_NUMBER).getAsString();
 
         return pluginData.getLatestVersionParser().parse(version);
     }
@@ -88,7 +89,22 @@ public class ModrinthSource implements Source {
                 .formatted(pluginData.getPluginName() ));
         }
 
-        return versions.get(0).getAsJsonObject();
+        // Prefer Primary Loader
+        JsonObject latestVersionJson = versions.get(0).getAsJsonObject();
+        String latestVersion = latestVersionJson.get(VERSION_NUMBER).getAsString();
+        String id = latestVersionJson.get("id").getAsString();
+        for (JsonElement version : versions) {
+            if (version.getAsJsonObject().get(VERSION_NUMBER).getAsString().equals(latestVersion)) break;
+
+            if (!version.getAsJsonObject().get(VERSION_NUMBER).getAsString().equals(id) &&
+                    version.getAsJsonObject().get(VERSION_NUMBER).getAsString().equals(latestVersion) &&
+                    version.getAsJsonObject().get("loaders").getAsJsonArray().get(0).getAsString().equals(this.loaders.getFirst())) {
+                latestVersionJson = version.getAsJsonObject();
+                break;
+            }
+        }
+
+        return latestVersionJson;
     }
 
     @Override
