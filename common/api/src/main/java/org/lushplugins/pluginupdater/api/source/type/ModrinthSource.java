@@ -24,9 +24,15 @@ public class ModrinthSource implements Source {
     public static final String NAME = "modrinth";
 
     private final List<String> loaders;
+    private String serverVersion = null;
 
     public ModrinthSource(List<String> loaders) {
         this.loaders = loaders;
+    }
+
+    public ModrinthSource(List<String> loaders, String serverVersion) {
+        this(loaders);
+        this.serverVersion = serverVersion;
     }
 
     @Override
@@ -65,6 +71,10 @@ public class ModrinthSource implements Source {
                 .map(s -> "%22" + s + "%22")
                 .collect(Collectors.joining(",", "[", "]")))
             .append("&include_changelog=false");
+
+        if (serverVersion != null) {
+            uriBuilder.append("&game_versions=").append("[%22").append(serverVersion).append("%22]");
+        }
 
 
         if (modrinthData.filtersReleaseChannel()) {
