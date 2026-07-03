@@ -1,7 +1,9 @@
 package org.lushplugins.pluginupdater.paper.api.plugin;
 
+import io.papermc.paper.ServerBuildInfo;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.lushplugins.pluginupdater.api.source.SourceRegistry;
 import org.lushplugins.pluginupdater.api.source.type.GeyserSource;
@@ -20,9 +22,10 @@ public record PaperPluginInfo(Plugin plugin) implements PluginInfo {
 
     static {
         SourceRegistry.register(new GeyserSource("spigot"));
-        SourceRegistry.register(new ModrinthSource(List.of(
-            "bukkit", "spigot", "paper", "purpur", "folia"
-        )));
+
+        SourceRegistry.register(new ModrinthSource(
+                List.of("bukkit", "spigot", "paper", "purpur", "folia"),
+                ServerBuildInfo.buildInfo().minecraftVersionId()));
     }
 
     @Override
@@ -31,8 +34,8 @@ public record PaperPluginInfo(Plugin plugin) implements PluginInfo {
     }
 
     @Override
-    public String getVersion() {
-        return plugin.getDescription().getVersion();
+    public @NotNull String getVersion() {
+        return plugin.getPluginMeta().getVersion();
     }
 
     @Override
