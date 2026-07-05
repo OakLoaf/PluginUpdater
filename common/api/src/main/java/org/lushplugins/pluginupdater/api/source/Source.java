@@ -24,17 +24,23 @@ public interface Source {
 
     String getName();
 
-    Version getLatestVersion(PluginData pluginData, SourceData sourceData) throws IOException, InterruptedException;
+    Version getLatestVersion(PluginData pluginData, SourceData sourceData) throws IOException, InterruptedException, InvalidVersionFormatException;
 
     DownloadableRelease getDownloadableRelease(PluginData pluginData, SourceData sourceData) throws IOException, InterruptedException;
 
     default boolean isUpdateAvailable(PluginData pluginData, SourceData sourceData) throws IOException, InterruptedException {
         Version currentVersion = pluginData.getCurrentVersion();
-        Version latestVersion = getLatestVersion(pluginData, sourceData);
+        Version latestVersion;
+        try {
+            latestVersion = getLatestVersion(pluginData, sourceData);
+        } catch (InvalidVersionFormatException e) {
+            UpdaterConstants.LOGGER.severe("Failed to read latest version for '%s': %s".formatted(pluginData.getPluginName(), e.getMessage()));
+            return false;
+        }
 
-        VersionComparator comparator = pluginData.getOptionalComparator().orElse(sourceData.getDefaultComparator());
         VersionDifference versionDifference;
         try {
+            VersionComparator comparator = pluginData.getOptionalComparator().orElse(sourceData.getDefaultComparator());
             versionDifference = comparator.getVersionDifference(currentVersion, latestVersion);
         } catch (InvalidVersionFormatException e) {
             UpdaterConstants.LOGGER.severe("Failed to compare versions for '%s': %s".formatted(pluginData.getPluginName(), e.getMessage()));

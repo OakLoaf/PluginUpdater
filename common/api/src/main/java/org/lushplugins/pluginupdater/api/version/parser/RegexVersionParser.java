@@ -18,7 +18,7 @@ public class RegexVersionParser implements VersionParser {
     }
 
     @Override
-    public Version parse(String rawVersion) {
+    public Version parse(String rawVersion) throws InvalidVersionFormatException {
         Matcher matcher = this.pattern.matcher(rawVersion);
         if (!matcher.find()) {
             throw new InvalidVersionFormatException("Version ('%s') does not match required formatting '%s'"

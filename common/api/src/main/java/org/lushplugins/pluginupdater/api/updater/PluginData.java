@@ -1,7 +1,9 @@
 package org.lushplugins.pluginupdater.api.updater;
 
 import org.jetbrains.annotations.Nullable;
+import org.lushplugins.pluginupdater.api.exception.InvalidVersionFormatException;
 import org.lushplugins.pluginupdater.api.source.SourceData;
+import org.lushplugins.pluginupdater.api.util.UpdaterConstants;
 import org.lushplugins.pluginupdater.api.version.Version;
 import org.lushplugins.pluginupdater.api.version.VersionDifference;
 import org.lushplugins.pluginupdater.api.version.comparator.SemVerComparator;
@@ -207,9 +209,16 @@ public class PluginData {
         }
 
         public PluginData build() {
+            Version currentVersion;
+            try {
+                currentVersion = this.versionParser.parse(this.currentVersion);
+            } catch (InvalidVersionFormatException e) {
+                throw new RuntimeException("Failed to read current version for '%s': %s".formatted(this.pluginName, e.getMessage()));
+            }
+
             return new PluginData(
                 this.pluginName,
-                this.versionParser.parse(this.currentVersion),
+                currentVersion,
                 this.latestVersionParser != null ? this.latestVersionParser : this.versionParser,
                 this.sourceData,
                 this.comparator,
