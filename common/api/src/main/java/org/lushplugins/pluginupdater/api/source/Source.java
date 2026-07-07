@@ -8,15 +8,8 @@ import org.lushplugins.pluginupdater.api.version.DownloadableRelease;
 import org.lushplugins.pluginupdater.api.version.Version;
 import org.lushplugins.pluginupdater.api.version.VersionDifference;
 import org.lushplugins.pluginupdater.api.version.comparator.VersionComparator;
-import org.lushplugins.pluginupdater.util.BuildParameters;
 
 import java.io.*;
-import java.net.HttpURLConnection;
-import java.net.URI;
-import java.net.URL;
-import java.nio.channels.Channels;
-import java.nio.channels.ReadableByteChannel;
-import java.util.Map;
 import java.util.logging.Level;
 
 @SuppressWarnings("CodeBlock2Expr")
@@ -59,43 +52,13 @@ public interface Source {
     }
 
     default boolean download(PluginData pluginData, SourceData sourceData, File destinationDir) throws IOException, InterruptedException {
-        Version latestVersion = pluginData.getLatestVersion();
         DownloadableRelease release = getDownloadableRelease(pluginData, sourceData);
         if (release == null) {
             return false;
         }
 
-        String downloadUrl = release.downloadUrl();
-        URL url = URI.create(downloadUrl).toURL();
-        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-        connection.addRequestProperty("User-Agent", "PluginUpdater/" + BuildParameters.VERSION);
-        for (Map.Entry<String, String> header : release.downloadHeaders().entrySet()) {
-            connection.addRequestProperty(header.getKey(), header.getValue());
-        }
-        connection.setInstanceFollowRedirects(true);
-        HttpURLConnection.setFollowRedirects(true);
-
-        if (connection.getResponseCode() != 200) {
-            throw new IllegalStateException("Response code was " + connection.getResponseCode());
-        }
-
-        // Get file name or default to PluginName-Version.jar
-        String fileName = url.getFile();
-        if (fileName.isEmpty() || fileName.contains("/") || fileName.contains("\\")) {
-            fileName = pluginData.getPluginName() + "-" + latestVersion.version() + ".jar";
-        }
-
-        // Ensures update folder exists
-        destinationDir.mkdirs();
-
-        // Downloads file from url
-        ReadableByteChannel rbc = Channels.newChannel(connection.getInputStream());
-        File out = new File(destinationDir, fileName);
-        UpdaterConstants.LOGGER.info("Saving '" + fileName + "' to '" + out.getAbsolutePath() + "'");
-        FileOutputStream fos = new FileOutputStream(out);
-        fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
-        fos.close();
-
+        String fallbackFileName = pluginData.getPluginName() + "-" + pluginData.getLatestVersion().version() + ".jar";
+        release.downloadTo(destinationDir, fallbackFileName);
         DownloadLogger.logDownload(pluginData);
 
         return true;
