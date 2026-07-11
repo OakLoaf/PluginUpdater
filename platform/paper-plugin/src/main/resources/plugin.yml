@@ -2,4 +2,5 @@ name: PluginUpdater
 version: '${version}-${commit}'
 main: org.lushplugins.pluginupdater.paper.PaperUpdaterPlugin
 api-version: '1.18'
+folia-supported: true
 modrinth-project-id: "plugin-updater"
