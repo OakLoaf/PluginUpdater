@@ -1,5 +1,6 @@
 package org.lushplugins.pluginupdater.api.source.type;
 
+import org.jetbrains.annotations.Nullable;
 import org.lushplugins.pluginupdater.api.source.SourceData;
 import org.lushplugins.pluginupdater.api.util.HttpUtil;
 import org.lushplugins.pluginupdater.api.util.UpdaterConstants;
@@ -49,6 +50,11 @@ public class HangarSource implements Source {
             version.version());
 
         return new DownloadableRelease(downloadUrl, null, null);
+    }
+
+    @Override
+    public @Nullable String getChangelogUrl(PluginData pluginData, SourceData sourceData) {
+        return null;
     }
 
     @Override

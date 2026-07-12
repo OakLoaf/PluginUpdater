@@ -2,8 +2,9 @@ package org.lushplugins.pluginupdater.api.updater;
 
 import org.jetbrains.annotations.Nullable;
 import org.lushplugins.pluginupdater.api.exception.InvalidVersionFormatException;
+import org.lushplugins.pluginupdater.api.source.Source;
 import org.lushplugins.pluginupdater.api.source.SourceData;
-import org.lushplugins.pluginupdater.api.util.UpdaterConstants;
+import org.lushplugins.pluginupdater.api.source.SourceRegistry;
 import org.lushplugins.pluginupdater.api.version.Version;
 import org.lushplugins.pluginupdater.api.version.VersionDifference;
 import org.lushplugins.pluginupdater.api.version.comparator.SemVerComparator;
@@ -132,6 +133,12 @@ public class PluginData {
 
     public void setCheckRan(boolean checkRan) {
         this.checkRan = checkRan;
+    }
+
+    public @Nullable String getChangelogUrl() {
+        SourceData sourceData = this.sourceData.getFirst();
+        Source source = SourceRegistry.get(sourceData.sourceName());
+        return source != null ? source.getChangelogUrl(this, sourceData) : null;
     }
 
     public static Builder builder(String pluginName, String currentVersion) {

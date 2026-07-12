@@ -2,6 +2,7 @@ package org.lushplugins.pluginupdater.api.source.type;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import org.jetbrains.annotations.Nullable;
 import org.lushplugins.pluginupdater.api.source.Source;
 import org.lushplugins.pluginupdater.api.source.SourceData;
 import org.lushplugins.pluginupdater.api.updater.PluginData;
@@ -64,6 +65,16 @@ public class GeyserSource implements Source {
             this.platform);
 
         return new DownloadableRelease(downloadUrl, null, null);
+    }
+
+    @Override
+    public @Nullable String getChangelogUrl(PluginData pluginData, SourceData sourceData) {
+        if (!(sourceData instanceof Data(String projectName))) {
+            return null;
+        }
+
+        return "https://geysermc.org/download/?project=%s"
+            .formatted(projectName);
     }
 
     @Override

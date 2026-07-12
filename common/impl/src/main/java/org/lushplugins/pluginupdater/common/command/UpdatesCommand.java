@@ -64,7 +64,23 @@ public record UpdatesCommand(UpdaterImpl updater) {
                 return;
             }
 
-            String message = "<white>" + pluginData.getPluginName() + ": <gray>" + pluginData.getCurrentVersion().rawVersionString() + " <white>-> " + (versionDifference.equals(VersionDifference.MAJOR) ? majorUpdateAvailableColor : updateAvailableColor) + pluginData.getLatestVersion().rawVersionString();
+            String changelogUrl = pluginData.getChangelogUrl();
+            String interactComponent;
+            if (changelogUrl != null) {
+                interactComponent = "<hover:show_text:Open %s changelog><click:open_url:%s>"
+                    .formatted(pluginData.getPluginName(), changelogUrl);
+            } else {
+                interactComponent = "";
+            }
+
+            String message = "%s<white>%s: <gray>%s <white>-> %s%s"
+                .formatted(
+                    interactComponent,
+                    pluginData.getPluginName(),
+                    pluginData.getCurrentVersion().rawVersionString(),
+                    versionDifference.equals(VersionDifference.MAJOR) ? majorUpdateAvailableColor : updateAvailableColor,
+                    pluginData.getLatestVersion().rawVersionString()
+                );
 
             if (pluginData.isAlreadyDownloaded()) {
                 message += latestVersionColor + " ᴅᴏᴡɴʟᴏᴀᴅᴇᴅ";

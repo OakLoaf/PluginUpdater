@@ -63,6 +63,16 @@ public class ModrinthSource implements Source {
         return new DownloadableRelease(downloadUrl, null, null);
     }
 
+    @Override
+    public @Nullable String getChangelogUrl(PluginData pluginData, SourceData sourceData) {
+        if (!(sourceData instanceof Data(String projectId, List<String> loaders, List<String> releaseChannels))) {
+            return null;
+        }
+
+        return "https://modrinth.com/plugin/%s/changelog"
+            .formatted(projectId);
+    }
+
     private JsonArray getVersions(PluginData pluginData, Data modrinthData) throws IOException, InterruptedException {
         StringBuilder uriBuilder = new StringBuilder("%s/project/%s/version"
             .formatted(UpdaterConstants.Endpoint.MODRINTH, modrinthData.projectId()))

@@ -2,6 +2,7 @@ package org.lushplugins.pluginupdater.api.source.type;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import org.jetbrains.annotations.Nullable;
 import org.lushplugins.pluginupdater.api.source.SourceData;
 import org.lushplugins.pluginupdater.api.updater.PluginData;
 import org.lushplugins.pluginupdater.api.util.HttpUtil;
@@ -12,6 +13,7 @@ import org.lushplugins.pluginupdater.api.version.Version;
 
 import java.io.IOException;
 import java.net.http.HttpResponse;
+import java.util.List;
 
 public class SpigotSource implements Source {
     public static final String NAME = "spigot";
@@ -51,6 +53,16 @@ public class SpigotSource implements Source {
             resourceId);
 
         return new DownloadableRelease(downloadUrl, null, null);
+    }
+
+    @Override
+    public @Nullable String getChangelogUrl(PluginData pluginData, SourceData sourceData) {
+        if (!(sourceData instanceof Data(String resourceId))) {
+            return null;
+        }
+
+        return "https://www.spigotmc.org/resources/%s/updates"
+            .formatted(resourceId);
     }
 
     @Override

@@ -65,6 +65,16 @@ public class GithubSource implements Source {
         return new DownloadableRelease(downloadUrl, downloadHeaders, null);
     }
 
+    @Override
+    public @Nullable String getChangelogUrl(PluginData pluginData, SourceData sourceData) {
+        if (!(sourceData instanceof Data(String repo, String token))) {
+            return null;
+        }
+
+        return "https://github.com/%s/releases"
+            .formatted(repo);
+    }
+
     private JsonObject getLatestRelease(PluginData pluginData, Data githubData) throws IOException, InterruptedException {
         HttpRequest.Builder requestBuilder = HttpUtil.prepareRequestBuilder(URI.create("%s/repos/%s/releases/latest"
                 .formatted(UpdaterConstants.Endpoint.GITHUB, githubData.repo())), null);

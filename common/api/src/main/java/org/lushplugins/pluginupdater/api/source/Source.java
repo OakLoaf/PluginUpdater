@@ -1,5 +1,6 @@
 package org.lushplugins.pluginupdater.api.source;
 
+import org.jetbrains.annotations.Nullable;
 import org.lushplugins.pluginupdater.api.exception.InvalidVersionFormatException;
 import org.lushplugins.pluginupdater.api.updater.PluginData;
 import org.lushplugins.pluginupdater.api.util.DownloadLogger;
@@ -20,6 +21,8 @@ public interface Source {
     Version getLatestVersion(PluginData pluginData, SourceData sourceData) throws IOException, InterruptedException, InvalidVersionFormatException;
 
     DownloadableRelease getDownloadableRelease(PluginData pluginData, SourceData sourceData) throws IOException, InterruptedException;
+
+    @Nullable String getChangelogUrl(PluginData pluginData, SourceData sourceData);
 
     default boolean isUpdateAvailable(PluginData pluginData, SourceData sourceData) throws IOException, InterruptedException {
         Version currentVersion = pluginData.getCurrentVersion();
