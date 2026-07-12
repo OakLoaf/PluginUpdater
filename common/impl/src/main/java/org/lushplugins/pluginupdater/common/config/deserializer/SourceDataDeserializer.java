@@ -46,6 +46,17 @@ public class SourceDataDeserializer {
     }
 
     public static ModrinthSource.Data modrinthSourceData(Config config) {
+        List<String> loaders;
+        if (ConfigUtil.isOfType(config, "loaders", String.class)) {
+            loaders = Collections.singletonList(config.<String>get("loaders").toLowerCase());
+        } else if (ConfigUtil.isOfType(config, "loaders", List.class)) {
+            loaders = config.<List<String>>get("loaders").stream()
+                .map(String::toLowerCase)
+                .toList();
+        } else {
+            loaders = null;
+        }
+
         List<String> releaseChannels;
         if (ConfigUtil.isOfType(config, "channels", String.class)) {
             releaseChannels = Collections.singletonList(config.getOrElse("channels", ModrinthSource.ReleaseChannel.RELEASE).toLowerCase());
@@ -59,6 +70,7 @@ public class SourceDataDeserializer {
 
         return new ModrinthSource.Data(
             config.get("modrinth-project-id"),
+            loaders,
             releaseChannels
         );
     }

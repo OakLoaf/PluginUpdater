@@ -22,15 +22,15 @@ import java.util.stream.Collectors;
 public class ModrinthSource implements Source {
     public static final String NAME = "modrinth";
 
-    private final List<String> loaders;
+    private final List<String> defaultLoaders;
     private String serverVersion = null;
 
-    public ModrinthSource(List<String> loaders) {
-        this.loaders = loaders;
+    public ModrinthSource(List<String> defaultLoaders) {
+        this.defaultLoaders = defaultLoaders;
     }
 
-    public ModrinthSource(List<String> loaders, String serverVersion) {
-        this(loaders);
+    public ModrinthSource(List<String> defaultLoaders, String serverVersion) {
+        this(defaultLoaders);
         this.serverVersion = serverVersion;
     }
 
@@ -66,7 +66,7 @@ public class ModrinthSource implements Source {
     private JsonArray getVersions(PluginData pluginData, Data modrinthData) throws IOException, InterruptedException {
         StringBuilder uriBuilder = new StringBuilder("%s/project/%s/version"
             .formatted(UpdaterConstants.Endpoint.MODRINTH, modrinthData.projectId()))
-            .append("?loaders=").append(this.loaders.stream()
+            .append("?loaders=").append(modrinthData.loadersOrElse(this.defaultLoaders).stream()
                 .map(s -> "%22" + s + "%22")
                 .collect(Collectors.joining(",", "[", "]")))
             .append("&include_changelog=false");
@@ -107,21 +107,30 @@ public class ModrinthSource implements Source {
 
     /**
      * @param projectId The Modrinth project id
+     * @param loaders Which loaders to filter, {@code null} will include all loaders for your platform
      * @param releaseChannels Which release channels to filter, {@code null} will include all release channels
      */
-    public record Data(String projectId, @Nullable List<String> releaseChannels) implements SourceData {
+    public record Data(String projectId, @Nullable List<String> loaders, @Nullable List<String> releaseChannels) implements SourceData {
+
+        public Data(String projectId, @Nullable List<String> releaseChannels) {
+            this(projectId, null, releaseChannels);
+        }
 
         /**
          * @param projectId The Modrinth project id
          * @param releaseChannel Which release channel to filter
          */
         public Data(String projectId, String releaseChannel) {
-            this(projectId, Collections.singletonList(releaseChannel));
+            this(projectId, null, Collections.singletonList(releaseChannel));
         }
 
         @Override
         public String sourceName() {
             return NAME;
+        }
+
+        public List<String> loadersOrElse(List<String> def) {
+            return this.loaders != null ? this.loaders : def;
         }
 
         public boolean filtersReleaseChannel() {

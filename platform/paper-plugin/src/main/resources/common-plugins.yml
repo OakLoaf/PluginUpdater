@@ -46,6 +46,7 @@ ExcellentEnchants:
 FastAsyncWorldEdit:
   source: modrinth
   modrinth-project-id: z4HZZnLr
+  loaders: "paper"
 floodgate:
   source: geyser
   project-name: floodgate
