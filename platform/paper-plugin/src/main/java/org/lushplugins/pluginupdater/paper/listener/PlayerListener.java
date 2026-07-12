@@ -25,7 +25,7 @@ public class PlayerListener implements Listener {
              if (message != null) {
                  PaperUpdaterPlatform platform = (PaperUpdaterPlatform) updater.platform();
                  Bukkit.getScheduler().runTaskLaterAsynchronously(PaperUpdaterPlugin.getInstance(), () -> {
-                     platform.sendNotification(player, updater.constructUpdateMessage());
+                     platform.sendMessage(player, updater.constructUpdateMessage());
                  }, 100);
              }
          }

@@ -41,10 +41,10 @@ public interface Source {
         }
 
         pluginData.setCheckRan(true);
+        pluginData.setVersionDifference(versionDifference);
 
         if (!versionDifference.equals(VersionDifference.LATEST)) {
             pluginData.setLatestVersion(latestVersion);
-            pluginData.setVersionDifference(versionDifference);
             return true;
         } else {
             return false;

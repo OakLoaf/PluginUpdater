@@ -1,7 +1,6 @@
 package org.lushplugins.pluginupdater.common.platform;
 
 import org.jetbrains.annotations.Nullable;
-import org.lushplugins.pluginupdater.api.updater.PluginData;
 import org.lushplugins.pluginupdater.api.updater.PluginInfo;
 import org.lushplugins.pluginupdater.common.UpdaterImpl;
 import org.lushplugins.pluginupdater.common.command.UpdateCommand;
@@ -15,7 +14,6 @@ import java.io.File;
 import java.io.InputStream;
 import java.nio.file.Path;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
 public interface UpdaterPlatform<T> {
@@ -50,7 +48,9 @@ public interface UpdaterPlatform<T> {
 
     boolean hasPermission(CommandActor actor, String permission);
 
-    void sendNotification(T user, String message);
+    void sendMessage(CommandActor actor, String message);
+
+    void sendMessage(T user, String message);
 
     void broadcastNotification(String message);
 

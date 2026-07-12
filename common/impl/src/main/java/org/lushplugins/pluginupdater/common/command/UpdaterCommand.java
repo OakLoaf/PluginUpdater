@@ -1,10 +1,13 @@
 package org.lushplugins.pluginupdater.common.command;
 
+import org.lushplugins.pluginupdater.api.updater.PluginData;
 import org.lushplugins.pluginupdater.common.command.annotation.CommandPermission;
 import org.lushplugins.pluginupdater.common.command.annotation.PluginName;
 import org.lushplugins.pluginupdater.common.UpdaterImpl;
+import org.lushplugins.pluginupdater.common.updater.UpdateHandler;
 import revxrsal.commands.annotation.Command;
 import revxrsal.commands.annotation.Subcommand;
+import revxrsal.commands.command.CommandActor;
 
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
@@ -28,8 +31,22 @@ public record UpdaterCommand(UpdaterImpl updater) {
 
     @Subcommand("check")
     @CommandPermission("pluginupdater.checkupdates")
-    public String check(@PluginName String pluginName) {
-        updater.updateHandler().queueUpdateCheck(pluginName);
+    public String check(CommandActor actor, @PluginName String pluginName) {
+        UpdateHandler.ProcessingData processingData = updater.updateHandler().queueUpdateCheck(pluginName);
+
+        processingData.getFuture().thenAccept(success -> {
+            PluginData pluginData = processingData.getPluginData();
+            switch (pluginData.getVersionDifference()) {
+                case MAJOR, MINOR, PATCH, BUILD -> updater.platform().sendMessage(actor, "<#b7faa2>New version <#b7faa2>found for %s <white>(%s <gray>-> <white>%s)"
+                    .formatted(pluginData.getPluginName(),
+                        pluginData.getCurrentVersion().rawVersionString(),
+                        pluginData.getLatestVersion().rawVersionString()));
+                case LATEST -> updater.platform().sendMessage(actor, ("<#b7faa2>No update has been found for %s")
+                    .formatted(pluginData.getPluginName()));
+                case UNKNOWN -> updater.platform().sendMessage(actor, "<#ff6969>Something went wrong when checking %s for a new version"
+                    .formatted(pluginData.getPluginName()));
+            }
+        });
 
         return "<#b7faa2>Successfully queued check for %s".formatted(pluginName);
     }

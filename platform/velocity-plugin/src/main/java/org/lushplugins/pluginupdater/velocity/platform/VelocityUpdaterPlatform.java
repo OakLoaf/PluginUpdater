@@ -91,7 +91,12 @@ public class VelocityUpdaterPlatform implements UpdaterPlatform<Player> {
     }
 
     @Override
-    public void sendNotification(Player player, String message) {
+    public void sendMessage(CommandActor actor, String message) {
+        ((VelocityCommandActor) actor).source().sendMessage(MiniMessage.miniMessage().deserialize(message));
+    }
+
+    @Override
+    public void sendMessage(Player player, String message) {
         player.sendMessage(MiniMessage.miniMessage().deserialize(message));
     }
 

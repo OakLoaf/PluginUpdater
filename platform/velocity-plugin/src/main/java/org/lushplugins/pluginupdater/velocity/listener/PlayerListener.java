@@ -31,7 +31,7 @@ public class PlayerListener {
                 VelocityUpdaterPlatform platform = (VelocityUpdaterPlatform) updater.platform();
                 instance.server().getScheduler()
                     .buildTask(instance, () -> {
-                        platform.sendNotification(player, updater.constructUpdateMessage());
+                        platform.sendMessage(player, updater.constructUpdateMessage());
                     })
                     .delay(5L, TimeUnit.SECONDS)
                     .schedule();

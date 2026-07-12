@@ -82,7 +82,12 @@ public class PaperUpdaterPlatform implements UpdaterPlatform<Player> {
     }
 
     @Override
-    public void sendNotification(Player player, String message) {
+    public void sendMessage(CommandActor actor, String message) {
+        PaperColor.handler().sendMessage(((BukkitCommandActor) actor).sender(), message);
+    }
+
+    @Override
+    public void sendMessage(Player player, String message) {
         PaperColor.handler().sendMessage(player, message);
     }
 
@@ -90,7 +95,7 @@ public class PaperUpdaterPlatform implements UpdaterPlatform<Player> {
     public void broadcastNotification(String message) {
         for (Player player : Bukkit.getOnlinePlayers()) {
             if (player.hasPermission("pluginupdater.notify")) {
-                sendNotification(player, message);
+                sendMessage(player, message);
             }
         }
     }
