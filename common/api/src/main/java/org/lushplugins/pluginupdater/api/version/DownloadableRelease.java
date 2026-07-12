@@ -71,7 +71,7 @@ public record DownloadableRelease(
                     filename = filename.substring(0, filename.indexOf(";"));
                 }
 
-                if (!filename.isEmpty()) {
+                if (filename.endsWith(".jar")) {
                     return filename;
                 }
             }
@@ -81,7 +81,7 @@ public record DownloadableRelease(
         int lastSlash = this.downloadUrl.lastIndexOf('/');
         if (lastSlash != -1 && lastSlash < this.downloadUrl.length() - 1) {
             String filename = this.downloadUrl.substring(lastSlash + 1);
-            if (!filename.isEmpty()) {
+            if (filename.endsWith(".jar")) {
                 return filename;
             }
         }
