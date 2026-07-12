@@ -11,6 +11,15 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
 public class HttpUtil {
+    private static final HttpClient CLIENT = HttpClient.newBuilder()
+        .followRedirects(HttpClient.Redirect.ALWAYS)
+        .build();
+
+    public static HttpResponse<String> sendRequest(URI uri, @Nullable String payload) throws IOException, InterruptedException {
+        return CLIENT.send(
+            prepareRequestBuilder(uri, payload).build(),
+            HttpResponse.BodyHandlers.ofString());
+    }
 
     public static HttpResponse<String> sendRequest(String uri) throws IOException, InterruptedException {
         return sendRequest(URI.create(uri), null);
@@ -18,15 +27,6 @@ public class HttpUtil {
 
     public static HttpResponse<String> sendRequest(String uri, @Nullable JsonElement payload) throws IOException, InterruptedException {
         return sendRequest(URI.create(uri), UpdaterConstants.GSON.toJson(payload));
-    }
-
-    public static HttpResponse<String> sendRequest(URI uri, @Nullable String payload) throws IOException, InterruptedException {
-        return HttpClient.newBuilder()
-            .followRedirects(HttpClient.Redirect.ALWAYS)
-            .build()
-            .send(
-                prepareRequestBuilder(uri, payload).build(),
-                HttpResponse.BodyHandlers.ofString());
     }
 
     public static HttpRequest.Builder prepareRequestBuilder(URI uri, @Nullable String payload) {

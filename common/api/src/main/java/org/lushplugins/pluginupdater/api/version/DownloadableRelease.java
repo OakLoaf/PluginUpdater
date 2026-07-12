@@ -6,13 +6,13 @@ import org.lushplugins.pluginupdater.api.util.UpdaterConstants;
 import org.lushplugins.pluginupdater.util.BuildParameters;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.net.HttpURLConnection;
 import java.net.URI;
-import java.net.URL;
-import java.nio.channels.Channels;
-import java.nio.channels.ReadableByteChannel;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Collections;
 import java.util.Map;
 
@@ -27,39 +27,51 @@ public record DownloadableRelease(
         return downloadHeaders != null ? downloadHeaders : Collections.emptyMap();
     }
 
-    // TODO: Migrate to use modern HttpClient instead of relying on outdated HttpURLConnection
-    public void downloadTo(File destinationDir, String fallbackFileName) throws IOException {
-        URL url = URI.create(this.downloadUrl).toURL();
-        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-        connection.addRequestProperty("User-Agent", "PluginUpdater/" + BuildParameters.VERSION);
-        for (Map.Entry<String, String> header : downloadHeaders().entrySet()) {
-            connection.addRequestProperty(header.getKey(), header.getValue());
+    public void downloadTo(File destinationDir, String fallbackFileName) throws IOException, InterruptedException {
+        try (HttpClient client = HttpClient.newBuilder()
+            .followRedirects(HttpClient.Redirect.ALWAYS)
+            .build()
+        ) {
+            HttpRequest.Builder requestBuilder = HttpRequest.newBuilder(URI.create(this.downloadUrl))
+                .header("User-Agent", "PluginUpdater/" + BuildParameters.VERSION);
+
+            for (Map.Entry<String, String> header : downloadHeaders().entrySet()) {
+                requestBuilder.header(header.getKey(), header.getValue());
+            }
+
+            HttpRequest request = requestBuilder
+                .GET()
+                .build();
+
+            HttpResponse<Void> response = client.send(
+                request,
+                HttpResponse.BodyHandlers.discarding()
+            );
+
+            if (response.statusCode() != 200) {
+                throw new IllegalStateException("Response code was " + response.statusCode());
+            }
+
+            // Get file name or default to PluginName-Version.jar
+            String fileName = getFileName(response, fallbackFileName);
+            Path downloadPath = destinationDir.toPath().resolve(fileName);
+            // Ensures update folder exists
+            Files.createDirectories(downloadPath.getParent());
+
+            UpdaterConstants.LOGGER.info("Saving '" + fileName + "' to '" + downloadPath.toAbsolutePath() + "'");
+            HttpResponse<Path> downloadResponse = client.send(
+                request,
+                HttpResponse.BodyHandlers.ofFile(destinationDir.toPath().resolve(fileName))
+            );
+
+            if (downloadResponse.statusCode() != 200) {
+                throw new IllegalStateException("Download response code was " + response.statusCode());
+            }
         }
-
-        connection.setInstanceFollowRedirects(true);
-        HttpURLConnection.setFollowRedirects(true);
-
-        if (connection.getResponseCode() != 200) {
-            throw new IllegalStateException("Response code was " + connection.getResponseCode());
-        }
-
-        // Get file name or default to PluginName-Version.jar
-        String fileName = getFileName(connection, getFileName(connection, fallbackFileName));
-
-        // Ensures update folder exists
-        destinationDir.mkdirs();
-
-        // Downloads file from url
-        ReadableByteChannel rbc = Channels.newChannel(connection.getInputStream());
-        File out = new File(destinationDir, fileName);
-        UpdaterConstants.LOGGER.info("Saving '" + fileName + "' to '" + out.getAbsolutePath() + "'");
-        FileOutputStream fos = new FileOutputStream(out);
-        fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
-        fos.close();
     }
 
-    private String getFileName(HttpURLConnection connection, String fallbackFileName) {
-        String contentDisposition = connection.getHeaderField("Content-Disposition");
+    private String getFileName(HttpResponse<?> response, String fallbackFileName) {
+        String contentDisposition = response.headers().firstValue("Content-Disposition").orElse(null);
         if (contentDisposition != null && !contentDisposition.isEmpty()) {
             if (contentDisposition.contains("filename=")) {
                 int index = contentDisposition.indexOf("filename=");
