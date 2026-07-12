@@ -7,7 +7,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.Plugin;
-import org.lushplugins.pluginupdater.api.listener.UpdateNotifier;
+import org.lushplugins.pluginupdater.api.notifier.UpdateNotifier;
 import org.lushplugins.pluginupdater.api.updater.Updater;
 import org.lushplugins.pluginupdater.paper.api.plugin.PaperPluginInfo;
 
@@ -32,6 +32,6 @@ public class PaperUpdateNotifier extends UpdateNotifier<Player> implements Liste
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
-        handle(event.getPlayer());
+        attemptToNotify(event.getPlayer(), 3);
     }
 }

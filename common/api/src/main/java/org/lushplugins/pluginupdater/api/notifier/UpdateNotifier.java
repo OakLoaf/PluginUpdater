@@ -1,5 +1,6 @@
-package org.lushplugins.pluginupdater.api.listener;
+package org.lushplugins.pluginupdater.api.notifier;
 
+import org.jetbrains.annotations.Nullable;
 import org.lushplugins.pluginupdater.api.updater.PluginData;
 import org.lushplugins.pluginupdater.api.updater.Updater;
 
@@ -20,7 +21,7 @@ public abstract class UpdateNotifier<T> {
 
     public abstract void sendMessage(T user, String message);
 
-    public void handle(T user) {
+    public void attemptToNotify(T user, @Nullable Integer delay) {
         if (permission == null || hasPermission(user, permission)) {
             PluginData pluginData = updater.getPluginData();
             if (pluginData.isUpdateAvailable() && !pluginData.isAlreadyDownloaded()) {
@@ -29,7 +30,11 @@ public abstract class UpdateNotifier<T> {
                     .replace("%current_version%", pluginData.getCurrentVersion().rawVersionString())
                     .replace("%latest_version%", pluginData.getLatestVersion().rawVersionString());
 
-                updater.getScheduler().schedule(() -> sendMessage(user, message), 3, TimeUnit.SECONDS);
+                if (delay != null) {
+                    updater.getScheduler().schedule(() -> sendMessage(user, message), delay, TimeUnit.SECONDS);
+                } else {
+                    sendMessage(user, message);
+                }
             }
         }
     }

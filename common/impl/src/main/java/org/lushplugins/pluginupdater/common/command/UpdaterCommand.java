@@ -42,6 +42,7 @@ public record UpdaterCommand(UpdaterImpl updater) {
             updater.updateHandler().queueUpdateCheck(pluginName);
             updateCount.incrementAndGet();
         });
+        updater.updateHandler().queueBroadcastNotification();
 
         return "<#b7faa2>Successfully queued checks for %s plugins".formatted(updateCount.get());
     }

@@ -24,7 +24,7 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.logging.Logger;
 
-public class VelocityUpdaterPlatform implements UpdaterPlatform {
+public class VelocityUpdaterPlatform implements UpdaterPlatform<Player> {
     private final VelocityUpdaterPlugin instance;
 
     public VelocityUpdaterPlatform(VelocityUpdaterPlugin instance) {
@@ -91,7 +91,21 @@ public class VelocityUpdaterPlatform implements UpdaterPlatform {
     }
 
     @Override
-    public void sendProcessingNotification(UpdateHandler handler, UpdateHandler.ProcessingData.State state) {
+    public void sendNotification(Player player, String message) {
+        player.sendMessage(MiniMessage.miniMessage().deserialize(message));
+    }
+
+    @Override
+    public void broadcastNotification(String message) {
+        List<Player> players = instance.server().getAllPlayers().stream()
+            .filter(player -> player.hasPermission("pluginupdater.notify"))
+            .toList();
+
+        Audience.audience(players).sendMessage(MiniMessage.miniMessage().deserialize(message));
+    }
+
+    @Override
+    public void sendProcessingActionBar(UpdateHandler handler, UpdateHandler.ProcessingData.State state) {
         List<Player> players = instance.server().getAllPlayers().stream()
             .filter(player -> player.hasPermission("pluginupdater.notify"))
             .toList();
@@ -104,7 +118,7 @@ public class VelocityUpdaterPlatform implements UpdaterPlatform {
         int total = processed + handler.remainingWithState(state);
 
         Audience.audience(players).sendActionBar(MiniMessage.miniMessage().deserialize(
-            "&#b7faa2Updater processing: &#66b04f%s&#b7faa2/&#66b04f%s"
+            "<#b7faa2>Updater processing: <#66b04f>%s<#b7faa2>/<#66b04f>%s"
                 .formatted(processed, total)));
     }
 }

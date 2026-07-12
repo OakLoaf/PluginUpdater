@@ -25,18 +25,18 @@ public record UpdatesCommand(UpdaterImpl updater) {
                     return configManager.getMessage("unchecked-color", "&8")
                         + pluginName;
                 } else if (pluginData.isAlreadyDownloaded()) {
-                    return configManager.getMessage("latest-version-color", "&#b7faa2")
+                    return configManager.getMessage("latest-version-color", "<#b7faa2>")
                         + pluginName
-                        + configManager.getMessage("update-prepared-color", "&#ffda54")
+                        + configManager.getMessage("update-prepared-color", "<#ffda54>")
                         + "*";
                 } else if (versionDifference.equals(VersionDifference.MAJOR)) {
-                    return configManager.getMessage("major-update-available-color", "&#ff6969")
+                    return configManager.getMessage("major-update-available-color", "<#ff6969>")
                         + pluginName;
                 } else if (versionDifference.equals(VersionDifference.MINOR) || versionDifference.equals(VersionDifference.PATCH) || versionDifference.equals(VersionDifference.BUILD)) {
-                    return configManager.getMessage("update-available-color", "&#ffda54")
+                    return configManager.getMessage("update-available-color", "<#ffda54>")
                         + pluginName;
                 } else {
-                    return configManager.getMessage("latest-version-color", "&#b7faa2")
+                    return configManager.getMessage("latest-version-color", "<#b7faa2>")
                         + pluginName;
                 }
             })

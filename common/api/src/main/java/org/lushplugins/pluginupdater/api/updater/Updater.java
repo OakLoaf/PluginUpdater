@@ -2,7 +2,7 @@ package org.lushplugins.pluginupdater.api.updater;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.lushplugins.pluginupdater.api.listener.UpdateNotifier;
+import org.lushplugins.pluginupdater.api.notifier.UpdateNotifier;
 import org.lushplugins.pluginupdater.api.source.SourceData;
 import org.lushplugins.pluginupdater.api.source.type.GithubSource;
 import org.lushplugins.pluginupdater.api.source.type.HangarSource;

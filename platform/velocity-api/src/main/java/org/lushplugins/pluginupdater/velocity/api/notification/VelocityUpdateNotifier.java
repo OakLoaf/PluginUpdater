@@ -5,7 +5,7 @@ import com.velocitypowered.api.event.player.configuration.PlayerFinishedConfigur
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 import net.kyori.adventure.text.minimessage.MiniMessage;
-import org.lushplugins.pluginupdater.api.listener.UpdateNotifier;
+import org.lushplugins.pluginupdater.api.notifier.UpdateNotifier;
 import org.lushplugins.pluginupdater.api.updater.Updater;
 import org.lushplugins.pluginupdater.velocity.api.plugin.VelocityPluginInfo;
 
@@ -30,6 +30,6 @@ public class VelocityUpdateNotifier extends UpdateNotifier<Player> {
 
     @Subscribe
     public void onPlayerJoin(PlayerFinishedConfigurationEvent event) {
-        handle(event.player());
+        attemptToNotify(event.player(), 3);
     }
 }

@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-public class PaperUpdaterPlatform implements UpdaterPlatform {
+public class PaperUpdaterPlatform implements UpdaterPlatform<Player> {
     private final Plugin plugin;
 
     public PaperUpdaterPlatform(Plugin plugin) {
@@ -82,7 +82,21 @@ public class PaperUpdaterPlatform implements UpdaterPlatform {
     }
 
     @Override
-    public void sendProcessingNotification(UpdateHandler handler, UpdateHandler.ProcessingData.State state) {
+    public void sendNotification(Player player, String message) {
+        PaperColor.handler().sendMessage(player, message);
+    }
+
+    @Override
+    public void broadcastNotification(String message) {
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            if (player.hasPermission("pluginupdater.notify")) {
+                sendNotification(player, message);
+            }
+        }
+    }
+
+    @Override
+    public void sendProcessingActionBar(UpdateHandler handler, UpdateHandler.ProcessingData.State state) {
         List<Player> players = Bukkit.getOnlinePlayers().stream()
             .filter(player -> player.hasPermission("pluginupdater.notify"))
             .collect(Collectors.toUnmodifiableList());
@@ -94,7 +108,8 @@ public class PaperUpdaterPlatform implements UpdaterPlatform {
         int processed = handler.currentlyProcessing().getOrDefault(state, 1);
         int total = processed + handler.remainingWithState(state);
 
-        PaperColor.handler().sendActionBarMessage(players, "&#b7faa2Updater processing: &#66b04f%s&#b7faa2/&#66b04f%s"
-            .formatted(processed, total));
+        PaperColor.handler().sendActionBarMessage(players,
+            "<#b7faa2>Updater processing: <#66b04f>%s<#b7faa2>/<#66b04f>%s"
+                .formatted(processed, total));
     }
 }

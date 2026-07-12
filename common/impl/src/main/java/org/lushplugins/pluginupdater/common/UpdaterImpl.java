@@ -1,5 +1,6 @@
 package org.lushplugins.pluginupdater.common;
 
+import org.jetbrains.annotations.Nullable;
 import org.lushplugins.pluginupdater.api.source.SourceRegistry;
 import org.lushplugins.pluginupdater.api.updater.PluginData;
 import org.lushplugins.pluginupdater.api.updater.PluginInfo;
@@ -21,12 +22,12 @@ import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 public class UpdaterImpl {
-    private final UpdaterPlatform platform;
+    private final UpdaterPlatform<?> platform;
     private final List<PluginDataCollector.Factory> collectors;
     private final UpdateHandler updateHandler;
     private final ConfigManager config;
 
-    public UpdaterImpl(UpdaterPlatform platform, List<PluginDataCollector.Factory> collectors) {
+    public UpdaterImpl(UpdaterPlatform<?> platform, List<PluginDataCollector.Factory> collectors) {
         this.platform = platform;
         this.collectors = collectors;
 
@@ -70,7 +71,7 @@ public class UpdaterImpl {
         updateHandler.shutdown();
     }
 
-    public UpdaterPlatform platform() {
+    public UpdaterPlatform<?> platform() {
         return platform;
     }
 
@@ -116,5 +117,22 @@ public class UpdaterImpl {
 
             return collectedPluginData;
         });
+    }
+
+    public @Nullable String constructUpdateMessage() {
+        int updatesAvailable = 0;
+        for (PluginData pluginData : this.config.getAllPluginData()) {
+            if (pluginData.isUpdateAvailable() && !pluginData.isAlreadyDownloaded()) {
+                updatesAvailable++;
+            }
+        }
+
+        if (updatesAvailable > 0) {
+            return this.config.getMessage("updates-available", "<#e0c01b>%amount% <#ffe27a>updates are available, type <#e0c01b>'%updates_command%' <#ffe27a>for more information!")
+                .replace("%amount%", String.valueOf(updatesAvailable))
+                .replace("%updates_command%", "/updates list");
+        }
+
+        return null;
     }
 }

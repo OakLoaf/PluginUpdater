@@ -65,6 +65,12 @@ public class UpdateHandler {
         return processingData;
     }
 
+    public ProcessingData queueBroadcastNotification() {
+        ProcessingData processingData = new ProcessingData(updater, null, ProcessingData.State.SEND_NOTIFICATION);
+        queue(processingData);
+        return processingData;
+    }
+
     public void queue(ProcessingData processingData) {
         queue.add(processingData);
     }
@@ -78,7 +84,9 @@ public class UpdateHandler {
 
         ProcessingData.State state = processingData.getState();
         this.currentlyProcessing.compute(state, (key, oldValue) -> oldValue != null ? oldValue + 1 : 1);
-        updater.platform().sendProcessingNotification(this, state);
+        if (state != ProcessingData.State.SEND_NOTIFICATION) {
+            updater.platform().sendProcessingActionBar(this, state);
+        }
 
         switch (state) {
             case UPDATE_CHECK -> {
@@ -118,6 +126,12 @@ public class UpdateHandler {
                 String sourceNames = String.join(", ", pluginData.getSourceData().stream().map(SourceData::sourceName).toList());
                 processingData.getFuture().completeExceptionally(new IOException("Failed to download update for plugin '%s' using defined sources: '%s'".formatted(pluginData.getPluginName(), sourceNames)));
             }
+            case SEND_NOTIFICATION -> {
+                String message = updater.constructUpdateMessage();
+                if (message != null) {
+                    updater.platform().broadcastNotification(message);
+                }
+            }
         }
     }
 
@@ -152,7 +166,8 @@ public class UpdateHandler {
 
         public enum State {
             UPDATE_CHECK,
-            DOWNLOAD
+            DOWNLOAD,
+            SEND_NOTIFICATION
         }
     }
 }

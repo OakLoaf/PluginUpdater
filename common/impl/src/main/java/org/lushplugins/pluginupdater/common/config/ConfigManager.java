@@ -81,6 +81,7 @@ public class ConfigManager {
             if (checkOnReload) {
                 UpdateHandler updateHandler = updater.updateHandler();
                 getPlugins().forEach(updateHandler::queueUpdateCheck);
+                updateHandler.queueBroadcastNotification();
             }
         });
 
