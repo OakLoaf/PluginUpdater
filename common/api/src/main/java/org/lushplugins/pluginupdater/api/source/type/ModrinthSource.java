@@ -73,7 +73,7 @@ public class ModrinthSource implements Source {
             .formatted(projectId);
     }
 
-    private JsonArray getVersions(PluginData pluginData, Data modrinthData) throws IOException, InterruptedException {
+    private JsonArray getVersions(PluginData pluginData, Data modrinthData, @Nullable String serverVersion) throws IOException, InterruptedException {
         StringBuilder uriBuilder = new StringBuilder("%s/project/%s/version"
             .formatted(UpdaterConstants.Endpoint.MODRINTH, modrinthData.projectId()))
             .append("?loaders=").append(modrinthData.loadersOrElse(this.defaultLoaders).stream()
@@ -84,7 +84,6 @@ public class ModrinthSource implements Source {
         if (serverVersion != null) {
             uriBuilder.append("&game_versions=").append("[%22").append(serverVersion).append("%22]");
         }
-
 
         if (modrinthData.filtersReleaseChannel()) {
             uriBuilder.append("&version_type=").append(modrinthData.releaseChannel());
@@ -101,10 +100,15 @@ public class ModrinthSource implements Source {
     }
 
     private JsonObject getLatestVersion(PluginData pluginData, Data modrinthData) throws IOException, InterruptedException {
-        JsonArray versions = getVersions(pluginData, modrinthData);
+        JsonArray versions = getVersions(pluginData, modrinthData, this.serverVersion);
         if (versions.isEmpty()) {
-            throw new IllegalStateException("Failed to collect versions for '%s'"
-                .formatted(pluginData.getPluginName() ));
+            // TODO: If getting versions without server version then mark as unstable in updates list
+            versions = getVersions(pluginData, modrinthData, null);
+
+            if (versions.isEmpty()) {
+                throw new IllegalStateException("Failed to collect versions for '%s'"
+                    .formatted(pluginData.getPluginName() ));
+            }
         }
 
         return versions.get(0).getAsJsonObject();
