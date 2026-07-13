@@ -32,7 +32,7 @@ public class RegexVersionParser implements VersionParser {
 
         String commitHash = getNamedGroupContent(matcher, "commit");
 
-        return new Version(rawVersion, version, buildNum, commitHash);
+        return new Version(rawVersion, version, buildNum, commitHash, false);
     }
 
     public static Pattern parsePattern(String rawPattern) {

@@ -1,5 +1,6 @@
 package org.lushplugins.pluginupdater.common.command;
 
+import org.lushplugins.pluginupdater.api.version.Version;
 import org.lushplugins.pluginupdater.common.command.annotation.CommandPermission;
 import org.lushplugins.pluginupdater.common.UpdaterImpl;
 import org.lushplugins.pluginupdater.api.updater.PluginInfo;
@@ -30,11 +31,31 @@ public record UpdatesCommand(UpdaterImpl updater) {
                         + configManager.getMessage("update-prepared-color", "<#ffda54>")
                         + "*";
                 } else if (versionDifference.equals(VersionDifference.MAJOR)) {
-                    return configManager.getMessage("major-update-available-color", "<#ff6969>")
+                    String name = configManager.getMessage("major-update-available-color", "<#ff6969>")
                         + pluginName;
+
+                    Version latestVersion = pluginData.getLatestVersion();
+                    if (latestVersion != null && latestVersion.potentiallyUnsafe()) {
+                        name += "<hover:show_text:This version is marked as potentially unsafe for your server version>"
+                            + configManager.getMessage("major-update-available-color", "<#ff6969>")
+                            + "*"
+                            + "</hover>";
+                    }
+
+                    return name;
                 } else if (versionDifference.equals(VersionDifference.MINOR) || versionDifference.equals(VersionDifference.PATCH) || versionDifference.equals(VersionDifference.BUILD)) {
-                    return configManager.getMessage("update-available-color", "<#ffda54>")
+                    String name = configManager.getMessage("update-available-color", "<#ffda54>")
                         + pluginName;
+
+                    Version latestVersion = pluginData.getLatestVersion();
+                    if (latestVersion != null && latestVersion.potentiallyUnsafe()) {
+                        name += "<hover:show_text:This version is marked as potentially unsafe for your server version>"
+                            + configManager.getMessage("major-update-available-color", "<#ff6969>")
+                            + "*"
+                            + "</hover>";
+                    }
+
+                    return name;
                 } else {
                     return configManager.getMessage("latest-version-color", "<#b7faa2>")
                         + pluginName;
@@ -81,6 +102,13 @@ public record UpdatesCommand(UpdaterImpl updater) {
                     versionDifference.equals(VersionDifference.MAJOR) ? majorUpdateAvailableColor : updateAvailableColor,
                     pluginData.getLatestVersion().rawVersionString()
                 );
+
+            if (pluginData.getLatestVersion().potentiallyUnsafe()) {
+                message += "<hover:show_text:This version is marked as potentially unsafe for your server version>"
+                    + majorUpdateAvailableColor
+                    + "*"
+                    + "</hover>";
+            }
 
             if (pluginData.isAlreadyDownloaded()) {
                 message += latestVersionColor + " ᴅᴏᴡɴʟᴏᴀᴅᴇᴅ";

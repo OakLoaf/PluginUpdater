@@ -41,6 +41,7 @@ tasks {
             // The following plugins are intentionally outdated for testing purposes
             modrinth("djC8I9ui", "3.2.0") // LushRewards
             modrinth("discordsrv", "1.27.0") // DiscordSRV
+            modrinth("ilX5LKrx", "2.1.3") // GardeningTweaks
             modrinth("fancynpcs", "2.2.2") // FancyNPCs
             modrinth("fancyholograms", "2.3.1") // FancyHolograms
             modrinth("nMwMeNFr", "2025.07") // UltimateAutoRestart

@@ -1,5 +1,6 @@
 package org.lushplugins.pluginupdater.common.command;
 
+import org.lushplugins.pluginupdater.api.version.Version;
 import org.lushplugins.pluginupdater.common.command.annotation.CommandPermission;
 import org.lushplugins.pluginupdater.common.UpdaterImpl;
 import org.lushplugins.pluginupdater.common.updater.UpdateHandler;
@@ -76,6 +77,12 @@ public record UpdateCommand(UpdaterImpl updater) {
                     return;
                 }
 
+                Version latestVersion = pluginData.getLatestVersion();
+                if (latestVersion != null && latestVersion.potentiallyUnsafe() && !force) {
+                    majorUpdateCount.incrementAndGet();
+                    return;
+                }
+
                 updateHandler.queueDownload(pluginData.getPluginName());
                 updateCount.incrementAndGet();
             });
@@ -90,7 +97,7 @@ public record UpdateCommand(UpdaterImpl updater) {
         }
 
         if (finalMajorCount > 0) {
-            actor.reply("<#e0c01b>%s <#ffe27a>plugins require major updates, run <#e0c01b>/updater update all --force <#ffe27a>to force all possible updates".formatted(finalMajorCount));
+            actor.reply("<#e0c01b>%s <#ffe27a>plugins require major updates or are marked as unsafe for your server version, run <#e0c01b>/updater update all --force <#ffe27a>to force all possible updates".formatted(finalMajorCount));
         }
     }
 }

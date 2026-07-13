@@ -3,8 +3,10 @@ package org.lushplugins.pluginupdater.api.source.type;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.gson.JsonPrimitive;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
+import org.lushplugins.pluginupdater.api.exception.InvalidVersionFormatException;
 import org.lushplugins.pluginupdater.api.source.SourceData;
 import org.lushplugins.pluginupdater.api.util.HttpUtil;
 import org.lushplugins.pluginupdater.api.util.UpdaterConstants;
@@ -12,6 +14,8 @@ import org.lushplugins.pluginupdater.api.source.Source;
 import org.lushplugins.pluginupdater.api.updater.PluginData;
 import org.lushplugins.pluginupdater.api.version.DownloadableRelease;
 import org.lushplugins.pluginupdater.api.version.Version;
+import org.lushplugins.pluginupdater.api.version.VersionDifference;
+import org.lushplugins.pluginupdater.api.version.comparator.VersionComparator;
 
 import java.io.IOException;
 import java.net.http.HttpResponse;
@@ -45,10 +49,12 @@ public class ModrinthSource implements Source {
             return null;
         }
 
-        JsonObject currVersionJson = getLatestVersion(pluginData, modrinthData);
-        String version = currVersionJson.get("version_number").getAsString();
+        JsonObject versionJson = getLatestVersion(pluginData, modrinthData);
+        String version = versionJson.get("version_number").getAsString();
+        boolean supportsServerVersion = versionJson.get("game_versions").getAsJsonArray().contains(new JsonPrimitive(this.serverVersion));
 
-        return pluginData.getLatestVersionParser().parse(version);
+        return pluginData.getLatestVersionParser().parse(version)
+            .markAsPotentiallyUnsafe(!supportsServerVersion);
     }
 
     @Override
@@ -57,8 +63,8 @@ public class ModrinthSource implements Source {
             return null;
         }
 
-        JsonObject currVersionJson = getLatestVersion(pluginData, modrinthData);
-        String downloadUrl = currVersionJson.get("files").getAsJsonArray().get(0).getAsJsonObject().get("url").getAsString();
+        JsonObject versionJson = getLatestVersion(pluginData, modrinthData);
+        String downloadUrl = versionJson.get("files").getAsJsonArray().get(0).getAsJsonObject().get("url").getAsString();
 
         return new DownloadableRelease(downloadUrl, null, null);
     }
@@ -101,14 +107,29 @@ public class ModrinthSource implements Source {
 
     private JsonObject getLatestVersion(PluginData pluginData, Data modrinthData) throws IOException, InterruptedException {
         JsonArray versions = getVersions(pluginData, modrinthData, this.serverVersion);
-        if (versions.isEmpty()) {
-            // TODO: If getting versions without server version then mark as unstable in updates list
-            versions = getVersions(pluginData, modrinthData, null);
+        if (!versions.isEmpty()) {
+            JsonObject versionJson = versions.get(0).getAsJsonObject();
 
-            if (versions.isEmpty()) {
-                throw new IllegalStateException("Failed to collect versions for '%s'"
-                    .formatted(pluginData.getPluginName() ));
+            Version version = pluginData.getLatestVersionParser().parse(versionJson.get("version_number").getAsString());
+
+            VersionDifference versionDifference;
+            try {
+                VersionComparator comparator = pluginData.getOptionalComparator().orElse(pluginData.getSourceData().getFirst().getDefaultComparator());
+                versionDifference = comparator.getVersionDifference(pluginData.getCurrentVersion(), version);
+            } catch (InvalidVersionFormatException e) {
+                throw new IllegalStateException("Failed to compare versions for '%s': %s"
+                    .formatted(pluginData.getPluginName(), e.getMessage()));
             }
+
+            if (versionDifference != VersionDifference.LATEST) {
+                return versionJson;
+            }
+        }
+
+        versions = getVersions(pluginData, modrinthData, null);
+        if (versions.isEmpty()) {
+            throw new IllegalStateException("Failed to collect versions for '%s'"
+                .formatted(pluginData.getPluginName() ));
         }
 
         return versions.get(0).getAsJsonObject();
@@ -118,6 +139,8 @@ public class ModrinthSource implements Source {
     public int getRateLimit() {
         return 1;
     }
+
+    public record LatestVersion(JsonObject json, boolean potentiallyUnsafe) {}
 
     /**
      * @param projectId The Modrinth project id
