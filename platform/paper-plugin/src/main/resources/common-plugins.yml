@@ -1,30 +1,48 @@
+BannerMaker:
+  source: github
+  github-repo: jyhsu2000/BannerMaker
 BlueMap:
   source: modrinth
   modrinth-project-id: swbUV1cr
+CarbonChat:
+  source: modrinth
+  modrinth-project-id: QzooIsZI
 Chunky:
   source: modrinth
   modrinth-project-id: fALzjamp
 ChunkyBorder:
   source: modrinth
   modrinth-project-id: s86X568j
-commandtimer:
-  source: github
-  github-repo: titivermeesch/CommandTimer
 CommandPanels:
   source: spigot
   spigot-resource-id: 67788
+commandtimer:
+  source: github
+  github-repo: titivermeesch/CommandTimer
+ConditionalEvents:
+  source: modrinth
+  modrinth-project-id: 4EEcEnDG
 CoreProtect:
   source: modrinth
   modrinth-project-id: Lu3KuzdV
 CrazyCrates:
   source: modrinth
   modrinth-project-id: r3BBZyf3
+DeadChest:
+  source: modrinth
+  modrinth-project-id: pKqnV03Y
 DecentHolograms:
   source: spigot
   spigot-resource-id: 96927
+DeluxeMentions:
+  source: github
+  github-repo: RubenArtz/DeluxeMentions
 DeluxeMenus:
   source: spigot
   spigot-resource-id: 11734
+DHSupport:
+  source: modrinth
+  modrinth-project-id: IjY7seTG
 DiscordSRV:
   source: modrinth
   modrinth-project-id: UmLGoGij
@@ -34,6 +52,12 @@ Dynmap:
 EpicRename:
   source: spigot
   spigot-resource-id: 4341
+Essentials:
+  source: modrinth
+  modrinth-project-id: hXiIvTyT
+EssentialsSpawn:
+  source: modrinth
+  modrinth-project-id: sYpvDxGJ
 EternalTags:
   source: spigot
   spigot-resource-id: 91842
@@ -43,15 +67,21 @@ ExcellentCrates:
 ExcellentEnchants:
   source: spigot
   spigot-resource-id: 61693
+F3F4Perms:
+  source: modrinth
+  modrinth-project-id: kRiduIsw
+FairyChat:
+  source: modrinth
+  modrinth-project-id: gnSidBpb
 FastAsyncWorldEdit:
   source: modrinth
   modrinth-project-id: z4HZZnLr
-  loaders: "paper"
+  loaders: paper
 floodgate:
   source: geyser
   project-name: floodgate
-  version-format: "<version>-.+ (b<build>-<commit>)"
-  latest-version-format: "<version>"
+  version-format: <version>-.+ (b<build>-<commit>)
+  latest-version-format: <version>
 ForcePack:
   source: spigot
   spigot-resource-id: 45439
@@ -73,6 +103,18 @@ HuskChat:
 HuskHomes:
   source: spigot
   spigot-resource-id: 83767
+Images:
+  source: spigot
+  spigot-resource-id: 53036
+LuckPerms:
+  source: spigot
+  spigot-resource-id: 28140
+mclogs:
+  source: modrinth
+  modrinth-project-id: 6DdCzpTL
+Minepacks:
+  source: spigot
+  spigot-resource-id: 19286
 Multiverse-Core:
   source: modrinth
   modrinth-project-id: 3wmN97b8
@@ -94,9 +136,6 @@ NametagEdit:
 nightcore:
   source: modrinth
   modrinth-project-id: Y4NRwMW5
-LuckPerms:
-  source: spigot
-  spigot-resource-id: 28140
 packetevents:
   source: modrinth
   modrinth-project-id: HYKaKraK
@@ -105,10 +144,16 @@ PlaceholderAPI:
   spigot-resource-id: 6245
 Plan:
   source: github
-  github-repo: "plan-player-analytics/Plan"
+  github-repo: plan-player-analytics/Plan
 PlayerParticles:
   source: spigot
   spigot-resource-id: 40261
+PluginPortal:
+  source: modrinth
+  modrinth-project-id: 5qkQnnWO
+ProtocolLib:
+  source: github
+  github-repo: dmulloy2/ProtocolLib
 SimplePortals:
   source: spigot
   spigot-resource-id: 56772
@@ -132,7 +177,10 @@ SunLight:
   spigot-resource-id: 67733
 TAB:
   source: github
-  github-repo: "NEZNAMY/TAB"
+  github-repo: NEZNAMY/TAB
+TAB-Bridge:
+  source: modrinth
+  modrinth-project-id: kG3hVbBX
 TabTPS:
   source: modrinth
   modrinth-project-id: cUhi3iB2
@@ -148,21 +196,40 @@ UltraCosmetics:
 Vault:
   source: spigot
   spigot-resource-id: 34315
+VeinMiner:
+  source: spigot
+  spigot-resource-id: 12038
 VentureChat:
   source: spigot
   spigot-resource-id: 771
 ViaBackwards:
   source: modrinth
   modrinth-project-id: NpvuJQoq
+  channels: release
 ViaRewind:
   source: modrinth
   modrinth-project-id: TbHIxhx5
+  channels: release
 ViaVersion:
   source: modrinth
   modrinth-project-id: P1OZGk5p
+  channels: release
 VillagerMarket:
   source: spigot
   spigot-resource-id: 82965
+voicechat:
+  source: modrinth
+  modrinth-project-id: 9eGKb6K1
+VoidGen:
+  source: modrinth
+  modrinth-project-id: DCTiMOWF
 WorldEdit:
   source: modrinth
   modrinth-project-id: 1u6JkXh5
+WorldGuard:
+  source: modrinth
+  modrinth-project-id: DKY9btbd
+  channels: release
+WorldGuardExtraFlagsPlus:
+  source: modrinth
+  modrinth-project-id: DsxKmIdB
