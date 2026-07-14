@@ -33,9 +33,12 @@ VentureChat:
 ViaBackwards:
   source: modrinth
   modrinth-project-id: NpvuJQoq
+  channels: "release"
 ViaRewind:
   source: modrinth
   modrinth-project-id: TbHIxhx5
+  channels: "release"
 ViaVersion:
   source: modrinth
   modrinth-project-id: P1OZGk5p
+  channels: "release"
