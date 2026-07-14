@@ -33,7 +33,7 @@ public class ModrinthSource implements Source {
         this.defaultLoaders = defaultLoaders;
     }
 
-    public ModrinthSource(List<String> defaultLoaders, String serverVersion) {
+    public ModrinthSource(List<String> defaultLoaders, @Nullable String serverVersion) {
         this(defaultLoaders);
         this.serverVersion = serverVersion;
     }
@@ -51,7 +51,7 @@ public class ModrinthSource implements Source {
 
         JsonObject versionJson = getLatestVersion(pluginData, modrinthData);
         String version = versionJson.get("version_number").getAsString();
-        boolean supportsServerVersion = versionJson.get("game_versions").getAsJsonArray().contains(new JsonPrimitive(this.serverVersion));
+        boolean supportsServerVersion = this.serverVersion == null || versionJson.get("game_versions").getAsJsonArray().contains(new JsonPrimitive(this.serverVersion));
 
         return pluginData.getLatestVersionParser().parse(version)
             .markAsPotentiallyUnsafe(!supportsServerVersion);
