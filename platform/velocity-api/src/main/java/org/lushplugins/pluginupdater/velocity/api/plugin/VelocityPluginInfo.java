@@ -22,7 +22,7 @@ public record VelocityPluginInfo(PluginContainer container, @Nullable Logger log
 
     @Override
     public String getName() {
-        return container.getDescription().getName().orElseThrow();
+        return container.getDescription().getName().orElse(container.getDescription().getId());
     }
 
     @Override
