@@ -79,6 +79,16 @@ public class VelocityUpdaterPlatform implements UpdaterPlatform<Player> {
     }
 
     @Override
+    public String getUpdaterCommandName() {
+        return "vupdater";
+    }
+
+    @Override
+    public String getUpdatesCommandName() {
+        return "vupdates";
+    }
+
+    @Override
     public void registerLampCommands(UpdaterImpl updater, Lamp<?> lamp) {
         UpdaterPlatform.super.registerLampCommands(updater, lamp);
 
