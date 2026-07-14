@@ -39,6 +39,8 @@ public class UpdaterImpl {
 
         Lamp<?> lamp = platform.prepareLamp()
             .permissionFactory(new CommandPermissionFactory(this))
+            .parameterTypes(parameterTypes -> parameterTypes
+                .addContextParameter(UpdaterImpl.class, (parameter, context) -> this))
             .suggestionProviders(providers -> providers
                 .addProviderForAnnotation(PluginName.class, (annotation) -> (context) -> {
                     if (annotation.includeTags()) {

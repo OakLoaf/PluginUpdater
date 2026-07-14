@@ -3,20 +3,21 @@ package org.lushplugins.pluginupdater.common.command;
 import org.lushplugins.pluginupdater.api.version.Version;
 import org.lushplugins.pluginupdater.common.command.annotation.CommandPermission;
 import org.lushplugins.pluginupdater.common.UpdaterImpl;
-import org.lushplugins.pluginupdater.api.updater.PluginInfo;
 import org.lushplugins.pluginupdater.api.version.VersionDifference;
 import org.lushplugins.pluginupdater.common.config.ConfigManager;
-import revxrsal.commands.annotation.Command;
+import revxrsal.commands.annotation.CommandPlaceholder;
+import revxrsal.commands.annotation.Subcommand;
+import revxrsal.commands.orphan.OrphanCommand;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @SuppressWarnings("unused")
-public record UpdatesCommand(UpdaterImpl updater) {
+public record UpdatesCommand(UpdaterImpl updater) implements OrphanCommand {
 
-    @Command({ "updater updates", "updates" })
+    @CommandPlaceholder
     @CommandPermission("pluginupdater.checkupdates")
-    public String updates() {
+    public static String updates(UpdaterImpl updater) {
         ConfigManager configManager = updater.config();
         List<String> plugins = configManager.getAllPluginData().stream()
             .map(pluginData -> {
@@ -70,9 +71,9 @@ public record UpdatesCommand(UpdaterImpl updater) {
         }
     }
 
-    @Command({ "updater list updates", "updates list" })
+    @Subcommand("list")
     @CommandPermission("pluginupdater.checkupdates")
-    public String list() {
+    public static String listUpdates(UpdaterImpl updater) {
         ConfigManager configManager = updater.config();
         String updateAvailableColor = configManager.getMessage("update-available-color", "<#ffda54>");
         String majorUpdateAvailableColor = configManager.getMessage("major-update-available-color", "<#ff6969>");
@@ -121,22 +122,6 @@ public record UpdatesCommand(UpdaterImpl updater) {
             return String.join("&r\n", plugins);
         } else {
             return "<#ff6969>No updates found";
-        }
-    }
-
-    @Command("updater list unregistered")
-    @CommandPermission("pluginupdater.unregisteredplugins")
-    public String unregisteredPlugins() {
-        List<String> unregisteredPlugins = updater.platform().getPlugins().stream()
-            .map(PluginInfo::getName)
-            .filter(pluginName -> updater.config().getPluginData(pluginName) == null)
-            .sorted(String.CASE_INSENSITIVE_ORDER)
-            .toList();
-
-        if (!unregisteredPlugins.isEmpty()) {
-            return "<white>Unregistered Plugins (%s):\n<#ff6969>%s".formatted(unregisteredPlugins.size(), String.join("<gray>, <#ff6969>", unregisteredPlugins));
-        } else {
-            return "<#ff6969>No unregistered plugins found";
         }
     }
 }

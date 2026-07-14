@@ -1,20 +1,21 @@
 package org.lushplugins.pluginupdater.common.command;
 
 import org.lushplugins.pluginupdater.api.updater.PluginData;
+import org.lushplugins.pluginupdater.api.updater.PluginInfo;
 import org.lushplugins.pluginupdater.common.command.annotation.CommandPermission;
 import org.lushplugins.pluginupdater.common.command.annotation.PluginName;
 import org.lushplugins.pluginupdater.common.UpdaterImpl;
 import org.lushplugins.pluginupdater.common.updater.UpdateHandler;
-import revxrsal.commands.annotation.Command;
 import revxrsal.commands.annotation.Subcommand;
 import revxrsal.commands.command.CommandActor;
+import revxrsal.commands.orphan.OrphanCommand;
 
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 
-@Command("updater")
 @SuppressWarnings("unused")
-public record UpdaterCommand(UpdaterImpl updater) {
+public record UpdaterCommand(UpdaterImpl updater) implements OrphanCommand {
 
     @Subcommand("reload")
     @CommandPermission("pluginupdater.reload")
@@ -62,5 +63,33 @@ public record UpdaterCommand(UpdaterImpl updater) {
         updater.updateHandler().queueBroadcastNotification();
 
         return "<#b7faa2>Successfully queued checks for %s plugins".formatted(updateCount.get());
+    }
+
+    @Subcommand("updates")
+    @CommandPermission("pluginupdater.checkupdates")
+    public String updates() {
+        return UpdatesCommand.updates(updater);
+    }
+
+    @Subcommand("list updates")
+    @CommandPermission("pluginupdater.checkupdates")
+    public String listUpdates() {
+        return UpdatesCommand.listUpdates(updater);
+    }
+
+    @Subcommand("list unregistered")
+    @CommandPermission("pluginupdater.unregisteredplugins")
+    public String listUnregisteredPlugins() {
+        List<String> unregisteredPlugins = updater.platform().getPlugins().stream()
+            .map(PluginInfo::getName)
+            .filter(pluginName -> updater.config().getPluginData(pluginName) == null)
+            .sorted(String.CASE_INSENSITIVE_ORDER)
+            .toList();
+
+        if (!unregisteredPlugins.isEmpty()) {
+            return "<white>Unregistered Plugins (%s):\n<#ff6969>%s".formatted(unregisteredPlugins.size(), String.join("<gray>, <#ff6969>", unregisteredPlugins));
+        } else {
+            return "<#ff6969>No unregistered plugins found";
+        }
     }
 }

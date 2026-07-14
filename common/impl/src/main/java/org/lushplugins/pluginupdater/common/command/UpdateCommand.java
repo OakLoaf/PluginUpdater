@@ -8,16 +8,18 @@ import org.lushplugins.pluginupdater.api.updater.PluginData;
 import org.lushplugins.pluginupdater.api.version.VersionDifference;
 import org.lushplugins.pluginupdater.common.command.annotation.PluginName;
 import revxrsal.commands.annotation.Command;
+import revxrsal.commands.annotation.Subcommand;
 import revxrsal.commands.annotation.Switch;
 import revxrsal.commands.command.CommandActor;
+import revxrsal.commands.orphan.OrphanCommand;
 
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Predicate;
 
 @SuppressWarnings("unused")
-public record UpdateCommand(UpdaterImpl updater) {
+public record UpdateCommand(UpdaterImpl updater) implements OrphanCommand {
 
-    @Command("updater update")
+    @Subcommand("update")
     @CommandPermission("pluginupdater.downloadupdates")
     public String update(CommandActor actor, @PluginName(includeTags = true) String pluginName) {
         if (!updater.config().shouldAllowDownloads()) {
@@ -51,7 +53,7 @@ public record UpdateCommand(UpdaterImpl updater) {
         }
     }
 
-    @Command("updater update all")
+    @Command("update all")
     @CommandPermission("pluginupdater.downloadupdates")
     public void updateAll(CommandActor actor, @Switch("force") boolean force) {
         updateAll(actor, (ignored) -> true, force);

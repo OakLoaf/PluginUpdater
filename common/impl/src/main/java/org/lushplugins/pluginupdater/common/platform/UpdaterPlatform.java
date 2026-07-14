@@ -9,6 +9,7 @@ import org.lushplugins.pluginupdater.common.command.UpdatesCommand;
 import org.lushplugins.pluginupdater.common.updater.UpdateHandler;
 import revxrsal.commands.Lamp;
 import revxrsal.commands.command.CommandActor;
+import revxrsal.commands.orphan.Orphans;
 
 import java.io.File;
 import java.io.InputStream;
@@ -38,11 +39,24 @@ public interface UpdaterPlatform<T> {
 
     Lamp.Builder<?> prepareLamp();
 
+    default String getUpdaterCommandName() {
+        return "updater";
+    }
+
+    default String getUpdatesCommandName() {
+        return "updates";
+    }
+
     default void registerLampCommands(UpdaterImpl updater, Lamp<?> lamp) {
-        lamp.register(new UpdaterCommand(updater), new UpdatesCommand(updater));
+        lamp.register(
+            Orphans.path(getUpdaterCommandName()).handler(new UpdaterCommand(updater)),
+            Orphans.path(getUpdatesCommandName()).handler(new UpdatesCommand(updater))
+        );
 
         if (updater.config().shouldAllowDownloads()) {
-            lamp.register(new UpdateCommand(updater));
+            lamp.register(
+                Orphans.path(getUpdaterCommandName()).handler(new UpdateCommand(updater))
+            );
         }
     }
 
