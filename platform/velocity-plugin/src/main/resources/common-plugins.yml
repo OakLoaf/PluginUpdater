@@ -4,14 +4,14 @@ floodgate:
   version-format: "<version>-.+ (b<build>-<commit>)"
   latest-version-format: "<version>"
 ForcePack:
-  source: spigot
-  spigot-resource-id: 45439
+  source: modrinth
+  modrinth-project-id: v182E90X
 Geyser-Velocity:
   source: geyser
   project-name: geyser
 LuckPerms:
-  source: spigot
-  spigot-resource-id: 28140
+  source: modrinth
+  modrinth-project-id: Vebnzrzj
 packetevents:
   source: modrinth
   modrinth-project-id: HYKaKraK
@@ -28,8 +28,8 @@ Tebex:
   source: modrinth
   modrinth-project-id: nRA0jiJt
 VentureChat:
-  source: spigot
-  spigot-resource-id: 771
+  source: github
+  github-repo: "Aust1n46/VentureChat"
 ViaBackwards:
   source: modrinth
   modrinth-project-id: NpvuJQoq
