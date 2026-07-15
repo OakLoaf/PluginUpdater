@@ -1,8 +1,6 @@
 package org.lushplugins.pluginupdater.cli.platform;
 
 import com.electronwill.nightconfig.core.Config;
-import com.electronwill.nightconfig.core.io.ConfigParser;
-import com.electronwill.nightconfig.yaml.YamlFormat;
 import org.jetbrains.annotations.Nullable;
 import org.lushplugins.pluginupdater.api.platform.UpdaterPlatform;
 import org.lushplugins.pluginupdater.cli.PluginUpdaterCLI;
@@ -26,7 +24,6 @@ public class CLIPlatform implements UpdaterPlatform<Object> {
 
     public CLIPlatform(PluginUpdaterCLI cli) {
         InfoParser infoParser = cli.getPlatform().infoParser();
-        ConfigParser<Config> yamlParser = YamlFormat.defaultInstance().createParser();
         try {
             this.plugins = Files.list(cli.getPluginsFolder())
                 .filter(path -> path.toString().endsWith(".jar"))
