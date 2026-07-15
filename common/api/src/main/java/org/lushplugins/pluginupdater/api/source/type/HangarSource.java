@@ -31,7 +31,7 @@ public class HangarSource implements Source {
     private final String platformVersion;
 
     @ApiStatus.Internal
-    public HangarSource(String platform, String platformVersion) {
+    public HangarSource(String platform, @Nullable String platformVersion) {
         this.platform = platform.toUpperCase();
         this.platformVersion = platformVersion;
     }
