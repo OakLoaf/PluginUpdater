@@ -67,9 +67,6 @@ ExcellentCrates:
 ExcellentEnchants:
   source: spigot
   spigot-resource-id: 61693
-F3F4Perms:
-  source: modrinth
-  modrinth-project-id: kRiduIsw
 FairyChat:
   source: modrinth
   modrinth-project-id: gnSidBpb
@@ -196,9 +193,6 @@ UltraCosmetics:
 Vault:
   source: spigot
   spigot-resource-id: 34315
-VeinMiner:
-  source: spigot
-  spigot-resource-id: 12038
 VentureChat:
   source: spigot
   spigot-resource-id: 771
