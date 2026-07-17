@@ -1,0 +1,39 @@
+name: Validate Common Plugins Order
+
+on:
+  pull_request:
+  push:
+
+jobs:
+  alphabetical-check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Validate alphabetical order of plugin keys
+        run: |
+          FILE="platform/paper-plugin/src/main/resources/common-plugins.yml"
+
+          echo "Checking alphabetical order for: $FILE"
+
+          # Extract top-level keys (plugin names)
+          KEYS=$(yq 'keys | .[]' "$FILE")
+
+          # Sort case-insensitively
+          SORTED=$(echo "$KEYS" | sort -f)
+
+          # Compare actual vs sorted
+          if [ "$KEYS" != "$SORTED" ]; then
+            echo "common-plugins.yml is not in case-insensitive alphabetical order"
+            echo ""
+            echo "Expected order:"
+            echo "$SORTED"
+            echo ""
+            echo "Actual order:"
+            echo "$KEYS"
+            exit 1
+          fi
+
+          echo "common-plugins.yml is ordered correctly"
