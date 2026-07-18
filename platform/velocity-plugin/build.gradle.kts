@@ -28,6 +28,7 @@ tasks {
             modrinth("viaversion", "5.7.1") // ViaVersion
             modrinth("viabackwards", "5.7.1") // ViaBackwards
             // The following plugins are intentionally outdated for testing purposes
+            github("NEZNAMY", "VelocityScoreboardAPI", "2.1.0", "VelocityScoreboardAPI.v2.1.0.jar")
         }
     }
 }
