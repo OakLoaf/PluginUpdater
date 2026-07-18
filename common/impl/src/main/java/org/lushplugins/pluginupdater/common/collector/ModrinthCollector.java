@@ -19,9 +19,9 @@ import java.util.*;
 import java.util.logging.Level;
 
 public class ModrinthCollector implements PluginDataCollector {
-    private final UpdaterPlatform platform;
+    private final UpdaterPlatform<?> platform;
 
-    public ModrinthCollector(UpdaterPlatform platform) {
+    public ModrinthCollector(UpdaterPlatform<?> platform) {
         this.platform = platform;
     }
 
