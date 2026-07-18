@@ -4,7 +4,7 @@ import org.jetbrains.annotations.Nullable;
 
 public record Version(
     String rawVersionString,
-    String version,
+    @Nullable String version,
     @Nullable Integer buildNum,
     @Nullable String commitHash,
     boolean potentiallyUnsafe

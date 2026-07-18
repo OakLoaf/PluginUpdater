@@ -60,7 +60,9 @@ public interface Source {
             return false;
         }
 
-        String fallbackFileName = pluginData.getPluginName() + "-" + pluginData.getLatestVersion().version() + ".jar";
+        Version latestVersion = pluginData.getLatestVersion();
+        String version = latestVersion.version() != null ? latestVersion.version() : latestVersion.rawVersionString();
+        String fallbackFileName = pluginData.getPluginName() + "-" + version + ".jar";
         release.downloadTo(destinationDir, fallbackFileName);
         DownloadLogger.logDownload(pluginData);
 
