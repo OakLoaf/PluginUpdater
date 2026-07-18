@@ -1,5 +1,6 @@
 package org.lushplugins.pluginupdater.api.source.type;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import org.jetbrains.annotations.Nullable;
@@ -18,6 +19,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 public class GithubSource implements Source {
     public static final String NAME = "github";
@@ -46,7 +48,36 @@ public class GithubSource implements Source {
         }
 
         JsonObject releaseJson = getLatestRelease(pluginData, githubData);
-        JsonObject assetJson = releaseJson.get("assets").getAsJsonArray().get(0).getAsJsonObject();
+        JsonObject assetJson = releaseJson.get("assets").getAsJsonArray().asList().stream()
+            .map(JsonElement::getAsJsonObject)
+            .filter(asset -> {
+                String assetNameFilter = githubData.assetName();
+                if (assetNameFilter == null) {
+                    return true;
+                }
+
+                String assetName = asset.get("name").getAsString();
+                char filterModifier = assetNameFilter.charAt(0);
+                return switch (filterModifier) {
+                    // Asset name is equal to string
+                    case '=' -> assetName.equalsIgnoreCase(assetNameFilter.substring(1));
+                    // Asset name does not contain string
+                    case '!' -> !assetName.contains(assetNameFilter.substring(1));
+                    // String matches regex
+                    case '?' -> {
+                        Pattern pattern = Pattern.compile(assetNameFilter.substring(1));
+                        yield pattern.matcher(assetName).find();
+                    }
+                    // String contains
+                    default -> assetName.contains(assetNameFilter);
+                };
+            })
+            .findFirst()
+            .orElse(null);
+
+        if (assetJson == null) {
+            throw new IllegalStateException("Failed to find an asset matching the asset name format '%s'.".formatted(githubData.assetName()));
+        }
 
         String token = githubData.token();
         String downloadUrl;
@@ -67,7 +98,7 @@ public class GithubSource implements Source {
 
     @Override
     public @Nullable String getChangelogUrl(PluginData pluginData, SourceData sourceData) {
-        if (!(sourceData instanceof Data(String repo, String token))) {
+        if (!(sourceData instanceof Data(String repo, String token, String assetName))) {
             return null;
         }
 
@@ -97,7 +128,7 @@ public class GithubSource implements Source {
         return JsonParser.parseString(response.body()).getAsJsonObject();
     }
 
-    public record Data(String repo, @Nullable String token) implements SourceData {
+    public record Data(String repo, @Nullable String token, String assetName) implements SourceData {
 
         @Override
         public String sourceName() {

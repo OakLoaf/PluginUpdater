@@ -64,6 +64,7 @@ public class PluginYamlCollector implements PluginDataCollector {
             else if (config.contains("github-repo")) {
                 sourceData = new GithubSource.Data(
                     config.get("github-repo"),
+                    null,
                     null
                 );
             }

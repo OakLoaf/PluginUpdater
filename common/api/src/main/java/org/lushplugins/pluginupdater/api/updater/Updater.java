@@ -166,9 +166,20 @@ public class Updater {
          * (Sources should be added in order of priority).
          * @param repo The plugin's GitHub repo (e.g. 'OakLoaf/PluginUpdater')
          * @param token The GitHub access token (if required)
+         * @param assetName A string that the asset name of the release must include
+         */
+        public Builder github(String repo, @Nullable String token, @Nullable String assetName) {
+            return source(new GithubSource.Data(repo, token, assetName));
+        }
+
+        /**
+         * Add GitHub plugin data to be used for collecting update information
+         * (Sources should be added in order of priority).
+         * @param repo The plugin's GitHub repo (e.g. 'OakLoaf/PluginUpdater')
+         * @param token The GitHub access token (if required)
          */
         public Builder github(String repo, @Nullable String token) {
-            return source(new GithubSource.Data(repo, token));
+            return github(repo, token, null);
         }
 
         /**

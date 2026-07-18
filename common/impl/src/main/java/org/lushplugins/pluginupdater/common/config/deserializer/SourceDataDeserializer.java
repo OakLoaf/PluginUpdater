@@ -35,7 +35,8 @@ public class SourceDataDeserializer {
     public static GithubSource.Data githubSourceData(Config config) {
         return new GithubSource.Data(
             config.get("github-repo"),
-            config.get("token")
+            config.get("token"),
+            config.get("asset-name")
         );
     }
 
