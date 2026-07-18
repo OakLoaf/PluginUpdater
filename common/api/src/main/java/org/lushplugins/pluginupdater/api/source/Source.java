@@ -123,7 +123,7 @@ public interface Source {
 
             try {
                 return callable.call(source, sourceData);
-            } catch (IOException | InterruptedException e) {
+            } catch (Throwable e) {
                 UpdaterConstants.LOGGER.log(Level.SEVERE, e.getMessage(), e);
             }
         }
