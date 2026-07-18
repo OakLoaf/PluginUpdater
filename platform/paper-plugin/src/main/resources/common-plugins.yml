@@ -173,8 +173,8 @@ SunLight:
   source: spigot
   spigot-resource-id: 67733
 TAB:
-  source: github
-  github-repo: NEZNAMY/TAB
+  source: modrinth
+  modrinth-project-id: gG7VFbG0
 TAB-Bridge:
   source: modrinth
   modrinth-project-id: kG3hVbBX

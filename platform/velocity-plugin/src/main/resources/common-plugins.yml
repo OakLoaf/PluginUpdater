@@ -22,8 +22,8 @@ spark:
   source: spigot
   spigot-resource-id: 57242
 TAB:
-  source: github
-  github-repo: "NEZNAMY/TAB"
+  source: modrinth
+  modrinth-project-id: gG7VFbG0
 Tebex:
   source: modrinth
   modrinth-project-id: nRA0jiJt
