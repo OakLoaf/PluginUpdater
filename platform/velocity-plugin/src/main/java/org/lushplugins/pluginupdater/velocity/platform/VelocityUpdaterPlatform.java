@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Optional;
 import java.util.logging.Logger;
 
 public class VelocityUpdaterPlatform implements UpdaterPlatform<Player> {
@@ -33,7 +34,16 @@ public class VelocityUpdaterPlatform implements UpdaterPlatform<Player> {
 
     @Override
     public @Nullable PluginInfo getPlugin(String name) {
-        PluginContainer plugin = instance.server().getPluginManager().getPlugin(name).orElse(null);
+        PluginContainer plugin = instance.server().getPluginManager().getPlugin(name).orElseGet(() -> {
+            return instance.server().getPluginManager().getPlugins().stream()
+                .filter(container -> {
+                    Optional<String> pluginName = container.getDescription().getName();
+                    return pluginName.isPresent() && name.equals(pluginName.get());
+                })
+                .findFirst()
+                .orElse(null);
+        });
+
         return plugin != null ? new VelocityPluginInfo(plugin, instance.logger()) : null;
     }
 
