@@ -4,9 +4,6 @@ import org.lushplugins.pluginupdater.api.exception.InvalidVersionFormatException
 import org.lushplugins.pluginupdater.api.version.Version;
 import org.lushplugins.pluginupdater.api.version.VersionDifference;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 public class SemVerComparator implements VersionComparator {
     public static final SemVerComparator INSTANCE = new SemVerComparator();
     
@@ -36,12 +33,12 @@ public class SemVerComparator implements VersionComparator {
                     return VersionDifference.MAJOR;
                 }
             } else if (latestVersionPart < currentVersionPart) {
-                return getBuildDifference(currentVersion, latestVersion);
+                return VersionDifference.getBuildDifference(currentVersion, latestVersion);
             }
 
             i++;
         }
 
-        return getBuildDifference(currentVersion, latestVersion);
+        return VersionDifference.getBuildDifference(currentVersion, latestVersion);
     }
 }
