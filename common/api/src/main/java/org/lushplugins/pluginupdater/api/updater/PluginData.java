@@ -74,7 +74,6 @@ public class PluginData {
         this.sourceData.add(sourceData);
     }
 
-    // TODO: Instead of being an optional maybe this should have it's nullability defined by VersionDifference state or similar?
     public Optional<Version> getLatestVersion() {
         return Optional.ofNullable(latestVersion);
     }
