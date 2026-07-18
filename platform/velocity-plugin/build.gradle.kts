@@ -29,6 +29,7 @@ tasks {
             modrinth("viabackwards", "5.7.1") // ViaBackwards
             // The following plugins are intentionally outdated for testing purposes
             github("NEZNAMY", "VelocityScoreboardAPI", "2.1.0", "VelocityScoreboardAPI.v2.1.0.jar")
+            modrinth("tab-was-taken", "MsHr6ITb")
         }
     }
 }
