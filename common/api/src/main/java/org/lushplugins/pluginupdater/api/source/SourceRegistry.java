@@ -1,9 +1,6 @@
 package org.lushplugins.pluginupdater.api.source;
 
-import org.lushplugins.pluginupdater.api.source.type.GithubSource;
-import org.lushplugins.pluginupdater.api.source.type.HangarSource;
-import org.lushplugins.pluginupdater.api.source.type.ModrinthSource;
-import org.lushplugins.pluginupdater.api.source.type.SpigotSource;
+import org.lushplugins.pluginupdater.api.source.type.*;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -17,6 +14,7 @@ public class SourceRegistry {
     static {
         register(new GithubSource());
         register(new HangarSource());
+        register(new JenkinsSource());
         register(new SpigotSource());
     }
 

@@ -4,10 +4,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.lushplugins.pluginupdater.api.notifier.UpdateNotifier;
 import org.lushplugins.pluginupdater.api.source.SourceData;
-import org.lushplugins.pluginupdater.api.source.type.GithubSource;
-import org.lushplugins.pluginupdater.api.source.type.HangarSource;
-import org.lushplugins.pluginupdater.api.source.type.ModrinthSource;
-import org.lushplugins.pluginupdater.api.source.type.SpigotSource;
+import org.lushplugins.pluginupdater.api.source.type.*;
 import org.lushplugins.pluginupdater.api.util.DownloadLogger;
 import org.lushplugins.pluginupdater.api.source.Source;
 import org.lushplugins.pluginupdater.api.version.VersionDifference;
@@ -198,6 +195,18 @@ public class Updater {
          */
         public Builder hangar(String projectSlug) {
             return source(new HangarSource.Data(projectSlug));
+        }
+
+        /**
+         * Add GitHub plugin data to be used for collecting update information
+         * (Sources should be added in order of priority).
+         * @param url The plugin's Jenkins url (e.g. 'https://ci.jenkins.io')
+         * @param job The Jenkins job
+         * @param artifactName A string that the artifact name of the build must include
+         */
+        @SuppressWarnings("JavadocLinkAsPlainText")
+        public Builder jenkins(String url, String job, @Nullable String artifactName) {
+            return source(new JenkinsSource.Data(url, job, artifactName));
         }
 
         /**

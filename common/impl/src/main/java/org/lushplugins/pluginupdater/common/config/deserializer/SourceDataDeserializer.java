@@ -12,7 +12,7 @@ import java.util.logging.Level;
 
 public class SourceDataDeserializer {
 
-    public static SourceData deserialize(UpdaterPlatform platform, Config config) {
+    public static SourceData deserialize(UpdaterPlatform<?> platform, Config config) {
         String source = ConfigUtil.getOrAlias(config, "source", "platform",
             () -> platform.getLogger().log(Level.WARNING, "Deprecated: The config option 'updater' has been renamed to 'source'"));
 
@@ -20,6 +20,7 @@ public class SourceDataDeserializer {
             case GeyserSource.NAME -> geyserSourceData(config);
             case GithubSource.NAME -> githubSourceData(config);
             case HangarSource.NAME -> hangarSourceData(config);
+            case JenkinsSource.NAME -> jenkinsSourceData(config);
             case ModrinthSource.NAME -> modrinthSourceData(config);
             case SpigotSource.NAME -> spigotSourceData(config);
             default -> null;
@@ -43,6 +44,14 @@ public class SourceDataDeserializer {
     public static HangarSource.Data hangarSourceData(Config config) {
         return new HangarSource.Data(
             config.get("hangar-project-slug")
+        );
+    }
+
+    public static JenkinsSource.Data jenkinsSourceData(Config config) {
+        return new JenkinsSource.Data(
+            config.get("url"),
+            config.get("job"),
+            config.get("artifact-name")
         );
     }
 
