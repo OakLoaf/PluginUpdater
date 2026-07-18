@@ -56,7 +56,7 @@ public class GeyserSource implements Source {
             return null;
         }
 
-        Version version = pluginData.getLatestVersion();
+        Version version = pluginData.getLatestVersion().orElseThrow();
         String downloadUrl = "%s/projects/%s/versions/%s/builds/%s/downloads/%s".formatted(
             UpdaterConstants.Endpoint.GEYSER,
             projectName,
@@ -64,7 +64,9 @@ public class GeyserSource implements Source {
             version.buildNum(),
             this.platform);
 
-        return new DownloadableRelease(downloadUrl, null, null);
+        return DownloadableRelease.builder()
+            .downloadUrl(downloadUrl)
+            .build();
     }
 
     @Override

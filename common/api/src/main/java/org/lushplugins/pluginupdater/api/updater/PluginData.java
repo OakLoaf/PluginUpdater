@@ -2,7 +2,6 @@ package org.lushplugins.pluginupdater.api.updater;
 
 import org.jetbrains.annotations.Nullable;
 import org.lushplugins.pluginupdater.api.exception.InvalidVersionFormatException;
-import org.lushplugins.pluginupdater.api.source.Source;
 import org.lushplugins.pluginupdater.api.source.SourceData;
 import org.lushplugins.pluginupdater.api.source.SourceRegistry;
 import org.lushplugins.pluginupdater.api.version.Version;
@@ -63,8 +62,8 @@ public class PluginData {
         return sourceData;
     }
 
-    public VersionComparator getComparator() {
-        return comparator;
+    public Optional<VersionComparator> getComparator() {
+        return Optional.ofNullable(comparator);
     }
 
     public Optional<VersionComparator> getOptionalComparator() {
@@ -75,8 +74,9 @@ public class PluginData {
         this.sourceData.add(sourceData);
     }
 
-    public Version getLatestVersion() {
-        return latestVersion;
+    // TODO: Instead of being an optional maybe this should have it's nullability defined by VersionDifference state or similar?
+    public Optional<Version> getLatestVersion() {
+        return Optional.ofNullable(latestVersion);
     }
 
     public void setLatestVersion(Version latestVersion) {
@@ -135,10 +135,10 @@ public class PluginData {
         this.checkRan = checkRan;
     }
 
-    public @Nullable String getChangelogUrl() {
+    public Optional<String> getChangelogUrl() {
         SourceData sourceData = this.sourceData.getFirst();
-        Source source = SourceRegistry.get(sourceData.sourceName());
-        return source != null ? source.getChangelogUrl(this, sourceData) : null;
+        return SourceRegistry.get(sourceData.sourceName())
+            .map(source -> source.getChangelogUrl(this, sourceData));
     }
 
     public static Builder builder(String pluginName, String currentVersion) {

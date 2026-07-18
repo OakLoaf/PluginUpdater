@@ -36,7 +36,7 @@ public class SourceDataDeserializer {
     public static GithubSource.Data githubSourceData(Config config) {
         return new GithubSource.Data(
             config.get("github-repo"),
-            config.get("token"),
+            config.<String>get("token"),
             config.get("asset-name")
         );
     }
@@ -51,7 +51,7 @@ public class SourceDataDeserializer {
         return new JenkinsSource.Data(
             config.get("url"),
             config.get("job"),
-            config.get("artifact-name")
+            config.<String>get("artifact-name")
         );
     }
 

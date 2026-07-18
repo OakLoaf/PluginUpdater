@@ -3,6 +3,7 @@ package org.lushplugins.pluginupdater.api.notifier;
 import org.jetbrains.annotations.Nullable;
 import org.lushplugins.pluginupdater.api.updater.PluginData;
 import org.lushplugins.pluginupdater.api.updater.Updater;
+import org.lushplugins.pluginupdater.api.version.Version;
 
 import java.util.concurrent.TimeUnit;
 
@@ -28,7 +29,9 @@ public abstract class UpdateNotifier<T> {
                 String message = this.message
                     .replace("%plugin%", pluginData.getPluginName())
                     .replace("%current_version%", pluginData.getCurrentVersion().rawVersionString())
-                    .replace("%latest_version%", pluginData.getLatestVersion().rawVersionString());
+                    .replace("%latest_version%", pluginData.getLatestVersion()
+                        .map(Version::rawVersionString)
+                        .orElse("unknown"));
 
                 if (delay != null) {
                     updater.getScheduler().schedule(() -> sendMessage(user, message), delay, TimeUnit.SECONDS);

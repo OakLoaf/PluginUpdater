@@ -35,8 +35,7 @@ public record UpdatesCommand(UpdaterImpl updater) implements OrphanCommand {
                     String name = configManager.getMessage("major-update-available-color", "<#ff6969>")
                         + pluginName;
 
-                    Version latestVersion = pluginData.getLatestVersion();
-                    if (latestVersion != null && latestVersion.potentiallyUnsafe()) {
+                    if (pluginData.getLatestVersion().map(Version::potentiallyUnsafe).orElse(false)) {
                         name += "<hover:show_text:This version is marked as potentially unsafe for your server version>"
                             + configManager.getMessage("major-update-available-color", "<#ff6969>")
                             + "*"
@@ -48,8 +47,7 @@ public record UpdatesCommand(UpdaterImpl updater) implements OrphanCommand {
                     String name = configManager.getMessage("update-available-color", "<#ffda54>")
                         + pluginName;
 
-                    Version latestVersion = pluginData.getLatestVersion();
-                    if (latestVersion != null && latestVersion.potentiallyUnsafe()) {
+                    if (pluginData.getLatestVersion().map(Version::potentiallyUnsafe).orElse(false)) {
                         name += "<hover:show_text:This version is marked as potentially unsafe for your server version>"
                             + configManager.getMessage("major-update-available-color", "<#ff6969>")
                             + "*"
@@ -86,25 +84,22 @@ public record UpdatesCommand(UpdaterImpl updater) implements OrphanCommand {
                 return;
             }
 
-            String changelogUrl = pluginData.getChangelogUrl();
-            String interactComponent;
-            if (changelogUrl != null) {
-                interactComponent = "<hover:show_text:Open %s changelog><click:open_url:%s>"
-                    .formatted(pluginData.getPluginName(), changelogUrl);
-            } else {
-                interactComponent = "";
-            }
+            String interactComponent = pluginData.getChangelogUrl()
+                .map((changelogUrl) -> "<hover:show_text:Open %s changelog><click:open_url:%s>"
+                    .formatted(pluginData.getPluginName(), changelogUrl))
+                .orElse("");
 
+            Version latestVersion = pluginData.getLatestVersion().orElseThrow();
             String message = "%s<white>%s: <gray>%s <white>-> %s%s"
                 .formatted(
                     interactComponent,
                     pluginData.getPluginName(),
                     pluginData.getCurrentVersion().rawVersionString(),
                     versionDifference.equals(VersionDifference.MAJOR) ? majorUpdateAvailableColor : updateAvailableColor,
-                    pluginData.getLatestVersion().rawVersionString()
+                    pluginData.getLatestVersion().orElseThrow().rawVersionString()
                 );
 
-            if (pluginData.getLatestVersion().potentiallyUnsafe()) {
+            if (latestVersion.potentiallyUnsafe()) {
                 message += "<hover:show_text:This version is marked as potentially unsafe for your server version>"
                     + majorUpdateAvailableColor
                     + "*"

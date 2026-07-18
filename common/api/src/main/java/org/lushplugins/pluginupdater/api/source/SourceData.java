@@ -13,7 +13,7 @@ public interface SourceData {
         return RegexVersionParser.INSTANCE;
     }
 
-    default VersionComparator getDefaultComparator() {
+    default VersionComparator defaultComparator() {
         return SemVerComparator.INSTANCE;
     }
 }

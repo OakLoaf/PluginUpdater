@@ -17,6 +17,7 @@ import org.lushplugins.pluginupdater.api.version.comparator.VersionComparator;
 
 import java.io.IOException;
 import java.net.http.HttpResponse;
+import java.util.Optional;
 
 public class JenkinsSource implements Source {
     public static final String NAME = "jenkins";
@@ -54,25 +55,19 @@ public class JenkinsSource implements Source {
 
         JsonObject artifactJson = buildJson.get("artifacts").getAsJsonArray().asList().stream()
             .map(JsonElement::getAsJsonObject)
-            .filter(artifact -> {
-                String assetNameFilter = jenkinsData.artifactName();
-                if (assetNameFilter == null) {
-                    return true;
-                }
-
-                return StringComparison.matchesFilter(artifact.get("fileName").getAsString(), assetNameFilter);
-            })
+            .filter(artifact -> jenkinsData.artifactName()
+                .map(filter -> StringComparison.matchesFilter(artifact.get("fileName").getAsString(), filter))
+                .orElse(true))
             .findFirst()
             .orElseThrow(() -> new IllegalStateException("Failed to find an artifact matching the artifact name format '%s'."
                 .formatted(jenkinsData.artifactName())));
 
         String fileName = artifactJson.get("fileName").getAsString();
-        return new DownloadableRelease(
-            "%s/job/%s/lastSuccessfulBuild/artifact/artifacts/%s"
-                .formatted(jenkinsData.url(), jenkinsData.job(), fileName),
-            null,
-            fileName
-        );
+        return DownloadableRelease.builder()
+            .downloadUrl("%s/job/%s/lastSuccessfulBuild/artifact/artifacts/%s"
+                .formatted(jenkinsData.url(), jenkinsData.job(), fileName))
+            .jarName(fileName)
+            .build();
     }
 
     public JsonObject getLatestSuccessfulBuild(PluginData pluginData, Data jenkinsData) throws IOException, InterruptedException {
@@ -88,7 +83,7 @@ public class JenkinsSource implements Source {
 
     @Override
     public @Nullable String getChangelogUrl(PluginData pluginData, SourceData sourceData) {
-        if (sourceData instanceof Data(String url, String job, String artifactName)) {
+        if (sourceData instanceof Data(String url, String job, var artifactName)) {
             return "%s/job/%s/changes"
                 .formatted(url, job);
         }
@@ -96,7 +91,11 @@ public class JenkinsSource implements Source {
         return null;
     }
 
-    public record Data(String url, String job, @Nullable String artifactName) implements SourceData {
+    public record Data(String url, String job, Optional<String> artifactName) implements SourceData {
+
+        public Data(String url, String job, @Nullable String artifactName) {
+            this(url, job, Optional.ofNullable(artifactName));
+        }
 
         @Override
         public String sourceName() {
@@ -104,7 +103,7 @@ public class JenkinsSource implements Source {
         }
 
         @Override
-        public VersionComparator getDefaultComparator() {
+        public VersionComparator defaultComparator() {
             return BuildComparator.INSTANCE;
         }
     }

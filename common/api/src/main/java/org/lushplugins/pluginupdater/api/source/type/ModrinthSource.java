@@ -19,22 +19,19 @@ import org.lushplugins.pluginupdater.api.version.comparator.VersionComparator;
 
 import java.io.IOException;
 import java.net.http.HttpResponse;
-import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class ModrinthSource implements Source {
     public static final String NAME = "modrinth";
 
     private final List<String> defaultLoaders;
-    private String serverVersion = null;
+    private final String serverVersion;
 
-    public ModrinthSource(List<String> defaultLoaders) {
-        this.defaultLoaders = defaultLoaders;
-    }
-
+    @ApiStatus.Internal
     public ModrinthSource(List<String> defaultLoaders, @Nullable String serverVersion) {
-        this(defaultLoaders);
+        this.defaultLoaders = defaultLoaders;
         this.serverVersion = serverVersion;
     }
 
@@ -66,12 +63,14 @@ public class ModrinthSource implements Source {
         JsonObject versionJson = getLatestVersion(pluginData, modrinthData);
         String downloadUrl = versionJson.get("files").getAsJsonArray().get(0).getAsJsonObject().get("url").getAsString();
 
-        return new DownloadableRelease(downloadUrl, null, null);
+        return DownloadableRelease.builder()
+            .downloadUrl(downloadUrl)
+            .build();
     }
 
     @Override
     public @Nullable String getChangelogUrl(PluginData pluginData, SourceData sourceData) {
-        if (sourceData instanceof Data(String projectId, List<String> loaders, List<String> releaseChannels)) {
+        if (sourceData instanceof Data(String projectId, var loaders, var releaseChannels)) {
             return "https://modrinth.com/plugin/%s/changelog"
                 .formatted(projectId);
         }
@@ -82,7 +81,7 @@ public class ModrinthSource implements Source {
     private JsonArray getVersions(PluginData pluginData, Data modrinthData, @Nullable String serverVersion) throws IOException, InterruptedException {
         StringBuilder uriBuilder = new StringBuilder("%s/project/%s/version"
             .formatted(UpdaterConstants.Endpoint.MODRINTH, modrinthData.projectId()))
-            .append("?loaders=").append(modrinthData.loadersOrElse(this.defaultLoaders).stream()
+            .append("?loaders=").append(modrinthData.loaders().orElse(this.defaultLoaders).stream()
                 .map(s -> "%22" + s + "%22")
                 .collect(Collectors.joining(",", "[", "]")))
             .append("&include_changelog=false");
@@ -91,12 +90,11 @@ public class ModrinthSource implements Source {
             uriBuilder.append("&game_versions=").append("[%22").append(serverVersion).append("%22]");
         }
 
-        if (modrinthData.filtersReleaseChannel()) {
-            uriBuilder.append("&version_type=").append(modrinthData.releaseChannel());
-        }
+        modrinthData.releaseChannel().ifPresent((channel) -> {
+            uriBuilder.append("&version_type=").append(channel);
+        });
 
         HttpResponse<String> response = HttpUtil.sendRequest(uriBuilder.toString());
-
         if (response.statusCode() != 200) {
             throw new IllegalStateException("Received invalid response code (%s) whilst checking '%s' for updates."
                 .formatted(response.statusCode(), pluginData.getPluginName()));
@@ -114,7 +112,7 @@ public class ModrinthSource implements Source {
 
             VersionDifference versionDifference;
             try {
-                VersionComparator comparator = pluginData.getOptionalComparator().orElse(pluginData.getSourceData().getFirst().getDefaultComparator());
+                VersionComparator comparator = pluginData.getOptionalComparator().orElse(pluginData.getSourceData().getFirst().defaultComparator());
                 versionDifference = comparator.getVersionDifference(pluginData.getCurrentVersion(), version);
             } catch (InvalidVersionFormatException e) {
                 throw new IllegalStateException("Failed to compare versions for '%s': %s"
@@ -147,18 +145,10 @@ public class ModrinthSource implements Source {
      * @param loaders Which loaders to filter, {@code null} will include all loaders for your platform
      * @param releaseChannels Which release channels to filter, {@code null} will include all release channels
      */
-    public record Data(String projectId, @Nullable List<String> loaders, @Nullable List<String> releaseChannels) implements SourceData {
+    public record Data(String projectId, Optional<List<String>> loaders, Optional<List<String>> releaseChannels) implements SourceData {
 
-        public Data(String projectId, @Nullable List<String> releaseChannels) {
-            this(projectId, null, releaseChannels);
-        }
-
-        /**
-         * @param projectId The Modrinth project id
-         * @param releaseChannel Which release channel to filter
-         */
-        public Data(String projectId, String releaseChannel) {
-            this(projectId, null, Collections.singletonList(releaseChannel));
+        public Data(String projectId, @Nullable List<String> loaders, @Nullable List<String> releaseChannels) {
+            this(projectId, Optional.ofNullable(loaders), Optional.ofNullable(releaseChannels));
         }
 
         @Override
@@ -166,17 +156,9 @@ public class ModrinthSource implements Source {
             return NAME;
         }
 
-        public List<String> loadersOrElse(List<String> def) {
-            return this.loaders != null ? this.loaders : def;
-        }
-
-        public boolean filtersReleaseChannel() {
-            return this.releaseChannels != null;
-        }
-
         @ApiStatus.Internal
-        public @Nullable String releaseChannel() {
-            return this.releaseChannels != null ? this.releaseChannels.getFirst() : null;
+        public Optional<String> releaseChannel() {
+            return this.releaseChannels.map(List::getFirst);
         }
     }
 

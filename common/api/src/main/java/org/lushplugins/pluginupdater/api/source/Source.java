@@ -36,7 +36,7 @@ public interface Source {
 
         VersionDifference versionDifference;
         try {
-            VersionComparator comparator = pluginData.getOptionalComparator().orElse(sourceData.getDefaultComparator());
+            VersionComparator comparator = pluginData.getOptionalComparator().orElse(sourceData.defaultComparator());
             versionDifference = comparator.getVersionDifference(currentVersion, latestVersion);
         } catch (InvalidVersionFormatException e) {
             UpdaterConstants.LOGGER.severe("Failed to compare versions for '%s': %s".formatted(pluginData.getPluginName(), e.getMessage()));
@@ -60,8 +60,7 @@ public interface Source {
             return false;
         }
 
-        Version latestVersion = pluginData.getLatestVersion();
-        String version = latestVersion.version() != null ? latestVersion.version() : latestVersion.rawVersionString();
+        String version = pluginData.getLatestVersion().orElseThrow().resolvedVersion();
         String fallbackFileName = pluginData.getPluginName() + "-" + version + ".jar";
         release.downloadTo(destinationDir, fallbackFileName);
         DownloadLogger.logDownload(pluginData);
@@ -118,7 +117,7 @@ public interface Source {
 
     private static <T> T attemptOnSources(PluginData pluginData, SourceSupplier<T> callable) throws IOException {
         for (SourceData sourceData : pluginData.getSourceData()) {
-            Source source = SourceRegistry.get(sourceData.sourceName());
+            Source source = SourceRegistry.get(sourceData.sourceName()).orElse(null);
             if (source == null) {
                 continue;
             }

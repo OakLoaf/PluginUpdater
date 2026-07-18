@@ -11,6 +11,7 @@ import org.lushplugins.pluginupdater.api.version.VersionDifference;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -26,12 +27,12 @@ public class Updater {
     private final UpdateNotifier<?> notifier;
 
     private Updater(
-        @NotNull PluginInfo plugin,
-        @NotNull PluginData pluginData,
-        File downloadDir,
+        PluginInfo plugin,
+        PluginData pluginData,
+        @Nullable File downloadDir,
         boolean notify,
-        String notificationPermission,
-        String notificationMessage,
+        @Nullable String notificationPermission,
+        @Nullable String notificationMessage,
         UpdateNotifier.Constructor notifierConstructor
     ) {
         this.plugin = plugin;
@@ -52,12 +53,12 @@ public class Updater {
         return pluginData;
     }
 
-    public File getDownloadDir() {
-        return downloadDir;
+    public Optional<File> getDownloadDir() {
+        return Optional.ofNullable(downloadDir);
     }
 
-    public UpdateNotifier<?> getNotifier() {
-        return notifier;
+    public Optional<UpdateNotifier<?>> getNotifier() {
+        return Optional.ofNullable(notifier);
     }
 
     /**
@@ -215,7 +216,7 @@ public class Updater {
          * @param projectId The plugin's modrinth project id.
          */
         public Builder modrinth(String projectId) {
-            return source(new ModrinthSource.Data(projectId, ModrinthSource.ReleaseChannel.ALL));
+            return source(new ModrinthSource.Data(projectId, ModrinthSource.ReleaseChannel.ALL, null));
         }
 
         /**

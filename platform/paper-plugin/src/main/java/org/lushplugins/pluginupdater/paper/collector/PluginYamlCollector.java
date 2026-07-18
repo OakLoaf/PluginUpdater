@@ -48,7 +48,8 @@ public class PluginYamlCollector implements PluginDataCollector {
             if (config.contains("modrinth-project-id")) {
                 sourceData = new ModrinthSource.Data(
                     config.get("modrinth-project-id"),
-                    ModrinthSource.ReleaseChannel.ALL
+                    ModrinthSource.ReleaseChannel.ALL,
+                    null
                 );
             }
             else if (config.contains("spigot-resource-id")) {
@@ -64,7 +65,7 @@ public class PluginYamlCollector implements PluginDataCollector {
             else if (config.contains("github-repo")) {
                 sourceData = new GithubSource.Data(
                     config.get("github-repo"),
-                    null,
+                    (String) null,
                     null
                 );
             }

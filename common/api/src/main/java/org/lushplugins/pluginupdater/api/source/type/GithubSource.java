@@ -18,8 +18,8 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 public class GithubSource implements Source {
     public static final String NAME = "github";
@@ -50,38 +50,34 @@ public class GithubSource implements Source {
         JsonObject releaseJson = getLatestRelease(pluginData, githubData);
         JsonObject assetJson = releaseJson.get("assets").getAsJsonArray().asList().stream()
             .map(JsonElement::getAsJsonObject)
-            .filter(asset -> {
-                String assetNameFilter = githubData.assetName();
-                if (assetNameFilter == null) {
-                    return true;
-                }
-
-                return StringComparison.matchesFilter(asset.get("name").getAsString(), assetNameFilter);
-            })
+            .filter(asset -> githubData.assetName()
+                .map(filter -> StringComparison.matchesFilter(asset.get("name").getAsString(), githubData.assetName().get()))
+                .orElse(true))
             .findFirst()
             .orElseThrow(() -> new IllegalStateException("Failed to find an asset matching the asset name format '%s'."
                 .formatted(githubData.assetName())));
 
-        String token = githubData.token();
-        String downloadUrl;
-        Map<String, String> downloadHeaders;
-        if (token != null && !token.isEmpty()) {
-            downloadUrl = assetJson.get("url").getAsString();
+        String downloadUrl = githubData.token()
+            .map(token -> assetJson.get("url").getAsString())
+            .orElse(assetJson.get("browser_download_url").getAsString());
 
-            downloadHeaders = new HashMap<>();
-            downloadHeaders.put("Authorization", "Bearer " + token);
-            downloadHeaders.put("Accept", "application/octet-stream");
-        } else {
-            downloadUrl = assetJson.get("browser_download_url").getAsString();
-            downloadHeaders = null;
-        }
+        Map<String, String> downloadHeaders = githubData.token()
+            .map(token -> Map.of(
+                    "Authorization", "Bearer " + token,
+                    "Accept", "application/octet-stream"
+                )
+            )
+            .orElse(null);
 
-        return new DownloadableRelease(downloadUrl, downloadHeaders, null);
+        return DownloadableRelease.builder()
+            .downloadUrl(downloadUrl)
+            .downloadHeaders(downloadHeaders)
+            .build();
     }
 
     @Override
     public @Nullable String getChangelogUrl(PluginData pluginData, SourceData sourceData) {
-        if (sourceData instanceof Data(String repo, String token, String assetName)) {
+        if (sourceData instanceof Data(String repo, var token, var assetName)) {
             return "https://github.com/%s/releases"
                 .formatted(repo);
         }
@@ -93,10 +89,9 @@ public class GithubSource implements Source {
         HttpRequest.Builder requestBuilder = HttpUtil.prepareRequestBuilder(URI.create("%s/repos/%s/releases/latest"
                 .formatted(UpdaterConstants.Endpoint.GITHUB, githubData.repo())), null);
 
-        String token = githubData.token();
-        if (token != null && !token.isEmpty()) {
-            requestBuilder.header("Authorization", "Bearer " + token);
-        }
+        githubData.token()
+            .filter(token -> !token.isEmpty())
+            .ifPresent(token -> requestBuilder.header("Authorization", "Bearer " + token));
 
         HttpClient client = HttpClient.newHttpClient();
         HttpResponse<String> response = client.send(
@@ -111,7 +106,11 @@ public class GithubSource implements Source {
         return JsonParser.parseString(response.body()).getAsJsonObject();
     }
 
-    public record Data(String repo, @Nullable String token, @Nullable String assetName) implements SourceData {
+    public record Data(String repo, Optional<String> token, Optional<String> assetName) implements SourceData {
+
+        public Data(String repo, @Nullable String token, @Nullable String assetName) {
+            this(repo, Optional.ofNullable(token), Optional.ofNullable(assetName));
+        }
 
         @Override
         public String sourceName() {

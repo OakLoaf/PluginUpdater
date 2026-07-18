@@ -1,6 +1,5 @@
 package org.lushplugins.pluginupdater.api.version;
 
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.lushplugins.pluginupdater.api.util.UpdaterConstants;
 import org.lushplugins.pluginupdater.util.BuildParameters;
@@ -15,15 +14,16 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Optional;
 
 public record DownloadableRelease(
     String downloadUrl,
     @Nullable Map<String, String> downloadHeaders,
-    @Nullable String jarName
+    Optional<String> jarName
 ) {
 
     @Override
-    public @NotNull Map<String, String> downloadHeaders() {
+    public Map<String, String> downloadHeaders() {
         return downloadHeaders != null ? downloadHeaders : Collections.emptyMap();
     }
 
@@ -99,5 +99,36 @@ public record DownloadableRelease(
         }
 
         return fallbackFileName;
+    }
+
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    public static class Builder {
+        private String downloadUrl;
+        private Map<String, String> downloadHeaders;
+        private String jarName;
+
+        private Builder() {}
+
+        public Builder downloadUrl(String downloadUrl) {
+            this.downloadUrl = downloadUrl;
+            return this;
+        }
+
+        public Builder downloadHeaders(@Nullable Map<String, String> downloadHeaders) {
+            this.downloadHeaders = downloadHeaders;
+            return this;
+        }
+
+        public Builder jarName(@Nullable String jarName) {
+            this.jarName = jarName;
+            return this;
+        }
+
+        public DownloadableRelease build() {
+            return new DownloadableRelease(downloadUrl, downloadHeaders, Optional.ofNullable(jarName));
+        }
     }
 }

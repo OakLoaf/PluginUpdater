@@ -13,7 +13,6 @@ import org.lushplugins.pluginupdater.api.version.Version;
 
 import java.io.IOException;
 import java.net.http.HttpResponse;
-import java.util.List;
 
 public class SpigotSource implements Source {
     public static final String NAME = "spigot";
@@ -52,7 +51,9 @@ public class SpigotSource implements Source {
             UpdaterConstants.Endpoint.SPIGET,
             resourceId);
 
-        return new DownloadableRelease(downloadUrl, null, null);
+        return DownloadableRelease.builder()
+            .downloadUrl(downloadUrl)
+            .build();
     }
 
     @Override

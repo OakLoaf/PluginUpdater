@@ -9,8 +9,8 @@ public class SemVerComparator implements VersionComparator {
     
     @Override
     public VersionDifference getVersionDifference(Version currentVersion, Version latestVersion) throws InvalidVersionFormatException {
-        String[] currentVersionParts = currentVersion.version().split("\\.");
-        String[] latestVersionParts = latestVersion.version().split("\\.");
+        String[] currentVersionParts = currentVersion.version().orElseThrow().split("\\.");
+        String[] latestVersionParts = latestVersion.version().orElseThrow().split("\\.");
 
         int i = 0;
         for (String latestRawVersionPart : latestVersionParts) {

@@ -75,7 +75,7 @@ public class ModrinthCollector implements PluginDataCollector {
 
             String projectId = versionJson.get("project_id").getAsString();
             pluginDataList.add(PluginData.builder(plugin)
-                .sourceData(new ModrinthSource.Data(projectId, ModrinthSource.ReleaseChannel.ALL))
+                .sourceData(new ModrinthSource.Data(projectId, ModrinthSource.ReleaseChannel.ALL, null))
                 .build());
         });
 

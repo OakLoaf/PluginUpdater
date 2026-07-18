@@ -43,13 +43,15 @@ public class HangarSource implements Source {
             return null;
         }
 
-        Version version = pluginData.getLatestVersion();
+        Version version = pluginData.getLatestVersion().orElseThrow();
         String downloadUrl = "%s/projects/%s/versions/%s/PAPER/download".formatted(
             UpdaterConstants.Endpoint.HANGAR,
             projectSlug,
             version.version());
 
-        return new DownloadableRelease(downloadUrl, null, null);
+        return DownloadableRelease.builder()
+            .downloadUrl(downloadUrl)
+            .build();
     }
 
     @Override
