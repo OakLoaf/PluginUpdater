@@ -84,7 +84,7 @@ public record DownloadableRelease(
                 }
 
                 if (filename.endsWith(".jar")) {
-                    return filename;
+                    return filename.replace("%20", " ");
                 }
             }
         }
@@ -94,7 +94,7 @@ public record DownloadableRelease(
         if (lastSlash != -1 && lastSlash < this.downloadUrl.length() - 1) {
             String filename = this.downloadUrl.substring(lastSlash + 1);
             if (filename.endsWith(".jar")) {
-                return filename;
+                return filename.replace("%20", " ");
             }
         }
 
