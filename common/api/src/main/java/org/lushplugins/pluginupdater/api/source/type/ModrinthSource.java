@@ -71,12 +71,12 @@ public class ModrinthSource implements Source {
 
     @Override
     public @Nullable String getChangelogUrl(PluginData pluginData, SourceData sourceData) {
-        if (!(sourceData instanceof Data(String projectId, List<String> loaders, List<String> releaseChannels))) {
-            return null;
+        if (sourceData instanceof Data(String projectId, List<String> loaders, List<String> releaseChannels)) {
+            return "https://modrinth.com/plugin/%s/changelog"
+                .formatted(projectId);
         }
 
-        return "https://modrinth.com/plugin/%s/changelog"
-            .formatted(projectId);
+        return null;
     }
 
     private JsonArray getVersions(PluginData pluginData, Data modrinthData, @Nullable String serverVersion) throws IOException, InterruptedException {

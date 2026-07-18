@@ -81,12 +81,12 @@ public class GithubSource implements Source {
 
     @Override
     public @Nullable String getChangelogUrl(PluginData pluginData, SourceData sourceData) {
-        if (!(sourceData instanceof Data(String repo, String token, String assetName))) {
-            return null;
+        if (sourceData instanceof Data(String repo, String token, String assetName)) {
+            return "https://github.com/%s/releases"
+                .formatted(repo);
         }
 
-        return "https://github.com/%s/releases"
-            .formatted(repo);
+        return null;
     }
 
     private JsonObject getLatestRelease(PluginData pluginData, Data githubData) throws IOException, InterruptedException {

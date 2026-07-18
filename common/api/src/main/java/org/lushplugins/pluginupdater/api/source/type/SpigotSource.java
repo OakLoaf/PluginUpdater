@@ -57,12 +57,12 @@ public class SpigotSource implements Source {
 
     @Override
     public @Nullable String getChangelogUrl(PluginData pluginData, SourceData sourceData) {
-        if (!(sourceData instanceof Data(String resourceId))) {
-            return null;
+        if (sourceData instanceof Data(String resourceId)) {
+            return "https://www.spigotmc.org/resources/%s/updates"
+                .formatted(resourceId);
         }
 
-        return "https://www.spigotmc.org/resources/%s/updates"
-            .formatted(resourceId);
+        return null;
     }
 
     @Override

@@ -69,12 +69,12 @@ public class GeyserSource implements Source {
 
     @Override
     public @Nullable String getChangelogUrl(PluginData pluginData, SourceData sourceData) {
-        if (!(sourceData instanceof Data(String projectName))) {
-            return null;
+        if (sourceData instanceof Data(String projectName)) {
+            return "https://geysermc.org/download/?project=%s"
+                .formatted(projectName);
         }
 
-        return "https://geysermc.org/download/?project=%s"
-            .formatted(projectName);
+        return null;
     }
 
     @Override
