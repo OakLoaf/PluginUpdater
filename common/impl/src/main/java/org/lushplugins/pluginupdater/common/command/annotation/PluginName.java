@@ -9,4 +9,6 @@ import java.lang.annotation.Target;
 @Target(ElementType.PARAMETER)
 public @interface PluginName {
     boolean includeTags() default false;
+
+    boolean withUpdateAvailable() default false;
 }

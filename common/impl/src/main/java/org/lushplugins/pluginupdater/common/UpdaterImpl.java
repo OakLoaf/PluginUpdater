@@ -60,6 +60,13 @@ public class UpdaterImpl {
                         }
                     }
 
+                    if (annotation.withUpdateAvailable()) {
+                        return config.getAllPluginData().stream()
+                            .filter(PluginData::isUpdateAvailable)
+                            .map(PluginData::pluginName)
+                            .toList();
+                    }
+
                     return config.getPlugins();
                 })
             )

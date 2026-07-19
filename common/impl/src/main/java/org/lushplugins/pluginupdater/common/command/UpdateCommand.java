@@ -21,7 +21,7 @@ public record UpdateCommand(UpdaterImpl updater) implements OrphanCommand {
 
     @Subcommand("update")
     @CommandPermission("pluginupdater.downloadupdates")
-    public String update(CommandActor actor, @PluginName(includeTags = true) String pluginName) {
+    public String update(CommandActor actor, @PluginName(includeTags = true, withUpdateAvailable = true) String pluginName) {
         if (!updater.config().shouldAllowDownloads()) {
             return "<#ff6969>Update downloads have been disabled in the config";
         }
