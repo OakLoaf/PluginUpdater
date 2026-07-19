@@ -25,7 +25,7 @@ public interface UpdaterPlatform<T> {
 
     Path getDataPath();
 
-    File getDownloadDir();
+    Path getDownloadDir();
 
     InputStream getResourceStream(String path);
 

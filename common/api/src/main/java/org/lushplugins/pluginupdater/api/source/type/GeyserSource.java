@@ -38,14 +38,14 @@ public class GeyserSource implements Source {
             .formatted(UpdaterConstants.Endpoint.GEYSER, projectName));
 
         if (response.statusCode() != 200) {
-            throw new IllegalStateException("Received invalid response code (" + response.statusCode() + ") whilst checking '" + pluginData.getPluginName() + "' for updates.");
+            throw new IllegalStateException("Received invalid response code (" + response.statusCode() + ") whilst checking '" + pluginData.pluginName() + "' for updates.");
         }
 
         JsonObject releaseJson = JsonParser.parseString(response.body()).getAsJsonObject();
         String version = releaseJson.get("version").getAsString();
         int buildNum = releaseJson.get("build").getAsInt();
 
-        return pluginData.getLatestVersionParser().parse(version)
+        return pluginData.latestVersionParser().parse(version)
             .withRawVersionString("%s (b%s)".formatted(version, buildNum))
             .withBuildNum(buildNum);
     }
@@ -56,7 +56,7 @@ public class GeyserSource implements Source {
             return null;
         }
 
-        Version version = pluginData.getLatestVersion().orElseThrow();
+        Version version = pluginData.latestVersion().orElseThrow();
         String downloadUrl = "%s/projects/%s/versions/%s/builds/%s/downloads/%s".formatted(
             UpdaterConstants.Endpoint.GEYSER,
             projectName,
@@ -64,8 +64,7 @@ public class GeyserSource implements Source {
             version.buildNum(),
             this.platform);
 
-        return DownloadableRelease.builder()
-            .downloadUrl(downloadUrl)
+        return DownloadableRelease.builder(downloadUrl)
             .build();
     }
 

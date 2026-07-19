@@ -14,7 +14,7 @@ public class VelocityUpdateNotifier extends UpdateNotifier<Player> {
     public VelocityUpdateNotifier(ProxyServer server, Updater updater, String message, String permission) {
         super(updater, message, permission);
 
-        VelocityPluginInfo pluginInfo = (VelocityPluginInfo) updater.getPluginInfo();
+        VelocityPluginInfo pluginInfo = (VelocityPluginInfo) updater.pluginInfo();
         server.getEventManager().register(this, pluginInfo.container());
     }
 

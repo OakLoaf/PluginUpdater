@@ -6,7 +6,7 @@ import com.google.gson.JsonParser;
 import org.jetbrains.annotations.Nullable;
 import org.lushplugins.pluginupdater.api.source.SourceData;
 import org.lushplugins.pluginupdater.api.util.HttpUtil;
-import org.lushplugins.pluginupdater.api.util.StringComparison;
+import org.lushplugins.pluginupdater.api.util.StringFilter;
 import org.lushplugins.pluginupdater.api.util.UpdaterConstants;
 import org.lushplugins.pluginupdater.api.source.Source;
 import org.lushplugins.pluginupdater.api.updater.PluginData;
@@ -38,7 +38,7 @@ public class GithubSource implements Source {
         JsonObject releaseJson = getLatestRelease(pluginData, githubData);
         String version = releaseJson.get("tag_name").getAsString();
 
-        return pluginData.getLatestVersionParser().parse(version);
+        return pluginData.latestVersionParser().parse(version);
     }
 
     @Override
@@ -51,7 +51,7 @@ public class GithubSource implements Source {
         JsonObject assetJson = releaseJson.get("assets").getAsJsonArray().asList().stream()
             .map(JsonElement::getAsJsonObject)
             .filter(asset -> githubData.assetName()
-                .map(filter -> StringComparison.matchesFilter(asset.get("name").getAsString(), githubData.assetName().get()))
+                .map(filter -> StringFilter.matchesFilter(asset.get("name").getAsString(), githubData.assetName().get()))
                 .orElse(true))
             .findFirst()
             .orElseThrow(() -> new IllegalStateException("Failed to find an asset matching the asset name format '%s'."
@@ -69,8 +69,7 @@ public class GithubSource implements Source {
             )
             .orElse(null);
 
-        return DownloadableRelease.builder()
-            .downloadUrl(downloadUrl)
+        return DownloadableRelease.builder(downloadUrl)
             .downloadHeaders(downloadHeaders)
             .build();
     }
@@ -100,7 +99,7 @@ public class GithubSource implements Source {
         client.close();
 
         if (response.statusCode() != 200) {
-            throw new IllegalStateException("Received invalid response code (%s) whilst checking '%s' for updates.".formatted(response.statusCode(), pluginData.getPluginName()));
+            throw new IllegalStateException("Received invalid response code (%s) whilst checking '%s' for updates.".formatted(response.statusCode(), pluginData.pluginName()));
         }
 
         return JsonParser.parseString(response.body()).getAsJsonObject();

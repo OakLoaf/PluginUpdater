@@ -9,7 +9,7 @@ import org.lushplugins.pluginupdater.api.source.Source;
 import org.lushplugins.pluginupdater.api.source.SourceData;
 import org.lushplugins.pluginupdater.api.updater.PluginData;
 import org.lushplugins.pluginupdater.api.util.HttpUtil;
-import org.lushplugins.pluginupdater.api.util.StringComparison;
+import org.lushplugins.pluginupdater.api.util.StringFilter;
 import org.lushplugins.pluginupdater.api.version.DownloadableRelease;
 import org.lushplugins.pluginupdater.api.version.Version;
 import org.lushplugins.pluginupdater.api.version.comparator.BuildComparator;
@@ -56,15 +56,14 @@ public class JenkinsSource implements Source {
         JsonObject artifactJson = buildJson.get("artifacts").getAsJsonArray().asList().stream()
             .map(JsonElement::getAsJsonObject)
             .filter(artifact -> jenkinsData.artifactName()
-                .map(filter -> StringComparison.matchesFilter(artifact.get("fileName").getAsString(), filter))
+                .map(filter -> StringFilter.matchesFilter(artifact.get("fileName").getAsString(), filter))
                 .orElse(true))
             .findFirst()
             .orElseThrow(() -> new IllegalStateException("Failed to find an artifact matching the artifact name format '%s'."
                 .formatted(jenkinsData.artifactName())));
 
         String fileName = artifactJson.get("fileName").getAsString();
-        return DownloadableRelease.builder()
-            .downloadUrl("%s/job/%s/lastSuccessfulBuild/artifact/artifacts/%s"
+        return DownloadableRelease.builder("%s/job/%s/lastSuccessfulBuild/artifact/artifacts/%s"
                 .formatted(jenkinsData.url(), jenkinsData.job(), fileName))
             .jarName(fileName)
             .build();
@@ -75,7 +74,7 @@ public class JenkinsSource implements Source {
             .formatted(jenkinsData.url(), jenkinsData.job()));
 
         if (response.statusCode() != 200) {
-            throw new IllegalStateException("Received invalid response code (" + response.statusCode() + ") whilst checking '" + pluginData.getPluginName() + "' for updates.");
+            throw new IllegalStateException("Received invalid response code (" + response.statusCode() + ") whilst checking '" + pluginData.pluginName() + "' for updates.");
         }
 
         return JsonParser.parseString(response.body()).getAsJsonObject();

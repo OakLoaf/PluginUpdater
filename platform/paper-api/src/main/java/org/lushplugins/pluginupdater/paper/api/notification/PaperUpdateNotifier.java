@@ -16,7 +16,7 @@ public class PaperUpdateNotifier extends UpdateNotifier<Player> implements Liste
     public PaperUpdateNotifier(Updater updater, String message, String permission) {
         super(updater, message, permission);
 
-        Plugin plugin = ((PaperPluginInfo) updater.getPluginInfo()).plugin();
+        Plugin plugin = ((PaperPluginInfo) updater.pluginInfo()).plugin();
         Bukkit.getPluginManager().registerEvents(this, plugin);
     }
 

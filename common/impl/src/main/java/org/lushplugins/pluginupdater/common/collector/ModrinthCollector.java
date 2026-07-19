@@ -18,12 +18,7 @@ import java.net.http.HttpResponse;
 import java.util.*;
 import java.util.logging.Level;
 
-public class ModrinthCollector implements PluginDataCollector {
-    private final UpdaterPlatform<?> platform;
-
-    public ModrinthCollector(UpdaterPlatform<?> platform) {
-        this.platform = platform;
-    }
+public record ModrinthCollector(UpdaterPlatform<?> platform) implements PluginDataCollector {
 
     @Override
     public List<PluginData> collect(Collection<PluginInfo> plugins) {

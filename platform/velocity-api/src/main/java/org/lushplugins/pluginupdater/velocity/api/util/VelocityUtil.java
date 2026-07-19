@@ -1,12 +1,12 @@
 package org.lushplugins.pluginupdater.velocity.api.util;
 
-import java.io.File;
 import java.nio.file.Path;
+import java.util.Optional;
 
 public class VelocityUtil {
 
-    public static File getUpdateFolderFile() {
+    public static Optional<Path> getUpdateFolder() {
         String updateFolderName = System.getProperty("velocity.update-folder-name", "update");
-        return !updateFolderName.isEmpty() ? Path.of("plugins", updateFolderName).toFile() : null;
+        return !updateFolderName.isEmpty() ? Optional.of(Path.of("plugins", updateFolderName)) : Optional.empty();
     }
 }

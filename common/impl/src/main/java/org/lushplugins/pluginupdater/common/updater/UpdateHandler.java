@@ -100,8 +100,8 @@ public class UpdateHandler {
                     updater.platform().getLogger().log(Level.SEVERE, e.getMessage(), e);
                 }
 
-                String sourceNames = String.join(", ", pluginData.getSourceData().stream().map(SourceData::sourceName).toList());
-                processingData.getFuture().completeExceptionally(new IOException("Failed to run check for plugin '" + pluginData.getPluginName() + "' using defined sources: '" + sourceNames + "'"));
+                String sourceNames = String.join(", ", pluginData.sourceData().stream().map(SourceData::sourceName).toList());
+                processingData.getFuture().completeExceptionally(new IOException("Failed to run check for plugin '" + pluginData.pluginName() + "' using defined sources: '" + sourceNames + "'"));
             }
             case DOWNLOAD -> {
                 PluginData pluginData = processingData.getPluginData();
@@ -112,7 +112,7 @@ public class UpdateHandler {
 
                 try {
                     if (Source.download(pluginData, updater.platform().getDownloadDir())) {
-                        pluginData.setVersionDifference(VersionDifference.UNKNOWN);
+                        pluginData.versionDifference(VersionDifference.UNKNOWN);
                         pluginData.setAlreadyDownloaded(true);
                         processingData.getFuture().complete(true);
                         return;
@@ -123,8 +123,8 @@ public class UpdateHandler {
                     processingData.getFuture().completeExceptionally(e);
                 }
 
-                String sourceNames = String.join(", ", pluginData.getSourceData().stream().map(SourceData::sourceName).toList());
-                processingData.getFuture().completeExceptionally(new IOException("Failed to download update for plugin '%s' using defined sources: '%s'".formatted(pluginData.getPluginName(), sourceNames)));
+                String sourceNames = String.join(", ", pluginData.sourceData().stream().map(SourceData::sourceName).toList());
+                processingData.getFuture().completeExceptionally(new IOException("Failed to download update for plugin '%s' using defined sources: '%s'".formatted(pluginData.pluginName(), sourceNames)));
             }
             case SEND_NOTIFICATION -> {
                 String message = updater.constructUpdateMessage();

@@ -50,7 +50,7 @@ public class ModrinthSource implements Source {
         String version = versionJson.get("version_number").getAsString();
         boolean supportsServerVersion = this.serverVersion == null || versionJson.get("game_versions").getAsJsonArray().contains(new JsonPrimitive(this.serverVersion));
 
-        return pluginData.getLatestVersionParser().parse(version)
+        return pluginData.latestVersionParser().parse(version)
             .markAsPotentiallyUnsafe(!supportsServerVersion);
     }
 
@@ -63,8 +63,7 @@ public class ModrinthSource implements Source {
         JsonObject versionJson = getLatestVersion(pluginData, modrinthData);
         String downloadUrl = versionJson.get("files").getAsJsonArray().get(0).getAsJsonObject().get("url").getAsString();
 
-        return DownloadableRelease.builder()
-            .downloadUrl(downloadUrl)
+        return DownloadableRelease.builder(downloadUrl)
             .build();
     }
 
@@ -97,7 +96,7 @@ public class ModrinthSource implements Source {
         HttpResponse<String> response = HttpUtil.sendRequest(uriBuilder.toString());
         if (response.statusCode() != 200) {
             throw new IllegalStateException("Received invalid response code (%s) whilst checking '%s' for updates."
-                .formatted(response.statusCode(), pluginData.getPluginName()));
+                .formatted(response.statusCode(), pluginData.pluginName()));
         }
 
         return JsonParser.parseString(response.body()).getAsJsonArray();
@@ -108,15 +107,15 @@ public class ModrinthSource implements Source {
         if (!versions.isEmpty()) {
             JsonObject versionJson = versions.get(0).getAsJsonObject();
 
-            Version version = pluginData.getLatestVersionParser().parse(versionJson.get("version_number").getAsString());
+            Version version = pluginData.latestVersionParser().parse(versionJson.get("version_number").getAsString());
 
             VersionDifference versionDifference;
             try {
-                VersionComparator comparator = pluginData.getOptionalComparator().orElse(pluginData.getSourceData().getFirst().defaultComparator());
-                versionDifference = comparator.getVersionDifference(pluginData.getCurrentVersion(), version);
+                VersionComparator comparator = pluginData.versionComparator().orElse(pluginData.sourceData().getFirst().defaultComparator());
+                versionDifference = comparator.compare(pluginData.currentVersion(), version);
             } catch (InvalidVersionFormatException e) {
                 throw new IllegalStateException("Failed to compare versions for '%s': %s"
-                    .formatted(pluginData.getPluginName(), e.getMessage()));
+                    .formatted(pluginData.pluginName(), e.getMessage()));
             }
 
             if (versionDifference != VersionDifference.LATEST) {
@@ -127,7 +126,7 @@ public class ModrinthSource implements Source {
         versions = getVersions(pluginData, modrinthData, null);
         if (versions.isEmpty()) {
             throw new IllegalStateException("Failed to collect versions for '%s'"
-                .formatted(pluginData.getPluginName() ));
+                .formatted(pluginData.pluginName() ));
         }
 
         return versions.get(0).getAsJsonObject();

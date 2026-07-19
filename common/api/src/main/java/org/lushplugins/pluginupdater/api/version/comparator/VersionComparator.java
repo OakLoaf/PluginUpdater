@@ -5,10 +5,5 @@ import org.lushplugins.pluginupdater.api.version.Version;
 import org.lushplugins.pluginupdater.api.version.VersionDifference;
 
 public interface VersionComparator {
-    VersionDifference getVersionDifference(Version currentVersion, Version latestVersion) throws InvalidVersionFormatException;
-
-    @Deprecated(forRemoval = true)
-    default VersionDifference getBuildDifference(Version currentVersion, Version latestVersion) {
-        return VersionDifference.getBuildDifference(currentVersion, latestVersion);
-    }
+    VersionDifference compare(Version currentVersion, Version latestVersion) throws InvalidVersionFormatException;
 }

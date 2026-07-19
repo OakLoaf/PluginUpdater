@@ -11,6 +11,8 @@ import org.lushplugins.pluginupdater.api.version.VersionDifference;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
@@ -23,13 +25,13 @@ public class Updater {
     private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
     private final PluginInfo plugin;
     private final PluginData pluginData;
-    private final File downloadDir;
+    private final Path downloadDir;
     private final UpdateNotifier<?> notifier;
 
     private Updater(
         PluginInfo plugin,
         PluginData pluginData,
-        @Nullable File downloadDir,
+        @Nullable Path downloadDir,
         boolean notify,
         @Nullable String notificationPermission,
         @Nullable String notificationMessage,
@@ -41,23 +43,23 @@ public class Updater {
         this.notifier = notify ? notifierConstructor.apply(this, notificationMessage, notificationPermission) : null;
     }
 
-    public ScheduledExecutorService getScheduler() {
+    public ScheduledExecutorService scheduler() {
         return scheduler;
     }
 
-    public PluginInfo getPluginInfo() {
+    public PluginInfo pluginInfo() {
         return plugin;
     }
 
-    public PluginData getPluginData() {
+    public PluginData pluginData() {
         return pluginData;
     }
 
-    public Optional<File> getDownloadDir() {
+    public Optional<Path> downloadDir() {
         return Optional.ofNullable(downloadDir);
     }
 
-    public Optional<UpdateNotifier<?>> getNotifier() {
+    public Optional<UpdateNotifier<?>> notifier() {
         return Optional.ofNullable(notifier);
     }
 
@@ -113,15 +115,18 @@ public class Updater {
     }
 
     private CompletableFuture<Boolean> download() {
+        Objects.requireNonNull(downloadDir, "downloadDir cannot be null");
+
         return CompletableFuture.supplyAsync(() -> {
             try {
-                if (Source.download(pluginData, downloadDir)) {
-                    pluginData.setVersionDifference(VersionDifference.UNKNOWN);
+                boolean success = Source.download(pluginData, downloadDir);
+
+                if (success) {
+                    pluginData.versionDifference(VersionDifference.UNKNOWN);
                     pluginData.setAlreadyDownloaded(true);
-                    return true;
-                } else {
-                    return false;
                 }
+
+                return success;
             } catch (IOException e) {
                 plugin.getLogger().log(Level.SEVERE, e.getMessage(), e);
                 return false;
@@ -133,14 +138,14 @@ public class Updater {
         scheduler.shutdown();
     }
 
-    public static Builder builder(PluginInfo plugin, File downloadDir) {
-        return new Builder(plugin,  downloadDir);
+    public static Builder builder(PluginInfo plugin) {
+        return new Builder(plugin);
     }
 
     public static class Builder {
         private final PluginInfo plugin;
         private final PluginData pluginData;
-        private File downloadDir;
+        private Path downloadDir;
         private long checkFrequency = 600;
         private boolean notify = true;
         private String notificationPermission = "pluginupdater.notifications";
@@ -148,13 +153,12 @@ public class Updater {
         private UpdateNotifier.Constructor notifierConstructor;
         private File downloadLogFile;
 
-        private Builder(PluginInfo plugin, File downloadDir) {
+        private Builder(PluginInfo plugin) {
             this.plugin = plugin;
             this.pluginData = PluginData.of(plugin);
-            this.downloadDir = downloadDir;
         }
 
-        public Builder downloadDir(File downloadDir) {
+        public Builder downloadDir(Path downloadDir) {
             this.downloadDir = downloadDir;
             return this;
         }
@@ -299,7 +303,7 @@ public class Updater {
          * @return The created Updater instance.
          */
         public Updater build() {
-            if (pluginData.getSourceData().isEmpty()) {
+            if (pluginData.sourceData().isEmpty()) {
                 throw new IllegalStateException("At least 1 source must be registered before building the Updater.");
             }
 
@@ -315,7 +319,7 @@ public class Updater {
             );
 
             if (checkFrequency > 0) {
-                updater.getScheduler().scheduleAtFixedRate(updater::checkForUpdate, 0, checkFrequency, TimeUnit.SECONDS);
+                updater.scheduler().scheduleAtFixedRate(updater::checkForUpdate, 0, checkFrequency, TimeUnit.SECONDS);
             }
 
             return updater;

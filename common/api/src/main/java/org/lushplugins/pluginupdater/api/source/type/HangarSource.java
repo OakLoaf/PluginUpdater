@@ -29,12 +29,12 @@ public class HangarSource implements Source {
         HttpResponse<String> response = HttpUtil.sendRequest(String.format("%s/projects/%s/latestrelease", UpdaterConstants.Endpoint.HANGAR, projectSlug));
 
         if (response.statusCode() != 200) {
-            throw new IllegalStateException("Received invalid response code (" + response.statusCode() + ") whilst checking '" + pluginData.getPluginName() + "' for updates.");
+            throw new IllegalStateException("Received invalid response code (" + response.statusCode() + ") whilst checking '" + pluginData.pluginName() + "' for updates.");
         }
 
         String version = response.body();
 
-        return pluginData.getLatestVersionParser().parse(version);
+        return pluginData.latestVersionParser().parse(version);
     }
 
     @Override
@@ -43,14 +43,13 @@ public class HangarSource implements Source {
             return null;
         }
 
-        Version version = pluginData.getLatestVersion().orElseThrow();
+        Version version = pluginData.latestVersion().orElseThrow();
         String downloadUrl = "%s/projects/%s/versions/%s/PAPER/download".formatted(
             UpdaterConstants.Endpoint.HANGAR,
             projectSlug,
             version.version());
 
-        return DownloadableRelease.builder()
-            .downloadUrl(downloadUrl)
+        return DownloadableRelease.builder(downloadUrl)
             .build();
     }
 

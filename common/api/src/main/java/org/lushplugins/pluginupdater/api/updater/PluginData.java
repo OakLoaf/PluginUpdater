@@ -46,44 +46,40 @@ public class PluginData {
         this.allowDownloads = allowDownloads;
     }
 
-    public String getPluginName() {
+    public String pluginName() {
         return pluginName;
     }
 
-    public Version getCurrentVersion() {
+    public Version currentVersion() {
         return currentVersion;
     }
 
-    public VersionParser getLatestVersionParser() {
+    public VersionParser latestVersionParser() {
         return latestVersionParser;
     }
 
-    public List<SourceData> getSourceData() {
+    public List<SourceData> sourceData() {
         return sourceData;
-    }
-
-    public Optional<VersionComparator> getComparator() {
-        return Optional.ofNullable(comparator);
-    }
-
-    public Optional<VersionComparator> getOptionalComparator() {
-        return Optional.ofNullable(comparator);
     }
 
     public void addSource(SourceData sourceData) {
         this.sourceData.add(sourceData);
     }
 
-    public Optional<Version> getLatestVersion() {
+    public Optional<VersionComparator> versionComparator() {
+        return Optional.ofNullable(comparator);
+    }
+
+    public Optional<Version> latestVersion() {
         return Optional.ofNullable(latestVersion);
     }
 
-    public void setLatestVersion(Version latestVersion) {
+    public void latestVersion(Version latestVersion) {
         this.latestVersion = latestVersion;
     }
 
-    public void setLatestVersion(String latestVersion) {
-        setLatestVersion(this.latestVersionParser.parse(latestVersion));
+    public void latestVersion(String latestVersion) {
+        latestVersion(this.latestVersionParser.parse(latestVersion));
     }
 
     public boolean isEnabled() {
@@ -98,11 +94,11 @@ public class PluginData {
         return !versionDifference.equals(VersionDifference.LATEST) && !versionDifference.equals(VersionDifference.UNKNOWN);
     }
 
-    public VersionDifference getVersionDifference() {
+    public VersionDifference versionDifference() {
         return versionDifference;
     }
 
-    public void setVersionDifference(VersionDifference versionDifference) {
+    public void versionDifference(VersionDifference versionDifference) {
         this.versionDifference = versionDifference;
     }
 
@@ -135,9 +131,12 @@ public class PluginData {
     }
 
     public Optional<String> getChangelogUrl() {
-        SourceData sourceData = this.sourceData.getFirst();
-        return SourceRegistry.get(sourceData.sourceName())
-            .map(source -> source.getChangelogUrl(this, sourceData));
+        return this.sourceData.stream()
+            .map(sourceData -> SourceRegistry.get(sourceData.sourceName())
+                .flatMap(source -> Optional.ofNullable(source.getChangelogUrl(this, sourceData))))
+            .filter(Optional::isPresent)
+            .map(Optional::get)
+            .findFirst();
     }
 
     public static Builder builder(String pluginName, String currentVersion) {

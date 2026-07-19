@@ -113,7 +113,7 @@ public class UpdaterImpl {
 
                 collectedPluginData.addAll(foundPluginData);
                 for (PluginData pluginData : foundPluginData) {
-                    unknownPlugins.remove(pluginData.getPluginName());
+                    unknownPlugins.remove(pluginData.pluginName());
                 }
             }
 

@@ -10,12 +10,7 @@ import org.lushplugins.pluginupdater.common.config.deserializer.PluginDataDeseri
 import java.io.InputStream;
 import java.util.*;
 
-public class CommonPluginCollector implements PluginDataCollector {
-    private final UpdaterImpl updater;
-
-    public CommonPluginCollector(UpdaterImpl updater) {
-        this.updater = updater;
-    }
+public record CommonPluginCollector(UpdaterImpl updater) implements PluginDataCollector {
 
     @Override
     public List<PluginData> collect(Collection<PluginInfo> plugins) {

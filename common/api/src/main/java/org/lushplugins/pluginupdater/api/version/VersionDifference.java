@@ -14,7 +14,7 @@ public enum VersionDifference {
     LATEST,
     UNKNOWN;
 
-    public static VersionDifference getBuildDifference(Version currentVersion, Version latestVersion) {
+    public static VersionDifference compareBuildDifference(Version currentVersion, Version latestVersion) {
         return currentVersion.buildNum()
             .flatMap(currentBuild -> latestVersion.buildNum()
                 .map(latestBuild -> latestBuild > currentBuild  ? VersionDifference.BUILD : VersionDifference.LATEST))

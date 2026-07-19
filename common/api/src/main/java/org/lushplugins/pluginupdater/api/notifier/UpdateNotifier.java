@@ -24,17 +24,17 @@ public abstract class UpdateNotifier<T> {
 
     public void attemptToNotify(T user, @Nullable Integer delay) {
         if (permission == null || hasPermission(user, permission)) {
-            PluginData pluginData = updater.getPluginData();
+            PluginData pluginData = updater.pluginData();
             if (pluginData.isUpdateAvailable() && !pluginData.isAlreadyDownloaded()) {
                 String message = this.message
-                    .replace("%plugin%", pluginData.getPluginName())
-                    .replace("%current_version%", pluginData.getCurrentVersion().rawVersionString())
-                    .replace("%latest_version%", pluginData.getLatestVersion()
+                    .replace("%plugin%", pluginData.pluginName())
+                    .replace("%current_version%", pluginData.currentVersion().rawVersionString())
+                    .replace("%latest_version%", pluginData.latestVersion()
                         .map(Version::rawVersionString)
                         .orElse("unknown"));
 
                 if (delay != null) {
-                    updater.getScheduler().schedule(() -> sendMessage(user, message), delay, TimeUnit.SECONDS);
+                    updater.scheduler().schedule(() -> sendMessage(user, message), delay, TimeUnit.SECONDS);
                 } else {
                     sendMessage(user, message);
                 }

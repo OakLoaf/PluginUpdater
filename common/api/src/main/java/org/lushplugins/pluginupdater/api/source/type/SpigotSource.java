@@ -32,13 +32,13 @@ public class SpigotSource implements Source {
             .formatted(UpdaterConstants.Endpoint.SPIGET, resourceId));
 
         if (response.statusCode() != 200) {
-            throw new IllegalStateException("Received invalid response code (" + response.statusCode() + ") whilst checking '" + pluginData.getPluginName() + "' for updates.");
+            throw new IllegalStateException("Received invalid response code (" + response.statusCode() + ") whilst checking '" + pluginData.pluginName() + "' for updates.");
         }
 
         JsonObject pluginJson = JsonParser.parseString(response.body()).getAsJsonObject();
         String version = pluginJson.get("name").getAsString();
 
-        return pluginData.getLatestVersionParser().parse(version);
+        return pluginData.latestVersionParser().parse(version);
     }
 
     @Override
@@ -51,8 +51,7 @@ public class SpigotSource implements Source {
             UpdaterConstants.Endpoint.SPIGET,
             resourceId);
 
-        return DownloadableRelease.builder()
-            .downloadUrl(downloadUrl)
+        return DownloadableRelease.builder(downloadUrl)
             .build();
     }
 

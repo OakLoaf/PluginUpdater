@@ -51,7 +51,7 @@ public class ConfigManager {
         Collection<PluginData> dataSnapshot = new ArrayList<>(plugins.values());
         for (PluginData snapshot : dataSnapshot) {
             if (!snapshot.isAlreadyDownloaded()) {
-                plugins.remove(snapshot.getPluginName());
+                plugins.remove(snapshot.pluginName());
             }
         }
 
@@ -109,7 +109,7 @@ public class ConfigManager {
     }
 
     public void addPlugin(@NotNull PluginData pluginData) {
-        addPlugin(pluginData.getPluginName(), pluginData);
+        addPlugin(pluginData.pluginName(), pluginData);
     }
 
     public void addPlugin(String pluginName, @NotNull PluginData pluginData) {

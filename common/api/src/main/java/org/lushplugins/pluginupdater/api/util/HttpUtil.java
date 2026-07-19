@@ -15,6 +15,10 @@ public class HttpUtil {
         .followRedirects(HttpClient.Redirect.ALWAYS)
         .build();
 
+    public static HttpClient client() {
+        return CLIENT;
+    }
+
     public static HttpResponse<String> sendRequest(URI uri, @Nullable String payload) throws IOException, InterruptedException {
         return CLIENT.send(
             prepareRequestBuilder(uri, payload).build(),

@@ -40,9 +40,9 @@ public class DownloadLogger {
             writer.print("[%s] Downloaded %s: %s -> %s\n"
                 .formatted(
                     LocalDateTime.now().format(DATE_TIME_FORMATTER),
-                    pluginData.getPluginName(),
-                    pluginData.getCurrentVersion().rawVersionString(),
-                    pluginData.getLatestVersion().orElseThrow().rawVersionString()));
+                    pluginData.pluginName(),
+                    pluginData.currentVersion().rawVersionString(),
+                    pluginData.latestVersion().orElseThrow().rawVersionString()));
             writer.close();
         } catch (IOException e) {
             e.printStackTrace();

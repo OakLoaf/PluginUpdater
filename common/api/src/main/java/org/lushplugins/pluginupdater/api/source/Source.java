@@ -11,6 +11,7 @@ import org.lushplugins.pluginupdater.api.version.VersionDifference;
 import org.lushplugins.pluginupdater.api.version.comparator.VersionComparator;
 
 import java.io.*;
+import java.nio.file.Path;
 import java.util.logging.Level;
 
 @SuppressWarnings("CodeBlock2Expr")
@@ -25,43 +26,43 @@ public interface Source {
     @Nullable String getChangelogUrl(PluginData pluginData, SourceData sourceData);
 
     default boolean isUpdateAvailable(PluginData pluginData, SourceData sourceData) throws IOException, InterruptedException {
-        Version currentVersion = pluginData.getCurrentVersion();
+        Version currentVersion = pluginData.currentVersion();
         Version latestVersion;
         try {
             latestVersion = getLatestVersion(pluginData, sourceData);
         } catch (InvalidVersionFormatException e) {
-            UpdaterConstants.LOGGER.severe("Failed to read latest version for '%s': %s".formatted(pluginData.getPluginName(), e.getMessage()));
+            UpdaterConstants.LOGGER.severe("Failed to read latest version for '%s': %s".formatted(pluginData.pluginName(), e.getMessage()));
             return false;
         }
 
         VersionDifference versionDifference;
         try {
-            VersionComparator comparator = pluginData.getOptionalComparator().orElse(sourceData.defaultComparator());
-            versionDifference = comparator.getVersionDifference(currentVersion, latestVersion);
+            VersionComparator comparator = pluginData.versionComparator().orElse(sourceData.defaultComparator());
+            versionDifference = comparator.compare(currentVersion, latestVersion);
         } catch (InvalidVersionFormatException e) {
-            UpdaterConstants.LOGGER.severe("Failed to compare versions for '%s': %s".formatted(pluginData.getPluginName(), e.getMessage()));
+            UpdaterConstants.LOGGER.severe("Failed to compare versions for '%s': %s".formatted(pluginData.pluginName(), e.getMessage()));
             return false;
         }
 
         pluginData.setCheckRan(true);
-        pluginData.setVersionDifference(versionDifference);
+        pluginData.versionDifference(versionDifference);
 
         if (!versionDifference.equals(VersionDifference.LATEST)) {
-            pluginData.setLatestVersion(latestVersion);
+            pluginData.latestVersion(latestVersion);
             return true;
         } else {
             return false;
         }
     }
 
-    default boolean download(PluginData pluginData, SourceData sourceData, File destinationDir) throws IOException, InterruptedException {
+    default boolean download(PluginData pluginData, SourceData sourceData, Path destinationDir) throws IOException, InterruptedException {
         DownloadableRelease release = getDownloadableRelease(pluginData, sourceData);
         if (release == null) {
             return false;
         }
 
-        String version = pluginData.getLatestVersion().orElseThrow().resolvedVersion();
-        String fallbackFileName = pluginData.getPluginName() + "-" + version + ".jar";
+        String version = pluginData.latestVersion().orElseThrow().resolvedVersion();
+        String fallbackFileName = pluginData.pluginName() + "-" + version + ".jar";
         release.downloadTo(destinationDir, fallbackFileName);
         DownloadLogger.logDownload(pluginData);
 
@@ -77,11 +78,11 @@ public interface Source {
 
     static Version getLatestVersion(PluginData pluginData) throws IOException {
         try {
-            return attemptOnSources(pluginData, (versionChecker, sourceData) -> {
-                return versionChecker.getLatestVersion(pluginData, sourceData);
+            return attemptOnSources(pluginData, (source, sourceData) -> {
+                return source.getLatestVersion(pluginData, sourceData);
             });
         } catch (IOException e) {
-            throw new IOException("Failed to check plugin '" + pluginData.getPluginName() + "' for latest version.", e);
+            throw new IOException("Failed to check plugin '" + pluginData.pluginName() + "' for latest version.", e);
         }
     }
 
@@ -91,32 +92,32 @@ public interface Source {
                 return source.getDownloadableRelease(pluginData, sourceData);
             });
         } catch (IOException e) {
-            throw new IOException("Failed to get download url for plugin '" + pluginData.getPluginName() + "'.", e);
+            throw new IOException("Failed to get download url for plugin '" + pluginData.pluginName() + "'.", e);
         }
     }
 
     static boolean isUpdateAvailable(PluginData pluginData) throws IOException {
         try {
-            return attemptOnSources(pluginData, (versionChecker, sourceData) -> {
-                return versionChecker.isUpdateAvailable(pluginData, sourceData);
+            return attemptOnSources(pluginData, (source, sourceData) -> {
+                return source.isUpdateAvailable(pluginData, sourceData);
             });
         } catch (IOException e) {
-            throw new IOException("Failed to check if update is available for plugin '" + pluginData.getPluginName() + "'.", e);
+            throw new IOException("Failed to check if update is available for plugin '" + pluginData.pluginName() + "'.", e);
         }
     }
 
-    static boolean download(PluginData pluginData, File destinationDir) throws IOException {
+    static boolean download(PluginData pluginData, Path destinationDir) throws IOException {
         try {
-            return attemptOnSources(pluginData, (versionChecker, sourceData) -> {
-                return versionChecker.download(pluginData, sourceData, destinationDir);
+            return attemptOnSources(pluginData, (source, sourceData) -> {
+                return source.download(pluginData, sourceData, destinationDir);
             });
         } catch (IOException e) {
-            throw new IOException("Failed to download update for plugin '" + pluginData.getPluginName() + "'.", e);
+            throw new IOException("Failed to download update for plugin '" + pluginData.pluginName() + "'.", e);
         }
     }
 
     private static <T> T attemptOnSources(PluginData pluginData, SourceSupplier<T> callable) throws IOException {
-        for (SourceData sourceData : pluginData.getSourceData()) {
+        for (SourceData sourceData : pluginData.sourceData()) {
             Source source = SourceRegistry.get(sourceData.sourceName()).orElse(null);
             if (source == null) {
                 continue;
@@ -129,7 +130,7 @@ public interface Source {
             }
         }
 
-        throw new IOException("Failed attempts on all available sources for plugin '" + pluginData.getPluginName() + "'.");
+        throw new IOException("Failed attempts on all available sources for plugin '" + pluginData.pluginName() + "'.");
     }
 
     @FunctionalInterface

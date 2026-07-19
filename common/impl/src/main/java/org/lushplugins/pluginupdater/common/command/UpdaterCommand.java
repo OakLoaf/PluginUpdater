@@ -37,15 +37,15 @@ public record UpdaterCommand(UpdaterImpl updater) implements OrphanCommand {
 
         processingData.getFuture().thenAccept(success -> {
             PluginData pluginData = processingData.getPluginData();
-            switch (pluginData.getVersionDifference()) {
+            switch (pluginData.versionDifference()) {
                 case MAJOR, MINOR, PATCH, BUILD -> updater.platform().sendMessage(actor, "<#b7faa2>New version <#b7faa2>found for %s <white>(%s <gray>-> <white>%s)"
-                    .formatted(pluginData.getPluginName(),
-                        pluginData.getCurrentVersion().rawVersionString(),
-                        pluginData.getLatestVersion().orElseThrow().rawVersionString()));
+                    .formatted(pluginData.pluginName(),
+                        pluginData.currentVersion().rawVersionString(),
+                        pluginData.latestVersion().orElseThrow().rawVersionString()));
                 case LATEST -> updater.platform().sendMessage(actor, ("<#b7faa2>No update has been found for %s")
-                    .formatted(pluginData.getPluginName()));
+                    .formatted(pluginData.pluginName()));
                 case UNKNOWN -> updater.platform().sendMessage(actor, "<#ff6969>Something went wrong when checking %s for a new version"
-                    .formatted(pluginData.getPluginName()));
+                    .formatted(pluginData.pluginName()));
             }
         });
 
