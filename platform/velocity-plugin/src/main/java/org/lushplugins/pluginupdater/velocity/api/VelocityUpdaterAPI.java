@@ -7,7 +7,7 @@ import org.lushplugins.pluginupdater.common.platform.UpdaterAPI;
 
 public class VelocityUpdaterAPI extends UpdaterAPI {
 
-    public VelocityUpdaterAPI(UpdaterImpl updater) {
+    public VelocityUpdaterAPI(UpdaterImpl<?> updater) {
         super(updater);
     }
 

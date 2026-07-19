@@ -6,9 +6,9 @@ import org.lushplugins.pluginupdater.api.updater.PluginData;
 import org.lushplugins.pluginupdater.common.UpdaterImpl;
 
 public class UpdaterAPI {
-    private final UpdaterImpl updater;
+    private final UpdaterImpl<?> updater;
 
-    public UpdaterAPI(UpdaterImpl updater) {
+    public UpdaterAPI(UpdaterImpl<?> updater) {
         this.updater = updater;
     }
 

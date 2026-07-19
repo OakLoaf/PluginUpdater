@@ -9,17 +9,18 @@ import org.lushplugins.pluginupdater.common.UpdaterImpl;
 import java.io.IOException;
 import java.util.ArrayDeque;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.*;
 import java.util.logging.Level;
 
-public class UpdateHandler {
-    private final UpdaterImpl updater;
+public class UpdateHandler<T> {
+    private final UpdaterImpl<T> updater;
     private final ScheduledExecutorService threads = Executors.newScheduledThreadPool(1);
     private final ArrayDeque<ProcessingData> queue = new ArrayDeque<>();
     private final Map<ProcessingData.State, Integer> currentlyProcessing = new HashMap<>();
 
-    public UpdateHandler(UpdaterImpl updater) {
+    public UpdateHandler(UpdaterImpl<T> updater) {
         this.updater = updater;
     }
 
@@ -85,7 +86,17 @@ public class UpdateHandler {
         ProcessingData.State state = processingData.getState();
         this.currentlyProcessing.compute(state, (key, oldValue) -> oldValue != null ? oldValue + 1 : 1);
         if (state != ProcessingData.State.SEND_NOTIFICATION) {
-            updater.platform().sendProcessingActionBar(this, state);
+            List<T> users = updater.platform().getOnlineUsersWithPermission("pluginupdater.notify");
+            if (users.isEmpty()) {
+                return;
+            }
+
+            int processed = this.currentlyProcessing.getOrDefault(state, 1);
+            int total = processed + this.remainingWithState(state);
+            String message = "<#b7faa2>Updater processing: <#66b04f>%s<#b7faa2>/<#66b04f>%s"
+                .formatted(processed, total);
+
+            updater.platform().broadcastActionBar(users, message);
         }
 
         switch (state) {
@@ -97,7 +108,7 @@ public class UpdateHandler {
                     pluginData.setCheckRan(true);
                     return;
                 } catch (Exception e) {
-                    updater.platform().getLogger().log(Level.SEVERE, e.getMessage(), e);
+                    updater.updaterPlugin().getLogger().log(Level.SEVERE, e.getMessage(), e);
                 }
 
                 String sourceNames = String.join(", ", pluginData.sourceData().stream().map(SourceData::sourceName).toList());
@@ -111,7 +122,7 @@ public class UpdateHandler {
                 }
 
                 try {
-                    if (Source.download(pluginData, updater.platform().getDownloadDir())) {
+                    if (Source.download(pluginData, updater.updaterPlugin().getDownloadDir())) {
                         pluginData.versionDifference(VersionDifference.UNKNOWN);
                         pluginData.setAlreadyDownloaded(true);
                         processingData.getFuture().complete(true);
@@ -129,19 +140,20 @@ public class UpdateHandler {
             case SEND_NOTIFICATION -> {
                 String message = updater.constructUpdateMessage();
                 if (message != null) {
-                    updater.platform().broadcastNotification(message);
+                    List<T> users = updater.platform().getOnlineUsersWithPermission("pluginupdater.notify");
+                    updater.platform().broadcastMessage(users, message);
                 }
             }
         }
     }
 
     public static class ProcessingData {
-        private final UpdaterImpl updater;
+        private final UpdaterImpl<?> updater;
         private final String pluginName;
         private final State state;
         private final CompletableFuture<Boolean> future;
 
-        public ProcessingData(UpdaterImpl updater, String pluginName, State state) {
+        public ProcessingData(UpdaterImpl<?> updater, String pluginName, State state) {
             this.updater = updater;
             this.pluginName = pluginName;
             this.state = state;

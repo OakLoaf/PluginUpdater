@@ -6,11 +6,11 @@ import com.google.gson.JsonParser;
 import org.jetbrains.annotations.Nullable;
 import org.lushplugins.pluginupdater.api.source.type.SpigotSource;
 import org.lushplugins.pluginupdater.api.updater.PluginInfo;
+import org.lushplugins.pluginupdater.common.UpdaterImpl;
 import org.lushplugins.pluginupdater.common.collector.PluginDataCollector;
 import org.lushplugins.pluginupdater.api.updater.PluginData;
 import org.lushplugins.pluginupdater.api.util.HttpUtil;
 import org.lushplugins.pluginupdater.api.util.UpdaterConstants;
-import org.lushplugins.pluginupdater.common.platform.UpdaterPlatform;
 
 import java.io.IOException;
 import java.net.http.HttpResponse;
@@ -19,12 +19,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.logging.Level;
 
-public class SpigotCollector implements PluginDataCollector {
-    private final UpdaterPlatform platform;
-
-    public SpigotCollector(UpdaterPlatform platform) {
-        this.platform = platform;
-    }
+public record SpigotCollector(UpdaterImpl<?> updater) implements PluginDataCollector {
 
     @Override
     public List<PluginData> collect(Collection<PluginInfo> plugins) {
@@ -44,7 +39,7 @@ public class SpigotCollector implements PluginDataCollector {
         try {
             response = HttpUtil.sendRequest(String.format("%s/search/resources/%s", UpdaterConstants.Endpoint.SPIGET, unknownPlugin.getName()));
         } catch (IOException | InterruptedException e) {
-            platform.getLogger().log(Level.WARNING, "Caught error whilst searching for project on spiget: ", e);
+            updater.updaterPlugin().getLogger().log(Level.WARNING, "Caught error whilst searching for project on spiget: ", e);
             return null;
         }
 
@@ -53,7 +48,7 @@ public class SpigotCollector implements PluginDataCollector {
         }
 
         if (response.statusCode() != 200) {
-            platform.getLogger().log(Level.WARNING, "Received invalid response code (%s) whilst searching for project on spiget (%s)".formatted(response.statusCode(), response.uri()));
+            updater.updaterPlugin().getLogger().log(Level.WARNING, "Received invalid response code (%s) whilst searching for project on spiget (%s)".formatted(response.statusCode(), response.uri()));
             return null;
         }
 

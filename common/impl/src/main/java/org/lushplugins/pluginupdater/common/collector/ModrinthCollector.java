@@ -10,7 +10,7 @@ import org.lushplugins.pluginupdater.api.updater.PluginData;
 import org.lushplugins.pluginupdater.api.updater.PluginInfo;
 import org.lushplugins.pluginupdater.api.util.HttpUtil;
 import org.lushplugins.pluginupdater.api.util.UpdaterConstants;
-import org.lushplugins.pluginupdater.common.platform.UpdaterPlatform;
+import org.lushplugins.pluginupdater.common.UpdaterImpl;
 
 import java.io.File;
 import java.io.IOException;
@@ -18,7 +18,7 @@ import java.net.http.HttpResponse;
 import java.util.*;
 import java.util.logging.Level;
 
-public record ModrinthCollector(UpdaterPlatform<?> platform) implements PluginDataCollector {
+public record ModrinthCollector(UpdaterImpl<?> updater) implements PluginDataCollector {
 
     @Override
     public List<PluginData> collect(Collection<PluginInfo> plugins) {
@@ -34,7 +34,7 @@ public record ModrinthCollector(UpdaterPlatform<?> platform) implements PluginDa
                 hash = Files.asByteSource(pluginFile).hash(Hashing.sha512());
                 pluginHashes.put(hash.toString(), unknownPlugin);
             } catch (IOException e) {
-                platform.getLogger().log(Level.WARNING, "Caught error whilst hashing plugin file: ", e);
+                updater.updaterPlugin().getLogger().log(Level.WARNING, "Caught error whilst hashing plugin file: ", e);
             }
         }
 
@@ -50,12 +50,12 @@ public record ModrinthCollector(UpdaterPlatform<?> platform) implements PluginDa
         try {
             response = HttpUtil.sendRequest(String.format("%s/version_files", UpdaterConstants.Endpoint.MODRINTH), payload);
         } catch (IOException | InterruptedException e) {
-            platform.getLogger().log(Level.WARNING, "Caught error whilst getting project data from hashes: ", e);
+            updater.updaterPlugin().getLogger().log(Level.WARNING, "Caught error whilst getting project data from hashes: ", e);
             return Collections.emptyList();
         }
 
         if (response.statusCode() != 200) {
-            platform.getLogger().log(Level.WARNING, "Received invalid response code (" + response.statusCode() + ") whilst getting project data from hashes.");
+            updater.updaterPlugin().getLogger().log(Level.WARNING, "Received invalid response code (" + response.statusCode() + ") whilst getting project data from hashes.");
             return Collections.emptyList();
         }
 

@@ -15,7 +15,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 
 @SuppressWarnings("unused")
-public record UpdaterCommand(UpdaterImpl updater) implements OrphanCommand {
+public record UpdaterCommand(UpdaterImpl<?> updater) implements OrphanCommand {
 
     @Subcommand("reload")
     @CommandPermission("pluginupdater.reload")
@@ -23,7 +23,7 @@ public record UpdaterCommand(UpdaterImpl updater) implements OrphanCommand {
         try {
             updater.config().reload();
         } catch (Throwable e) {
-            updater.platform().getLogger().log(Level.SEVERE, "Caught error whilst reloading: ", e);
+            updater.updaterPlugin().getLogger().log(Level.SEVERE, "Caught error whilst reloading: ", e);
             return "<#ff6969>Something went wrong whilst reloading the plugin, check the console for errors";
         }
 
@@ -38,13 +38,13 @@ public record UpdaterCommand(UpdaterImpl updater) implements OrphanCommand {
         processingData.getFuture().thenAccept(success -> {
             PluginData pluginData = processingData.getPluginData();
             switch (pluginData.versionDifference()) {
-                case MAJOR, MINOR, PATCH, BUILD -> updater.platform().sendMessage(actor, "<#b7faa2>New version <#b7faa2>found for %s <white>(%s <gray>-> <white>%s)"
+                case MAJOR, MINOR, PATCH, BUILD -> updater.commandPlatform().sendMessage(actor, "<#b7faa2>New version <#b7faa2>found for %s <white>(%s <gray>-> <white>%s)"
                     .formatted(pluginData.pluginName(),
                         pluginData.currentVersion().rawVersionString(),
                         pluginData.latestVersion().orElseThrow().rawVersionString()));
-                case LATEST -> updater.platform().sendMessage(actor, ("<#b7faa2>No update has been found for %s")
+                case LATEST -> updater.commandPlatform().sendMessage(actor, ("<#b7faa2>No update has been found for %s")
                     .formatted(pluginData.pluginName()));
-                case UNKNOWN -> updater.platform().sendMessage(actor, "<#ff6969>Something went wrong when checking %s for a new version"
+                case UNKNOWN -> updater.commandPlatform().sendMessage(actor, "<#ff6969>Something went wrong when checking %s for a new version"
                     .formatted(pluginData.pluginName()));
             }
         });

@@ -3,7 +3,6 @@ package org.lushplugins.pluginupdater.api.source;
 import org.lushplugins.pluginupdater.api.source.type.*;
 
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.HashMap;

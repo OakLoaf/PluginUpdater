@@ -17,12 +17,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public class PluginYamlCollector implements PluginDataCollector {
-    private final UpdaterImpl updater;
-
-    public PluginYamlCollector(UpdaterImpl updater) {
-        this.updater = updater;
-    }
+public record PluginYamlCollector(UpdaterImpl<?> updater) implements PluginDataCollector {
 
     @Override
     public List<PluginData> collect(Collection<PluginInfo> plugins) {
@@ -33,9 +28,9 @@ public class PluginYamlCollector implements PluginDataCollector {
                 continue;
             }
 
-            InputStream resource = updater.platform().getResourceStream(plugin, "plugin.yml");
+            InputStream resource = updater.updaterPlugin().getResourceStream(plugin, "plugin.yml");
             if (resource == null) {
-                resource = updater.platform().getResourceStream(plugin, "paper-plugin.yml");
+                resource = updater.updaterPlugin().getResourceStream(plugin, "paper-plugin.yml");
 
                 if (resource == null) {
                     continue;

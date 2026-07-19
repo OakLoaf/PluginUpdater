@@ -13,11 +13,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 @SuppressWarnings("unused")
-public record UpdatesCommand(UpdaterImpl updater) implements OrphanCommand {
+public record UpdatesCommand(UpdaterImpl<?> updater) implements OrphanCommand {
 
     @CommandPlaceholder
     @CommandPermission("pluginupdater.checkupdates")
-    public static String updates(UpdaterImpl updater) {
+    public static String updates(UpdaterImpl<?> updater) {
         ConfigManager configManager = updater.config();
         List<String> plugins = configManager.getAllPluginData().stream()
             .map(pluginData -> {
@@ -71,7 +71,7 @@ public record UpdatesCommand(UpdaterImpl updater) implements OrphanCommand {
 
     @Subcommand("list")
     @CommandPermission("pluginupdater.checkupdates")
-    public static String listUpdates(UpdaterImpl updater) {
+    public static String listUpdates(UpdaterImpl<?> updater) {
         ConfigManager configManager = updater.config();
         String updateAvailableColor = configManager.getMessage("update-available-color", "<#ffda54>");
         String majorUpdateAvailableColor = configManager.getMessage("major-update-available-color", "<#ff6969>");

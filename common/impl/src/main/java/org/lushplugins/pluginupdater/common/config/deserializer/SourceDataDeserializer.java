@@ -3,7 +3,7 @@ package org.lushplugins.pluginupdater.common.config.deserializer;
 import com.electronwill.nightconfig.core.Config;
 import org.lushplugins.pluginupdater.api.source.SourceData;
 import org.lushplugins.pluginupdater.api.source.type.*;
-import org.lushplugins.pluginupdater.common.platform.UpdaterPlatform;
+import org.lushplugins.pluginupdater.common.platform.UpdaterPlugin;
 import org.lushplugins.pluginupdater.common.util.ConfigUtil;
 
 import java.util.Collections;
@@ -12,9 +12,9 @@ import java.util.logging.Level;
 
 public class SourceDataDeserializer {
 
-    public static SourceData deserialize(UpdaterPlatform<?> platform, Config config) {
+    public static SourceData deserialize(UpdaterPlugin plugin, Config config) {
         String source = ConfigUtil.getOrAlias(config, "source", "platform",
-            () -> platform.getLogger().log(Level.WARNING, "Deprecated: The config option 'updater' has been renamed to 'source'"));
+            () -> plugin.getLogger().log(Level.WARNING, "Deprecated: The config option 'updater' has been renamed to 'source'"));
 
         return switch (source) {
             case GeyserSource.NAME -> geyserSourceData(config);

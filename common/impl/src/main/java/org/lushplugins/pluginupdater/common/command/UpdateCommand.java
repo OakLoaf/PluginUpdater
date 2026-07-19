@@ -17,7 +17,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Predicate;
 
 @SuppressWarnings("unused")
-public record UpdateCommand(UpdaterImpl updater) implements OrphanCommand {
+public record UpdateCommand(UpdaterImpl<?> updater) implements OrphanCommand {
 
     @Subcommand("update")
     @CommandPermission("pluginupdater.downloadupdates")
@@ -60,7 +60,7 @@ public record UpdateCommand(UpdaterImpl updater) implements OrphanCommand {
     }
 
     public void updateAll(CommandActor actor, Predicate<PluginData> predicate, boolean force) {
-        UpdateHandler updateHandler = updater.updateHandler();
+        UpdateHandler<?> updateHandler = updater.updateHandler();
         AtomicInteger updateCount = new AtomicInteger(0);
         AtomicInteger majorUpdateCount = new AtomicInteger(0);
         updater.config().getAllPluginData().stream()

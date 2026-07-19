@@ -1,6 +1,7 @@
 package org.lushplugins.pluginupdater.common;
 
 import org.jetbrains.annotations.Nullable;
+import org.lushplugins.pluginupdater.api.platform.UpdaterPlatform;
 import org.lushplugins.pluginupdater.api.source.SourceRegistry;
 import org.lushplugins.pluginupdater.api.updater.PluginData;
 import org.lushplugins.pluginupdater.api.updater.PluginInfo;
@@ -9,7 +10,8 @@ import org.lushplugins.pluginupdater.common.command.annotation.CommandPermission
 import org.lushplugins.pluginupdater.common.command.annotation.PluginName;
 import org.lushplugins.pluginupdater.common.command.response.StringMessageResponseHandler;
 import org.lushplugins.pluginupdater.common.config.ConfigManager;
-import org.lushplugins.pluginupdater.common.platform.UpdaterPlatform;
+import org.lushplugins.pluginupdater.common.platform.CommandHandler;
+import org.lushplugins.pluginupdater.common.platform.UpdaterPlugin;
 import org.lushplugins.pluginupdater.common.updater.UpdateHandler;
 import revxrsal.commands.Lamp;
 
@@ -21,23 +23,27 @@ import java.util.concurrent.CompletableFuture;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
-public class UpdaterImpl {
-    private final UpdaterPlatform<?> platform;
+public class UpdaterImpl<T> {
+    private final UpdaterPlatform<T> platform;
+    private final UpdaterPlugin updaterPlugin;
+    private final CommandHandler commandPlatform;
     private final List<PluginDataCollector.Factory> collectors;
-    private final UpdateHandler updateHandler;
+    private final UpdateHandler<T> updateHandler;
     private final ConfigManager config;
 
-    public UpdaterImpl(UpdaterPlatform<?> platform, List<PluginDataCollector.Factory> collectors) {
+    public UpdaterImpl(UpdaterPlatform<T> platform, UpdaterPlugin updaterPlugin, CommandHandler commandPlatform, List<PluginDataCollector.Factory> collectors) {
         this.platform = platform;
+        this.updaterPlugin = updaterPlugin;
+        this.commandPlatform = commandPlatform;
         this.collectors = collectors;
 
-        updateHandler = new UpdateHandler(this);
+        updateHandler = new UpdateHandler<>(this);
         updateHandler.enable();
 
         config = new ConfigManager(this);
         config.reload();
 
-        Lamp<?> lamp = platform.prepareLamp()
+        Lamp<?> lamp = commandPlatform.prepareLamp()
             .permissionFactory(new CommandPermissionFactory(this))
             .parameterTypes(parameterTypes -> parameterTypes
                 .addContextParameter(UpdaterImpl.class, (parameter, context) -> this))
@@ -73,22 +79,30 @@ public class UpdaterImpl {
             .responseHandler(String.class, new StringMessageResponseHandler())
             .build();
 
-        platform.registerLampCommands(this, lamp);
+        commandPlatform.registerLampCommands(this, lamp);
     }
 
     public void shutdown() {
         updateHandler.shutdown();
     }
 
-    public UpdaterPlatform<?> platform() {
+    public UpdaterPlatform<T> platform() {
         return platform;
+    }
+
+    public UpdaterPlugin updaterPlugin() {
+        return updaterPlugin;
+    }
+
+    public CommandHandler commandPlatform() {
+        return commandPlatform;
     }
 
     public List<PluginDataCollector.Factory> collectors() {
         return collectors;
     }
 
-    public UpdateHandler updateHandler() {
+    public UpdateHandler<T> updateHandler() {
         return updateHandler;
     }
 
@@ -114,7 +128,7 @@ public class UpdaterImpl {
                 try {
                     foundPluginData = collector.collect(unknownPlugins.values());
                 } catch (Throwable e) {
-                    platform.getLogger().log(Level.WARNING, "Caught exception whilst collecting unknown plugin data: ", e);
+                    updaterPlugin.getLogger().log(Level.WARNING, "Caught exception whilst collecting unknown plugin data: ", e);
                     continue;
                 }
 

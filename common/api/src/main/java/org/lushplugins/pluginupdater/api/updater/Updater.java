@@ -1,8 +1,9 @@
 package org.lushplugins.pluginupdater.api.updater;
 
-import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 import org.lushplugins.pluginupdater.api.notifier.UpdateNotifier;
+import org.lushplugins.pluginupdater.api.platform.UpdaterPlatform;
 import org.lushplugins.pluginupdater.api.source.SourceData;
 import org.lushplugins.pluginupdater.api.source.type.*;
 import org.lushplugins.pluginupdater.api.util.DownloadLogger;
@@ -18,33 +19,41 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 import java.util.logging.Level;
 
 @SuppressWarnings("unused")
-public class Updater {
+public class Updater<T> {
     private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
+    private final UpdaterPlatform<T> platform;
     private final PluginInfo plugin;
     private final PluginData pluginData;
     private final Path downloadDir;
-    private final UpdateNotifier<?> notifier;
+    private final UpdateNotifier<T> notifier;
 
+    @Contract("_, _, _, _, true, null, _ -> fail; ")
     private Updater(
+        UpdaterPlatform<T> platform,
         PluginInfo plugin,
         PluginData pluginData,
         @Nullable Path downloadDir,
         boolean notify,
-        @Nullable String notificationPermission,
-        @Nullable String notificationMessage,
-        UpdateNotifier.Constructor notifierConstructor
+        String notificationMessage,
+        String notificationPermission
     ) {
+        this.platform = platform;
         this.plugin = plugin;
         this.pluginData = pluginData;
         this.downloadDir = downloadDir;
-        this.notifier = notify ? notifierConstructor.apply(this, notificationMessage, notificationPermission) : null;
+        this.notifier = notify ? new UpdateNotifier<>(this, notificationMessage, notificationPermission) : null;
     }
 
     public ScheduledExecutorService scheduler() {
         return scheduler;
+    }
+
+    public UpdaterPlatform<T> platform() {
+        return platform;
     }
 
     public PluginInfo pluginInfo() {
@@ -59,7 +68,7 @@ public class Updater {
         return Optional.ofNullable(downloadDir);
     }
 
-    public Optional<UpdateNotifier<?>> notifier() {
+    public Optional<UpdateNotifier<T>> notifier() {
         return Optional.ofNullable(notifier);
     }
 
@@ -138,11 +147,12 @@ public class Updater {
         scheduler.shutdown();
     }
 
-    public static Builder builder(PluginInfo plugin) {
-        return new Builder(plugin);
+    public static <T> Builder<T> builder(UpdaterPlatform<T> platform, PluginInfo plugin) {
+        return new Builder<>(platform, plugin);
     }
 
-    public static class Builder {
+    public static class Builder<T> {
+        private final UpdaterPlatform<T> platform;
         private final PluginInfo plugin;
         private final PluginData pluginData;
         private Path downloadDir;
@@ -150,19 +160,31 @@ public class Updater {
         private boolean notify = true;
         private String notificationPermission = "pluginupdater.notifications";
         private String notificationMessage = "<#ffe27>A new <#e0c01b>%plugin% <#ffe27>update is now available! <#e0c01b>%current_version% <#ffe27a>-> <#e0c01b>%latest_version%";
-        private UpdateNotifier.Constructor notifierConstructor;
         private File downloadLogFile;
+        private Consumer<Updater<T>> postBuild;
 
-        private Builder(PluginInfo plugin) {
+        private Builder(UpdaterPlatform<T> platform, PluginInfo plugin) {
+            this.platform = platform;
             this.plugin = plugin;
             this.pluginData = PluginData.of(plugin);
         }
 
-        public Builder downloadDir(Path downloadDir) {
+        public Builder<T> downloadDir(Path downloadDir) {
             this.downloadDir = downloadDir;
             return this;
         }
 
+        /**
+         * Add a plugin's source data to be used for collecting update information
+         * (Sources should be added in order of priority).
+         * @param sourceData The source data.
+         */
+        public Builder<T> source(SourceData sourceData) {
+            this.pluginData.addSource(sourceData);
+            return this;
+        }
+
+        // TODO: Migrate specific SourceData methods to GithubSource#Data#builder method
         /**
          * Add GitHub plugin data to be used for collecting update information
          * (Sources should be added in order of priority).
@@ -170,7 +192,7 @@ public class Updater {
          * @param token The GitHub access token (if required)
          * @param assetName A string that the asset name of the release must include
          */
-        public Builder github(String repo, @Nullable String token, @Nullable String assetName) {
+        public Builder<T> github(String repo, @Nullable String token, @Nullable String assetName) {
             return source(new GithubSource.Data(repo, token, assetName));
         }
 
@@ -180,7 +202,7 @@ public class Updater {
          * @param repo The plugin's GitHub repo (e.g. 'OakLoaf/PluginUpdater')
          * @param token The GitHub access token (if required)
          */
-        public Builder github(String repo, @Nullable String token) {
+        public Builder<T> github(String repo, @Nullable String token) {
             return github(repo, token, null);
         }
 
@@ -189,7 +211,7 @@ public class Updater {
          * (Sources should be added in order of priority).
          * @param repo The plugin's GitHub repo (e.g. 'OakLoaf/PluginUpdater')
          */
-        public Builder github(String repo) {
+        public Builder<T> github(String repo) {
             return github(repo, null);
         }
 
@@ -198,7 +220,7 @@ public class Updater {
          * (Sources should be added in order of priority).
          * @param projectSlug The plugin's hangar project slug.
          */
-        public Builder hangar(String projectSlug) {
+        public Builder<T> hangar(String projectSlug) {
             return source(new HangarSource.Data(projectSlug));
         }
 
@@ -210,7 +232,7 @@ public class Updater {
          * @param artifactName A string that the artifact name of the build must include
          */
         @SuppressWarnings("JavadocLinkAsPlainText")
-        public Builder jenkins(String url, String job, @Nullable String artifactName) {
+        public Builder<T> jenkins(String url, String job, @Nullable String artifactName) {
             return source(new JenkinsSource.Data(url, job, artifactName));
         }
 
@@ -219,7 +241,7 @@ public class Updater {
          * (Sources should be added in order of priority).
          * @param projectId The plugin's modrinth project id.
          */
-        public Builder modrinth(String projectId) {
+        public Builder<T> modrinth(String projectId) {
             return source(new ModrinthSource.Data(projectId, ModrinthSource.ReleaseChannel.ALL, null));
         }
 
@@ -228,25 +250,15 @@ public class Updater {
          * (Sources should be added in order of priority).
          * @param resourceId The plugin's spigot resource id.
          */
-        public Builder spigot(String resourceId) {
+        public Builder<T> spigot(String resourceId) {
             return source(new SpigotSource.Data(resourceId));
-        }
-
-        /**
-         * Add a plugin's source data to be used for collecting update information
-         * (Sources should be added in order of priority).
-         * @param sourceData The source data.
-         */
-        public Builder source(SourceData sourceData) {
-            this.pluginData.addSource(sourceData);
-            return this;
         }
 
         /**
          * Sets whether a version check should be run upon building
          * @param seconds Number of seconds between checks (Default: 600 seconds. Set to -1 to disable)
          */
-        public Builder checkSchedule(long seconds) {
+        public Builder<T> checkSchedule(long seconds) {
             this.checkFrequency = seconds;
             return this;
         }
@@ -255,8 +267,17 @@ public class Updater {
          * Sets whether notifications should be sent for this
          * @param shouldSend Whether notifications should be sent.
          */
-        public Builder notify(boolean shouldSend) {
+        public Builder<T> notify(boolean shouldSend) {
             this.notify = shouldSend;
+            return this;
+        }
+
+        /**
+         * Sets the update notification message.
+         * @param message The notification message.
+         */
+        public Builder<T> notificationMessage(String message) {
+            this.notificationMessage = message;
             return this;
         }
 
@@ -265,27 +286,8 @@ public class Updater {
          * @param permission The permission that players need to receive notifications.
          *                   Defaults to {@code pluginupdater.notifications}
          */
-        public Builder notificationPermission(@Nullable String permission) {
+        public Builder<T> notificationPermission(@Nullable String permission) {
             this.notificationPermission = permission;
-            return this;
-        }
-
-        /**
-         * Sets the update notification message.
-         * @param message The notification message.
-         */
-        public Builder notificationMessage(@NotNull String message) {
-            this.notificationMessage = message;
-            return this;
-        }
-
-        /**
-         * Sets the notification handler constructor, this is mainly to
-         * allow for supporting multiple different platforms
-         * @param notifierConstructor The notification handler constructor
-         */
-        public Builder notifier(@NotNull UpdateNotifier.Constructor notifierConstructor) {
-            this.notifierConstructor = notifierConstructor;
             return this;
         }
 
@@ -293,8 +295,17 @@ public class Updater {
          * Sets the log file to log downloads in
          * @param logFile The log file. Defaults to null.
          */
-        public Builder logDownloads(@Nullable File logFile) {
+        public Builder<T> logDownloads(@Nullable File logFile) {
             this.downloadLogFile = logFile;
+            return this;
+        }
+
+        /**
+         * Define a task to be run after the {@link Updater} has been built
+         * @param consumer The task to run after building the {@link Updater}
+         */
+        public Builder<T> onBuild(Consumer<Updater<T>> consumer) {
+            this.postBuild = consumer;
             return this;
         }
 
@@ -302,25 +313,27 @@ public class Updater {
          * Builds and starts the Updater.
          * @return The created Updater instance.
          */
-        public Updater build() {
+        public Updater<T> build() {
             if (pluginData.sourceData().isEmpty()) {
                 throw new IllegalStateException("At least 1 source must be registered before building the Updater.");
             }
 
             DownloadLogger.setLogFile(downloadLogFile);
-            Updater updater = new Updater(
+            Updater<T> updater = new Updater<>(
+                platform,
                 plugin,
                 pluginData,
                 downloadDir,
                 notify,
-                notificationPermission,
-                notificationMessage,
-                notifierConstructor
+                Objects.requireNonNull(notificationMessage),
+                notificationPermission
             );
 
             if (checkFrequency > 0) {
                 updater.scheduler().scheduleAtFixedRate(updater::checkForUpdate, 0, checkFrequency, TimeUnit.SECONDS);
             }
+
+            postBuild.accept(updater);
 
             return updater;
         }
