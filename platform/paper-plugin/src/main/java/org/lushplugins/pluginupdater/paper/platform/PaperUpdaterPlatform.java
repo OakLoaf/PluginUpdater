@@ -49,8 +49,8 @@ public class PaperUpdaterPlatform implements UpdaterPlatform<Player> {
     }
 
     @Override
-    public File getDownloadDir() {
-        return Bukkit.getUpdateFolderFile();
+    public Path getDownloadDir() {
+        return Bukkit.getUpdateFolderFile().toPath();
     }
 
     @Override

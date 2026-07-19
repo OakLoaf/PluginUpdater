@@ -60,8 +60,8 @@ public class VelocityUpdaterPlatform implements UpdaterPlatform<Player> {
     }
 
     @Override
-    public File getDownloadDir() {
-        return VelocityUtil.getUpdateFolder();
+    public Path getDownloadDir() {
+        return VelocityUtil.getUpdateFolder().orElse(null);
     }
 
     @Override
