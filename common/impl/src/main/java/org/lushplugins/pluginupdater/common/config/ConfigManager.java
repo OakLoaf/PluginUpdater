@@ -28,7 +28,7 @@ public class ConfigManager {
         this.updater = updater;
     }
 
-    public void reload() {
+    public void reload(boolean skipCheck) {
         try {
             Files.createDirectories(updater.updaterPlugin().getDataPath());
         } catch (IOException e) {
@@ -84,7 +84,7 @@ public class ConfigManager {
                 addPlugin(pluginData);
             }
 
-            if (checkOnReload) {
+            if (checkOnReload && !skipCheck) {
                 UpdateHandler<?> updateHandler = updater.updateHandler();
                 getPlugins().forEach(updateHandler::queueUpdateCheck);
                 updateHandler.queueBroadcastNotification();
@@ -92,6 +92,10 @@ public class ConfigManager {
         });
 
         config.close();
+    }
+
+    public void reload() {
+        reload(false);
     }
 
     public boolean shouldAllowDownloads() {

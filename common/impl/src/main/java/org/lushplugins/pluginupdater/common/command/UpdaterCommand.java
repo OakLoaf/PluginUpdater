@@ -7,6 +7,7 @@ import org.lushplugins.pluginupdater.common.command.annotation.PluginName;
 import org.lushplugins.pluginupdater.common.UpdaterImpl;
 import org.lushplugins.pluginupdater.common.updater.UpdateHandler;
 import revxrsal.commands.annotation.Subcommand;
+import revxrsal.commands.annotation.Switch;
 import revxrsal.commands.command.CommandActor;
 import revxrsal.commands.orphan.OrphanCommand;
 
@@ -19,9 +20,9 @@ public record UpdaterCommand(UpdaterImpl<?> updater) implements OrphanCommand {
 
     @Subcommand("reload")
     @CommandPermission("pluginupdater.reload")
-    public String reload() {
+    public String reload(@Switch("skip-check") boolean skipCheck) {
         try {
-            updater.config().reload();
+            updater.config().reload(skipCheck);
         } catch (Throwable e) {
             updater.updaterPlugin().getLogger().log(Level.SEVERE, "Caught error whilst reloading: ", e);
             return "<#ff6969>Something went wrong whilst reloading the plugin, check the console for errors";
