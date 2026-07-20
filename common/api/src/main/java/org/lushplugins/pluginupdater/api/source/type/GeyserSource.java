@@ -13,6 +13,7 @@ import org.lushplugins.pluginupdater.api.version.Version;
 
 import java.io.IOException;
 import java.net.http.HttpResponse;
+import java.util.Objects;
 
 public class GeyserSource implements Source {
     public static final String NAME = "geyser";
@@ -91,6 +92,25 @@ public class GeyserSource implements Source {
         @Override
         public String sourceName() {
             return NAME;
+        }
+
+        public static Builder builder() {
+            return new Builder();
+        }
+
+        public static class Builder {
+            private String projectName;
+
+            private Builder() {}
+
+            public Builder projectName(String projectName) {
+                this.projectName = projectName;
+                return this;
+            }
+
+            public Data build() {
+                return new Data(Objects.requireNonNull(projectName));
+            }
         }
     }
 }

@@ -11,6 +11,7 @@ import org.lushplugins.pluginupdater.api.version.Version;
 
 import java.io.IOException;
 import java.net.http.HttpResponse;
+import java.util.Objects;
 
 public class HangarSource implements Source {
     public static final String NAME = "hangar";
@@ -71,6 +72,25 @@ public class HangarSource implements Source {
         @Override
         public String sourceName() {
             return NAME;
+        }
+
+        public static Builder builder() {
+            return new Builder();
+        }
+
+        public static class Builder {
+            private String projectSlug;
+
+            private Builder() {}
+
+            public Builder projectSlug(String projectSlug) {
+                this.projectSlug = projectSlug;
+                return this;
+            }
+
+            public Data build() {
+                return new Data(Objects.requireNonNull(projectSlug));
+            }
         }
     }
 }

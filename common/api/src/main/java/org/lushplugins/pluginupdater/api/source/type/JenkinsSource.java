@@ -17,6 +17,7 @@ import org.lushplugins.pluginupdater.api.version.comparator.VersionComparator;
 
 import java.io.IOException;
 import java.net.http.HttpResponse;
+import java.util.Objects;
 import java.util.Optional;
 
 public class JenkinsSource implements Source {
@@ -90,11 +91,12 @@ public class JenkinsSource implements Source {
         return null;
     }
 
+    /**
+     * @param url The plugin's Jenkins url (e.g. 'https://ci.jenkins.io')
+     * @param job The Jenkins job
+     * @param artifactName A string that the artifact name of the build must include
+     */
     public record Data(String url, String job, Optional<String> artifactName) implements SourceData {
-
-        public Data(String url, String job, @Nullable String artifactName) {
-            this(url, job, Optional.ofNullable(artifactName));
-        }
 
         @Override
         public String sourceName() {
@@ -104,6 +106,41 @@ public class JenkinsSource implements Source {
         @Override
         public VersionComparator defaultComparator() {
             return BuildComparator.INSTANCE;
+        }
+
+        public static Builder builder() {
+            return new Builder();
+        }
+
+        public static class Builder {
+            private String url;
+            private String job;
+            private String artifactName;
+
+            private Builder() {}
+
+            public Builder url(String url) {
+                this.url = url;
+                return this;
+            }
+
+            public Builder job(String job) {
+                this.job = job;
+                return this;
+            }
+
+            public Builder artifactName(@Nullable String artifactName) {
+                this.artifactName = artifactName;
+                return this;
+            }
+
+            public Data build() {
+                return new Data(
+                    Objects.requireNonNull(url),
+                    Objects.requireNonNull(job),
+                    Optional.ofNullable(artifactName)
+                );
+            }
         }
     }
 }

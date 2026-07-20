@@ -13,6 +13,7 @@ import org.lushplugins.pluginupdater.api.version.Version;
 
 import java.io.IOException;
 import java.net.http.HttpResponse;
+import java.util.Objects;
 
 public class SpigotSource implements Source {
     public static final String NAME = "spigot";
@@ -78,6 +79,25 @@ public class SpigotSource implements Source {
         @Override
         public String sourceName() {
             return NAME;
+        }
+
+        public static Builder builder() {
+            return new Builder();
+        }
+
+        public static class Builder {
+            private String resourceId;
+
+            private Builder() {}
+
+            public Builder resourceId(String resourceId) {
+                this.resourceId = resourceId;
+                return this;
+            }
+
+            public Data build() {
+                return new Data(Objects.requireNonNull(resourceId));
+            }
         }
     }
 }

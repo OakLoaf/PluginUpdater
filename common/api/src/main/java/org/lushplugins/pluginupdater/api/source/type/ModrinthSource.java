@@ -20,6 +20,7 @@ import org.lushplugins.pluginupdater.api.version.comparator.VersionComparator;
 import java.io.IOException;
 import java.net.http.HttpResponse;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -139,16 +140,19 @@ public class ModrinthSource implements Source {
 
     public record LatestVersion(JsonObject json, boolean potentiallyUnsafe) {}
 
+    public static class ReleaseChannel {
+        public static final List<String> ALL = null;
+        public static final String RELEASE = "release";
+        public static final String BETA = "beta";
+        public static final String ALPHA = "alpha";
+    }
+
     /**
      * @param projectId The Modrinth project id
      * @param loaders Which loaders to filter, {@code null} will include all loaders for your platform
      * @param releaseChannels Which release channels to filter, {@code null} will include all release channels
      */
     public record Data(String projectId, Optional<List<String>> loaders, Optional<List<String>> releaseChannels) implements SourceData {
-
-        public Data(String projectId, @Nullable List<String> loaders, @Nullable List<String> releaseChannels) {
-            this(projectId, Optional.ofNullable(loaders), Optional.ofNullable(releaseChannels));
-        }
 
         @Override
         public String sourceName() {
@@ -159,12 +163,40 @@ public class ModrinthSource implements Source {
         public Optional<String> releaseChannel() {
             return this.releaseChannels.map(List::getFirst);
         }
-    }
 
-    public static class ReleaseChannel {
-        public static final List<String> ALL = null;
-        public static final String RELEASE = "release";
-        public static final String BETA = "beta";
-        public static final String ALPHA = "alpha";
+        public static Builder builder() {
+            return new Builder();
+        }
+
+        public static class Builder {
+            private String projectId;
+            private List<String> loaders;
+            private List<String> releaseChannels;
+
+            private Builder() {}
+
+            public Builder projectId(String projectId) {
+                this.projectId = projectId;
+                return this;
+            }
+
+            public Builder loaders(@Nullable List<String> loaders) {
+                this.loaders = loaders;
+                return this;
+            }
+
+            public Builder releaseChannels(@Nullable List<String> releaseChannels) {
+                this.releaseChannels = releaseChannels;
+                return this;
+            }
+
+            public Data build() {
+                return new Data(
+                    Objects.requireNonNull(projectId),
+                    Optional.ofNullable(loaders),
+                    Optional.ofNullable(releaseChannels)
+                );
+            }
+        }
     }
 }

@@ -20,6 +20,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
+import java.util.function.UnaryOperator;
 import java.util.logging.Level;
 
 @SuppressWarnings("unused")
@@ -184,74 +185,52 @@ public class Updater<T> {
             return this;
         }
 
-        // TODO: Migrate specific SourceData methods to GithubSource#Data#builder method
         /**
-         * Add GitHub plugin data to be used for collecting update information
+         * Add Geyser source data to be used for collecting update information
          * (Sources should be added in order of priority).
-         * @param repo The plugin's GitHub repo (e.g. 'OakLoaf/PluginUpdater')
-         * @param token The GitHub access token (if required)
-         * @param assetName A string that the asset name of the release must include
-         */
-        public Builder<T> github(String repo, @Nullable String token, @Nullable String assetName) {
-            return source(new GithubSource.Data(repo, token, assetName));
+         **/
+        public Builder<T> geyser(UnaryOperator<GeyserSource.Data.Builder> builder) {
+            return source(builder.apply(GeyserSource.Data.builder()).build());
         }
 
         /**
-         * Add GitHub plugin data to be used for collecting update information
+         * Add GitHub source data to be used for collecting update information
          * (Sources should be added in order of priority).
-         * @param repo The plugin's GitHub repo (e.g. 'OakLoaf/PluginUpdater')
-         * @param token The GitHub access token (if required)
-         */
-        public Builder<T> github(String repo, @Nullable String token) {
-            return github(repo, token, null);
+         **/
+        public Builder<T> github(UnaryOperator<GithubSource.Data.Builder> builder) {
+            return source(builder.apply(GithubSource.Data.builder()).build());
         }
 
         /**
-         * Add GitHub plugin data to be used for collecting update information
+         * Add Hangar source data to be used for collecting update information
          * (Sources should be added in order of priority).
-         * @param repo The plugin's GitHub repo (e.g. 'OakLoaf/PluginUpdater')
-         */
-        public Builder<T> github(String repo) {
-            return github(repo, null);
+         **/
+        public Builder<T> hangar(UnaryOperator<HangarSource.Data.Builder> builder) {
+            return source(builder.apply(HangarSource.Data.builder()).build());
         }
 
         /**
-         * Add Hangar plugin data to be used for collecting update information
+         * Add Jenkins source data to be used for collecting update information
          * (Sources should be added in order of priority).
-         * @param projectSlug The plugin's hangar project slug.
-         */
-        public Builder<T> hangar(String projectSlug) {
-            return source(new HangarSource.Data(projectSlug));
+         **/
+        public Builder<T> jenkins(UnaryOperator<JenkinsSource.Data.Builder> builder) {
+            return source(builder.apply(JenkinsSource.Data.builder()).build());
         }
 
         /**
-         * Add GitHub plugin data to be used for collecting update information
+         * Add Modrinth source data to be used for collecting update information
          * (Sources should be added in order of priority).
-         * @param url The plugin's Jenkins url (e.g. 'https://ci.jenkins.io')
-         * @param job The Jenkins job
-         * @param artifactName A string that the artifact name of the build must include
-         */
-        @SuppressWarnings("JavadocLinkAsPlainText")
-        public Builder<T> jenkins(String url, String job, @Nullable String artifactName) {
-            return source(new JenkinsSource.Data(url, job, artifactName));
+         **/
+        public Builder<T> modrinth(UnaryOperator<ModrinthSource.Data.Builder> builder) {
+            return source(builder.apply(ModrinthSource.Data.builder()).build());
         }
 
         /**
-         * Add Modrinth plugin data to be used for collecting update information
+         * Add Spigot source data to be used for collecting update information
          * (Sources should be added in order of priority).
-         * @param projectId The plugin's modrinth project id.
-         */
-        public Builder<T> modrinth(String projectId) {
-            return source(new ModrinthSource.Data(projectId, ModrinthSource.ReleaseChannel.ALL, null));
-        }
-
-        /**
-         * Add Spigot plugin data to be used for collecting update information
-         * (Sources should be added in order of priority).
-         * @param resourceId The plugin's spigot resource id.
-         */
-        public Builder<T> spigot(String resourceId) {
-            return source(new SpigotSource.Data(resourceId));
+         **/
+        public Builder<T> spigot(UnaryOperator<SpigotSource.Data.Builder> builder) {
+            return source(builder.apply(SpigotSource.Data.builder()).build());
         }
 
         /**

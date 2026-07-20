@@ -19,6 +19,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 public class GithubSource implements Source {
@@ -105,15 +106,51 @@ public class GithubSource implements Source {
         return JsonParser.parseString(response.body()).getAsJsonObject();
     }
 
+    /**
+     * @param repo The plugin's GitHub repo (e.g. 'OakLoaf/PluginUpdater')
+     * @param token The GitHub access token (if required)
+     * @param assetName A string that the asset name of the release must include
+     */
     public record Data(String repo, Optional<String> token, Optional<String> assetName) implements SourceData {
-
-        public Data(String repo, @Nullable String token, @Nullable String assetName) {
-            this(repo, Optional.ofNullable(token), Optional.ofNullable(assetName));
-        }
 
         @Override
         public String sourceName() {
             return NAME;
+        }
+
+        public static Builder builder() {
+            return new Builder();
+        }
+
+        public static class Builder {
+            private String repo;
+            private String token;
+            private String assetName;
+
+            private Builder() {}
+
+            public Builder repo(String repo) {
+                this.repo = repo;
+                return this;
+            }
+
+            public Builder token(@Nullable String token) {
+                this.token = token;
+                return this;
+            }
+
+            public Builder assetName(@Nullable String assetName) {
+                this.assetName = assetName;
+                return this;
+            }
+
+            public Data build() {
+                return new Data(
+                    Objects.requireNonNull(repo),
+                    Optional.ofNullable(token),
+                    Optional.ofNullable(assetName)
+                );
+            }
         }
     }
 }
