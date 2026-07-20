@@ -82,7 +82,7 @@ public record UpdaterCommand(UpdaterImpl<?> updater) implements OrphanCommand {
     public String listUnregisteredPlugins() {
         List<String> unregisteredPlugins = updater.platform().getPlugins().stream()
             .map(PluginInfo::getName)
-            .filter(pluginName -> updater.config().getPluginData(pluginName) == null)
+            .filter(pluginName -> updater.config().canRegisterPluginData(pluginName))
             .sorted(String.CASE_INSENSITIVE_ORDER)
             .toList();
 
