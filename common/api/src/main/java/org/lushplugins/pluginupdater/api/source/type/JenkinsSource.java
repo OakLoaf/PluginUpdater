@@ -29,7 +29,7 @@ public class JenkinsSource implements Source {
     }
 
     @Override
-    public Version getLatestVersion(PluginData pluginData, SourceData sourceData) throws IOException, InterruptedException, InvalidVersionFormatException {
+    public Version fetchLatestVersion(PluginData pluginData, SourceData sourceData) throws IOException, InterruptedException, InvalidVersionFormatException {
         if (!(sourceData instanceof Data jenkinsData)) {
             return null;
         }
@@ -47,7 +47,7 @@ public class JenkinsSource implements Source {
     }
 
     @Override
-    public DownloadableRelease getDownloadableRelease(PluginData pluginData, SourceData sourceData) throws IOException, InterruptedException {
+    public DownloadableRelease fetchDownloadableRelease(PluginData pluginData, SourceData sourceData) throws IOException, InterruptedException {
         if (!(sourceData instanceof Data jenkinsData)) {
             return null;
         }
@@ -64,7 +64,9 @@ public class JenkinsSource implements Source {
                 .formatted(jenkinsData.artifactName())));
 
         String fileName = artifactJson.get("fileName").getAsString();
-        return DownloadableRelease.builder("%s/job/%s/lastSuccessfulBuild/artifact/artifacts/%s"
+        return DownloadableRelease.builder()
+            .pluginData(pluginData)
+            .downloadUrl("%s/job/%s/lastSuccessfulBuild/artifact/artifacts/%s"
                 .formatted(jenkinsData.url(), jenkinsData.job(), fileName))
             .jarName(fileName)
             .build();

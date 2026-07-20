@@ -24,7 +24,7 @@ public class SpigotSource implements Source {
     }
 
     @Override
-    public Version getLatestVersion(PluginData pluginData, SourceData sourceData) throws IOException, InterruptedException {
+    public Version fetchLatestVersion(PluginData pluginData, SourceData sourceData) throws IOException, InterruptedException {
         if (!(sourceData instanceof Data(String resourceId))) {
             return null;
         }
@@ -43,7 +43,7 @@ public class SpigotSource implements Source {
     }
 
     @Override
-    public DownloadableRelease getDownloadableRelease(PluginData pluginData, SourceData sourceData) {
+    public DownloadableRelease fetchDownloadableRelease(PluginData pluginData, SourceData sourceData) {
         if (!(sourceData instanceof Data(String resourceId))) {
             return null;
         }
@@ -52,7 +52,9 @@ public class SpigotSource implements Source {
             UpdaterConstants.Endpoint.SPIGET,
             resourceId);
 
-        return DownloadableRelease.builder(downloadUrl)
+        return DownloadableRelease.builder()
+            .pluginData(pluginData)
+            .downloadUrl(downloadUrl)
             .build();
     }
 

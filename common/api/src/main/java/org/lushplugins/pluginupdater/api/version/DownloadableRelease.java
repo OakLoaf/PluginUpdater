@@ -1,6 +1,8 @@
 package org.lushplugins.pluginupdater.api.version;
 
 import org.jetbrains.annotations.Nullable;
+import org.lushplugins.pluginupdater.api.updater.PluginData;
+import org.lushplugins.pluginupdater.api.util.DownloadLogger;
 import org.lushplugins.pluginupdater.api.util.HttpUtil;
 import org.lushplugins.pluginupdater.api.util.UpdaterConstants;
 import org.lushplugins.pluginupdater.util.BuildParameters;
@@ -14,15 +16,20 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 public record DownloadableRelease(
+    PluginData pluginData,
     String downloadUrl,
     Map<String, String> downloadHeaders,
     Optional<String> jarName
 ) {
 
-    public void downloadTo(Path destinationDir, String fallbackFileName) throws IOException, InterruptedException {
+    public void downloadTo(Path destinationDir) throws IOException, InterruptedException {
+        String version = pluginData.latestVersion().orElseThrow().resolvedVersion();
+        String fallbackFileName = pluginData.pluginName() + "-" + version + ".jar";
+
         HttpRequest.Builder requestBuilder = HttpRequest.newBuilder(URI.create(this.downloadUrl))
             .header("User-Agent", "PluginUpdater/" + BuildParameters.VERSION);
 
@@ -57,6 +64,8 @@ public record DownloadableRelease(
         if (downloadResponse.statusCode() != 200) {
             throw new IllegalStateException("Download response code was " + response.statusCode());
         }
+
+        DownloadLogger.logDownload(pluginData);
     }
 
     private String getFileName(HttpResponse<?> response, String fallbackFileName) {
@@ -90,17 +99,26 @@ public record DownloadableRelease(
         return fallbackFileName;
     }
 
-    public static Builder builder(String downloadUrl) {
-        return new Builder(downloadUrl);
+    public static Builder builder() {
+        return new Builder();
     }
 
     public static class Builder {
-        private final String downloadUrl;
+        private PluginData pluginData;
+        private String downloadUrl;
         private Map<String, String> downloadHeaders;
         private String jarName;
 
-        private Builder(String downloadUrl) {
+        private Builder() {}
+
+        public Builder pluginData(PluginData pluginData) {
+            this.pluginData = pluginData;
+            return this;
+        }
+
+        public Builder downloadUrl(String downloadUrl) {
             this.downloadUrl = downloadUrl;
+            return this;
         }
 
         public Builder downloadHeaders(@Nullable Map<String, String> downloadHeaders) {
@@ -115,7 +133,8 @@ public record DownloadableRelease(
 
         public DownloadableRelease build() {
             return new DownloadableRelease(
-                downloadUrl,
+                Objects.requireNonNull(pluginData),
+                Objects.requireNonNull(downloadUrl),
                 downloadHeaders != null ? downloadHeaders : Collections.emptyMap(),
                 Optional.ofNullable(jarName)
             );

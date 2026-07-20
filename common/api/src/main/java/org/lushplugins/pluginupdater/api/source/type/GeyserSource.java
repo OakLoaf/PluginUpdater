@@ -30,7 +30,7 @@ public class GeyserSource implements Source {
     }
 
     @Override
-    public Version getLatestVersion(PluginData pluginData, SourceData sourceData) throws IOException, InterruptedException {
+    public Version fetchLatestVersion(PluginData pluginData, SourceData sourceData) throws IOException, InterruptedException {
         if (!(sourceData instanceof GeyserSource.Data(String projectName))) {
             return null;
         }
@@ -52,7 +52,7 @@ public class GeyserSource implements Source {
     }
 
     @Override
-    public DownloadableRelease getDownloadableRelease(PluginData pluginData, SourceData sourceData) {
+    public DownloadableRelease fetchDownloadableRelease(PluginData pluginData, SourceData sourceData) {
         if (!(sourceData instanceof Data(String projectName))) {
             return null;
         }
@@ -65,7 +65,9 @@ public class GeyserSource implements Source {
             version.buildNum(),
             this.platform);
 
-        return DownloadableRelease.builder(downloadUrl)
+        return DownloadableRelease.builder()
+            .pluginData(pluginData)
+            .downloadUrl(downloadUrl)
             .build();
     }
 

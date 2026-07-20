@@ -42,7 +42,7 @@ public class ModrinthSource implements Source {
     }
 
     @Override
-    public Version getLatestVersion(PluginData pluginData, SourceData sourceData) throws IOException, InterruptedException {
+    public Version fetchLatestVersion(PluginData pluginData, SourceData sourceData) throws IOException, InterruptedException {
         if (!(sourceData instanceof Data modrinthData)) {
             return null;
         }
@@ -56,7 +56,7 @@ public class ModrinthSource implements Source {
     }
 
     @Override
-    public DownloadableRelease getDownloadableRelease(PluginData pluginData, SourceData sourceData) throws IOException, InterruptedException {
+    public DownloadableRelease fetchDownloadableRelease(PluginData pluginData, SourceData sourceData) throws IOException, InterruptedException {
         if (!(sourceData instanceof Data modrinthData)) {
             return null;
         }
@@ -64,7 +64,9 @@ public class ModrinthSource implements Source {
         JsonObject versionJson = getLatestVersion(pluginData, modrinthData);
         String downloadUrl = versionJson.get("files").getAsJsonArray().get(0).getAsJsonObject().get("url").getAsString();
 
-        return DownloadableRelease.builder(downloadUrl)
+        return DownloadableRelease.builder()
+            .pluginData(pluginData)
+            .downloadUrl(downloadUrl)
             .build();
     }
 

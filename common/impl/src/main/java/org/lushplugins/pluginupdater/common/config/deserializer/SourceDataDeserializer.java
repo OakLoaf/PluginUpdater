@@ -28,31 +28,31 @@ public class SourceDataDeserializer {
     }
 
     public static GeyserSource.Data geyserSourceData(Config config) {
-        return new GeyserSource.Data(
-            config.get("project-name")
-        );
+        return GeyserSource.Data.builder()
+            .projectName(config.get("project-name"))
+            .build();
     }
 
     public static GithubSource.Data githubSourceData(Config config) {
-        return new GithubSource.Data(
-            config.get("github-repo"),
-            config.<String>get("token"),
-            config.get("asset-name")
-        );
+        return GithubSource.Data.builder()
+            .repo(config.get("github-repo"))
+            .token(config.get("token"))
+            .assetName(config.get("asset-name"))
+            .build();
     }
 
     public static HangarSource.Data hangarSourceData(Config config) {
-        return new HangarSource.Data(
-            config.get("hangar-project-slug")
-        );
+        return HangarSource.Data.builder()
+            .projectSlug(config.get("hangar-project-slug"))
+            .build();
     }
 
     public static JenkinsSource.Data jenkinsSourceData(Config config) {
-        return new JenkinsSource.Data(
-            config.get("url"),
-            config.get("job"),
-            config.<String>get("artifact-name")
-        );
+        return JenkinsSource.Data.builder()
+            .url(config.get("url"))
+            .job(config.get("job"))
+            .artifactName(config.get("artifact-name"))
+            .build();
     }
 
     public static ModrinthSource.Data modrinthSourceData(Config config) {
@@ -78,16 +78,16 @@ public class SourceDataDeserializer {
             releaseChannels = ModrinthSource.ReleaseChannel.ALL;
         }
 
-        return new ModrinthSource.Data(
-            config.get("modrinth-project-id"),
-            loaders,
-            releaseChannels
-        );
+        return ModrinthSource.Data.builder()
+            .projectId(config.get("modrinth-project-id"))
+            .loaders(loaders)
+            .releaseChannels(releaseChannels)
+            .build();
     }
 
     public static SpigotSource.Data spigotSourceData(Config config) {
-        return new SpigotSource.Data(
-            config.get("spigot-resource-id").toString()
-        );
+        return SpigotSource.Data.builder()
+            .resourceId(config.get("spigot-resource-id"))
+            .build();
     }
 }

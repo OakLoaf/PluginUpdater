@@ -2,7 +2,6 @@ package org.lushplugins.pluginupdater.common.updater;
 
 import org.lushplugins.pluginupdater.api.source.SourceData;
 import org.lushplugins.pluginupdater.api.updater.PluginData;
-import org.lushplugins.pluginupdater.api.source.Source;
 import org.lushplugins.pluginupdater.api.version.VersionDifference;
 import org.lushplugins.pluginupdater.common.UpdaterImpl;
 
@@ -104,7 +103,7 @@ public class UpdateHandler<T> {
                 PluginData pluginData = processingData.getPluginData();
 
                 try {
-                    processingData.getFuture().complete(Source.isUpdateAvailable(pluginData));
+                    processingData.getFuture().complete(pluginData.checkForUpdate());
                     pluginData.setCheckRan(true);
                     return;
                 } catch (Exception e) {
@@ -122,7 +121,7 @@ public class UpdateHandler<T> {
                 }
 
                 try {
-                    if (Source.download(pluginData, updater.updaterPlugin().getDownloadDir())) {
+                    if (pluginData.downloadUpdate(updater.updaterPlugin().getDownloadDir())) {
                         pluginData.versionDifference(VersionDifference.UNKNOWN);
                         pluginData.setAlreadyDownloaded(true);
                         processingData.getFuture().complete(true);

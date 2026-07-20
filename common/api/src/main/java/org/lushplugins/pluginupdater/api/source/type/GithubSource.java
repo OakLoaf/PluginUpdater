@@ -31,7 +31,7 @@ public class GithubSource implements Source {
     }
 
     @Override
-    public Version getLatestVersion(PluginData pluginData, SourceData sourceData) throws IOException, InterruptedException {
+    public Version fetchLatestVersion(PluginData pluginData, SourceData sourceData) throws IOException, InterruptedException {
         if (!(sourceData instanceof Data githubData)) {
             return null;
         }
@@ -43,7 +43,7 @@ public class GithubSource implements Source {
     }
 
     @Override
-    public DownloadableRelease getDownloadableRelease(PluginData pluginData, SourceData sourceData) throws IOException, InterruptedException {
+    public DownloadableRelease fetchDownloadableRelease(PluginData pluginData, SourceData sourceData) throws IOException, InterruptedException {
         if (!(sourceData instanceof Data githubData)) {
             return null;
         }
@@ -70,7 +70,9 @@ public class GithubSource implements Source {
             )
             .orElse(null);
 
-        return DownloadableRelease.builder(downloadUrl)
+        return DownloadableRelease.builder()
+            .pluginData(pluginData)
+            .downloadUrl(downloadUrl)
             .downloadHeaders(downloadHeaders)
             .build();
     }

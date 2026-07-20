@@ -7,11 +7,9 @@ import org.lushplugins.pluginupdater.api.platform.UpdaterPlatform;
 import org.lushplugins.pluginupdater.api.source.SourceData;
 import org.lushplugins.pluginupdater.api.source.type.*;
 import org.lushplugins.pluginupdater.api.util.DownloadLogger;
-import org.lushplugins.pluginupdater.api.source.Source;
 import org.lushplugins.pluginupdater.api.version.VersionDifference;
 
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Objects;
 import java.util.Optional;
@@ -21,7 +19,6 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.function.UnaryOperator;
-import java.util.logging.Level;
 
 @SuppressWarnings("unused")
 public class Updater<T> {
@@ -92,14 +89,7 @@ public class Updater<T> {
      * @return A future containing whether an update is available.
      */
     public CompletableFuture<Boolean> checkForUpdate() {
-        return CompletableFuture.supplyAsync(() -> {
-            try {
-                return Source.isUpdateAvailable(pluginData);
-            } catch (IOException e) {
-                plugin.getLogger().log(Level.SEVERE, e.getMessage(), e);
-                return false;
-            }
-        });
+        return CompletableFuture.supplyAsync(pluginData::checkForUpdate);
     }
 
     /**
@@ -128,19 +118,14 @@ public class Updater<T> {
         Objects.requireNonNull(downloadDir, "downloadDir cannot be null");
 
         return CompletableFuture.supplyAsync(() -> {
-            try {
-                boolean success = Source.download(pluginData, downloadDir);
+            boolean success = pluginData.downloadUpdate(downloadDir);
 
-                if (success) {
-                    pluginData.versionDifference(VersionDifference.UNKNOWN);
-                    pluginData.setAlreadyDownloaded(true);
-                }
-
-                return success;
-            } catch (IOException e) {
-                plugin.getLogger().log(Level.SEVERE, e.getMessage(), e);
-                return false;
+            if (success) {
+                pluginData.versionDifference(VersionDifference.UNKNOWN);
+                pluginData.setAlreadyDownloaded(true);
             }
+
+            return success;
         });
     }
 

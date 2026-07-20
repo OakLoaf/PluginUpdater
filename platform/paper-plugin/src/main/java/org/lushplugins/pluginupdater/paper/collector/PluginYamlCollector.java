@@ -41,28 +41,25 @@ public record PluginYamlCollector(UpdaterImpl<?> updater) implements PluginDataC
 
             SourceData sourceData = null;
             if (config.contains("modrinth-project-id")) {
-                sourceData = new ModrinthSource.Data(
-                    config.get("modrinth-project-id"),
-                    ModrinthSource.ReleaseChannel.ALL,
-                    null
-                );
+                sourceData = ModrinthSource.Data.builder()
+                    .projectId(config.get("modrinth-project-id"))
+                    .releaseChannels(ModrinthSource.ReleaseChannel.ALL)
+                    .build();
             }
             else if (config.contains("spigot-resource-id")) {
-                sourceData = new SpigotSource.Data(
-                    config.get("spigot-resource-id")
-                );
+                sourceData = SpigotSource.Data.builder()
+                    .resourceId(config.get("spigot-resource-id"))
+                    .build();
             }
             else if (config.contains("hangar-project-slug")) {
-                sourceData = new HangarSource.Data(
-                    config.get("hangar-project-slug")
-                );
+                sourceData = HangarSource.Data.builder()
+                    .projectSlug(config.get("hangar-project-slug"))
+                    .build();
             }
             else if (config.contains("github-repo")) {
-                sourceData = new GithubSource.Data(
-                    config.get("github-repo"),
-                    (String) null,
-                    null
-                );
+                sourceData = GithubSource.Data.builder()
+                    .repo(config.get("github-repo"))
+                    .build();
             }
 
             if (sourceData != null) {

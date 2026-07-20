@@ -1,9 +1,12 @@
 package org.lushplugins.pluginupdater.api.updater;
 
 import org.jetbrains.annotations.Nullable;
+import org.lushplugins.pluginupdater.api.exception.FailedAttemptsOnSourcesException;
 import org.lushplugins.pluginupdater.api.exception.InvalidVersionFormatException;
-import org.lushplugins.pluginupdater.api.source.SourceData;
-import org.lushplugins.pluginupdater.api.source.SourceRegistry;
+import org.lushplugins.pluginupdater.api.source.*;
+import org.lushplugins.pluginupdater.api.util.UpdaterConstants;
+import org.lushplugins.pluginupdater.api.version.DownloadableRelease;
+import org.lushplugins.pluginupdater.api.version.FetchedVersion;
 import org.lushplugins.pluginupdater.api.version.Version;
 import org.lushplugins.pluginupdater.api.version.VersionDifference;
 import org.lushplugins.pluginupdater.api.version.comparator.SemVerComparator;
@@ -11,7 +14,10 @@ import org.lushplugins.pluginupdater.api.version.comparator.VersionComparator;
 import org.lushplugins.pluginupdater.api.version.parser.RegexVersionParser;
 import org.lushplugins.pluginupdater.api.version.parser.VersionParser;
 
+import java.io.IOException;
+import java.nio.file.Path;
 import java.util.*;
+import java.util.logging.Level;
 
 public class PluginData {
     private final String pluginName;
@@ -137,6 +143,87 @@ public class PluginData {
             .filter(Optional::isPresent)
             .map(Optional::get)
             .findFirst();
+    }
+
+    public FetchedVersion fetchLatestVersion() throws InvalidVersionFormatException {
+        try {
+            return attemptOnSources((context) -> {
+                Version version = context.source().fetchLatestVersion(this, context.sourceData());
+                return new FetchedVersion(version, context);
+            });
+        } catch (FailedAttemptsOnSourcesException e) {
+            throw new RuntimeException("Failed to fetch latest version for plugin '" + this.pluginName + "'.");
+        }
+    }
+
+    public boolean checkForUpdate() {
+        Version latestVersion;
+        SourceContext sourceContext;
+        try {
+            FetchedVersion fetchedVersion = fetchLatestVersion();
+            latestVersion = fetchedVersion.version();
+            sourceContext = fetchedVersion.sourceContext();
+        } catch (InvalidVersionFormatException e) {
+            UpdaterConstants.LOGGER.severe("Failed to read latest version for '%s': %s".formatted(this.pluginName, e.getMessage()));
+            return false;
+        }
+
+        VersionDifference versionDifference;
+        try {
+            VersionComparator comparator = versionComparator().orElse(sourceContext.sourceData().defaultComparator());
+            versionDifference = comparator.compare(this.currentVersion, latestVersion);
+        } catch (InvalidVersionFormatException e) {
+            UpdaterConstants.LOGGER.severe("Failed to compare versions for '%s': %s".formatted(this.pluginName, e.getMessage()));
+            return false;
+        }
+
+        this.checkRan = true;
+        this.versionDifference = versionDifference;
+
+        if (!versionDifference.equals(VersionDifference.LATEST)) {
+            this.latestVersion = latestVersion;
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public DownloadableRelease prepareDownloadableRelease() {
+        try {
+            return attemptOnSources((context) -> {
+                return context.source().fetchDownloadableRelease(this, context.sourceData());
+            });
+        } catch (FailedAttemptsOnSourcesException e) {
+            throw new RuntimeException("Failed to prepare downloadable release for plugin '" + this.pluginName + "'.");
+        }
+    }
+
+    public boolean downloadUpdate(Path destinationDir) {
+        try {
+            prepareDownloadableRelease()
+                .downloadTo(destinationDir);
+            return true;
+        } catch (IOException | InterruptedException e) {
+            UpdaterConstants.LOGGER.log(Level.SEVERE, "Failed to download update for plugin '" + this.pluginName + "'.", e);
+            return false;
+        }
+    }
+
+    private <T> T attemptOnSources(SourceSupplier<T> supplier) throws FailedAttemptsOnSourcesException {
+        for (SourceData sourceData : this.sourceData) {
+            Source source = SourceRegistry.get(sourceData.sourceName()).orElse(null);
+            if (source == null) {
+                continue;
+            }
+
+            try {
+                return supplier.apply(new SourceContext(source, sourceData));
+            } catch (Throwable e) {
+                UpdaterConstants.LOGGER.log(Level.SEVERE, e.getMessage(), e);
+            }
+        }
+
+        throw new FailedAttemptsOnSourcesException("Failed attempts on all available sources for plugin '" + this.pluginName + "'.");
     }
 
     public static Builder builder(String pluginName, String currentVersion) {
