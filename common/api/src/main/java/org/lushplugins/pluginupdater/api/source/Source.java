@@ -76,6 +76,7 @@ public interface Source {
         return -1;
     }
 
+    // TODO: Refactor static methods into a more suitable class
     static Version getLatestVersion(PluginData pluginData) throws IOException {
         try {
             return attemptOnSources(pluginData, (source, sourceData) -> {
