@@ -24,7 +24,7 @@ public record UpdatesCommand(UpdaterImpl<?> updater) implements OrphanCommand {
                 String pluginName = pluginData.pluginName();
                 VersionDifference versionDifference = pluginData.versionDifference();
                 if (!pluginData.hasCheckRan()) {
-                    return configManager.getMessage("unchecked-color", "&8")
+                    return configManager.getMessage("unchecked-color", "<gray>")
                         + pluginName;
                 } else if (pluginData.isAlreadyDownloaded()) {
                     return configManager.getMessage("latest-version-color", "<#b7faa2>")
@@ -114,7 +114,7 @@ public record UpdatesCommand(UpdaterImpl<?> updater) implements OrphanCommand {
         });
 
         if (!plugins.isEmpty()) {
-            return String.join("&r\n", plugins);
+            return String.join("<reset>\n", plugins);
         } else {
             return "<#ff6969>No updates found";
         }
