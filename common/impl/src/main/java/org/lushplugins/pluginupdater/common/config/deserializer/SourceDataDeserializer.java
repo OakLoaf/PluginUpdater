@@ -48,8 +48,10 @@ public class SourceDataDeserializer {
     }
 
     public static JenkinsSource.Data jenkinsSourceData(Config config) {
+        String url = config.get("url");
+
         return JenkinsSource.Data.builder()
-            .url(config.get("url"))
+            .url(url.charAt(url.length() - 1) == '/' ? url.substring(0, url.length() - 1) : url)
             .job(config.get("job"))
             .artifactName(config.get("artifact-name"))
             .build();
