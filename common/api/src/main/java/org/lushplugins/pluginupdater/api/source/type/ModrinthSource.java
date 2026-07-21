@@ -140,8 +140,6 @@ public class ModrinthSource implements Source {
         return 1;
     }
 
-    public record LatestVersion(JsonObject json, boolean potentiallyUnsafe) {}
-
     public static class ReleaseChannel {
         public static final List<String> ALL = null;
         public static final String RELEASE = "release";
