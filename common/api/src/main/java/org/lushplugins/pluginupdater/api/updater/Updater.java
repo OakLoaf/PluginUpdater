@@ -1,63 +1,73 @@
 package org.lushplugins.pluginupdater.api.updater;
 
-import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.Nullable;
 import org.lushplugins.pluginupdater.api.notifier.UpdateNotifier;
+import org.lushplugins.pluginupdater.api.platform.UpdaterPlatform;
 import org.lushplugins.pluginupdater.api.source.SourceData;
 import org.lushplugins.pluginupdater.api.source.type.*;
 import org.lushplugins.pluginupdater.api.util.DownloadLogger;
-import org.lushplugins.pluginupdater.api.source.Source;
 import org.lushplugins.pluginupdater.api.version.VersionDifference;
 
 import java.io.File;
-import java.io.IOException;
+import java.nio.file.Path;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
+import java.util.function.Consumer;
+import java.util.function.UnaryOperator;
 
 @SuppressWarnings("unused")
-public class Updater {
+public class Updater<T> {
     private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
+    private final UpdaterPlatform<T> platform;
     private final PluginInfo plugin;
     private final PluginData pluginData;
-    private final File downloadDir;
-    private final UpdateNotifier<?> notifier;
+    private final Path downloadDir;
+    private final UpdateNotifier<T> notifier;
 
+    @Contract("_, _, _, _, true, null, _ -> fail; ")
     private Updater(
-        @NotNull PluginInfo plugin,
-        @NotNull PluginData pluginData,
-        File downloadDir,
+        UpdaterPlatform<T> platform,
+        PluginInfo plugin,
+        PluginData pluginData,
+        @Nullable Path downloadDir,
         boolean notify,
-        String notificationPermission,
         String notificationMessage,
-        UpdateNotifier.Constructor notifierConstructor
+        String notificationPermission
     ) {
+        this.platform = platform;
         this.plugin = plugin;
         this.pluginData = pluginData;
         this.downloadDir = downloadDir;
-        this.notifier = notify ? notifierConstructor.apply(this, notificationMessage, notificationPermission) : null;
+        this.notifier = notify ? new UpdateNotifier<>(this, notificationMessage, notificationPermission) : null;
     }
 
-    public ScheduledExecutorService getScheduler() {
+    public ScheduledExecutorService scheduler() {
         return scheduler;
     }
 
-    public PluginInfo getPluginInfo() {
+    public UpdaterPlatform<T> platform() {
+        return platform;
+    }
+
+    public PluginInfo pluginInfo() {
         return plugin;
     }
 
-    public PluginData getPluginData() {
+    public PluginData pluginData() {
         return pluginData;
     }
 
-    public File getDownloadDir() {
-        return downloadDir;
+    public Optional<Path> downloadDir() {
+        return Optional.ofNullable(downloadDir);
     }
 
-    public UpdateNotifier<?> getNotifier() {
-        return notifier;
+    public Optional<UpdateNotifier<T>> notifier() {
+        return Optional.ofNullable(notifier);
     }
 
     /**
@@ -79,14 +89,7 @@ public class Updater {
      * @return A future containing whether an update is available.
      */
     public CompletableFuture<Boolean> checkForUpdate() {
-        return CompletableFuture.supplyAsync(() -> {
-            try {
-                return Source.isUpdateAvailable(pluginData);
-            } catch (IOException e) {
-                plugin.getLogger().log(Level.SEVERE, e.getMessage(), e);
-                return false;
-            }
-        });
+        return CompletableFuture.supplyAsync(pluginData::checkForUpdate);
     }
 
     /**
@@ -112,19 +115,17 @@ public class Updater {
     }
 
     private CompletableFuture<Boolean> download() {
+        Objects.requireNonNull(downloadDir, "downloadDir cannot be null");
+
         return CompletableFuture.supplyAsync(() -> {
-            try {
-                if (Source.download(pluginData, downloadDir)) {
-                    pluginData.setVersionDifference(VersionDifference.UNKNOWN);
-                    pluginData.setAlreadyDownloaded(true);
-                    return true;
-                } else {
-                    return false;
-                }
-            } catch (IOException e) {
-                plugin.getLogger().log(Level.SEVERE, e.getMessage(), e);
-                return false;
+            boolean success = pluginData.downloadUpdate(downloadDir);
+
+            if (success) {
+                pluginData.versionDifference(VersionDifference.UNKNOWN);
+                pluginData.setAlreadyDownloaded(true);
             }
+
+            return success;
         });
     }
 
@@ -132,99 +133,31 @@ public class Updater {
         scheduler.shutdown();
     }
 
-    public static Builder builder(PluginInfo plugin, File downloadDir) {
-        return new Builder(plugin,  downloadDir);
+    public static <T> Builder<T> builder(UpdaterPlatform<T> platform, PluginInfo plugin) {
+        return new Builder<>(platform, plugin);
     }
 
-    public static class Builder {
+    public static class Builder<T> {
+        private final UpdaterPlatform<T> platform;
         private final PluginInfo plugin;
         private final PluginData pluginData;
-        private File downloadDir;
+        private Path downloadDir;
         private long checkFrequency = 600;
         private boolean notify = true;
         private String notificationPermission = "pluginupdater.notifications";
         private String notificationMessage = "<#ffe27>A new <#e0c01b>%plugin% <#ffe27>update is now available! <#e0c01b>%current_version% <#ffe27a>-> <#e0c01b>%latest_version%";
-        private UpdateNotifier.Constructor notifierConstructor;
         private File downloadLogFile;
+        private Consumer<Updater<T>> postBuild;
 
-        private Builder(PluginInfo plugin, File downloadDir) {
+        private Builder(UpdaterPlatform<T> platform, PluginInfo plugin) {
+            this.platform = platform;
             this.plugin = plugin;
             this.pluginData = PluginData.of(plugin);
-            this.downloadDir = downloadDir;
         }
 
-        public Builder downloadDir(File downloadDir) {
+        public Builder<T> downloadDir(Path downloadDir) {
             this.downloadDir = downloadDir;
             return this;
-        }
-
-        /**
-         * Add GitHub plugin data to be used for collecting update information
-         * (Sources should be added in order of priority).
-         * @param repo The plugin's GitHub repo (e.g. 'OakLoaf/PluginUpdater')
-         * @param token The GitHub access token (if required)
-         * @param assetName A string that the asset name of the release must include
-         */
-        public Builder github(String repo, @Nullable String token, @Nullable String assetName) {
-            return source(new GithubSource.Data(repo, token, assetName));
-        }
-
-        /**
-         * Add GitHub plugin data to be used for collecting update information
-         * (Sources should be added in order of priority).
-         * @param repo The plugin's GitHub repo (e.g. 'OakLoaf/PluginUpdater')
-         * @param token The GitHub access token (if required)
-         */
-        public Builder github(String repo, @Nullable String token) {
-            return github(repo, token, null);
-        }
-
-        /**
-         * Add GitHub plugin data to be used for collecting update information
-         * (Sources should be added in order of priority).
-         * @param repo The plugin's GitHub repo (e.g. 'OakLoaf/PluginUpdater')
-         */
-        public Builder github(String repo) {
-            return github(repo, null);
-        }
-
-        /**
-         * Add Hangar plugin data to be used for collecting update information
-         * (Sources should be added in order of priority).
-         * @param projectSlug The plugin's hangar project slug.
-         */
-        public Builder hangar(String projectSlug) {
-            return source(new HangarSource.Data(projectSlug));
-        }
-
-        /**
-         * Add GitHub plugin data to be used for collecting update information
-         * (Sources should be added in order of priority).
-         * @param url The plugin's Jenkins url (e.g. 'https://ci.jenkins.io')
-         * @param job The Jenkins job
-         * @param artifactName A string that the artifact name of the build must include
-         */
-        @SuppressWarnings("JavadocLinkAsPlainText")
-        public Builder jenkins(String url, String job, @Nullable String artifactName) {
-            return source(new JenkinsSource.Data(url, job, artifactName));
-        }
-
-        /**
-         * Add Modrinth plugin data to be used for collecting update information
-         * (Sources should be added in order of priority).
-         * @param projectId The plugin's modrinth project id.
-         */
-        public Builder modrinth(String projectId) {
-            return source(new ModrinthSource.Data(projectId, ModrinthSource.ReleaseChannel.ALL));
-        }
-
-        /**
-         * Add Spigot plugin data to be used for collecting update information
-         * (Sources should be added in order of priority).
-         * @param resourceId The plugin's spigot resource id.
-         */
-        public Builder spigot(String resourceId) {
-            return source(new SpigotSource.Data(resourceId));
         }
 
         /**
@@ -232,16 +165,64 @@ public class Updater {
          * (Sources should be added in order of priority).
          * @param sourceData The source data.
          */
-        public Builder source(SourceData sourceData) {
+        public Builder<T> source(SourceData sourceData) {
             this.pluginData.addSource(sourceData);
             return this;
+        }
+
+        /**
+         * Add Geyser source data to be used for collecting update information
+         * (Sources should be added in order of priority).
+         **/
+        public Builder<T> geyser(UnaryOperator<GeyserSource.Data.Builder> builder) {
+            return source(builder.apply(GeyserSource.Data.builder()).build());
+        }
+
+        /**
+         * Add GitHub source data to be used for collecting update information
+         * (Sources should be added in order of priority).
+         **/
+        public Builder<T> github(UnaryOperator<GithubSource.Data.Builder> builder) {
+            return source(builder.apply(GithubSource.Data.builder()).build());
+        }
+
+        /**
+         * Add Hangar source data to be used for collecting update information
+         * (Sources should be added in order of priority).
+         **/
+        public Builder<T> hangar(UnaryOperator<HangarSource.Data.Builder> builder) {
+            return source(builder.apply(HangarSource.Data.builder()).build());
+        }
+
+        /**
+         * Add Jenkins source data to be used for collecting update information
+         * (Sources should be added in order of priority).
+         **/
+        public Builder<T> jenkins(UnaryOperator<JenkinsSource.Data.Builder> builder) {
+            return source(builder.apply(JenkinsSource.Data.builder()).build());
+        }
+
+        /**
+         * Add Modrinth source data to be used for collecting update information
+         * (Sources should be added in order of priority).
+         **/
+        public Builder<T> modrinth(UnaryOperator<ModrinthSource.Data.Builder> builder) {
+            return source(builder.apply(ModrinthSource.Data.builder()).build());
+        }
+
+        /**
+         * Add Spigot source data to be used for collecting update information
+         * (Sources should be added in order of priority).
+         **/
+        public Builder<T> spigot(UnaryOperator<SpigotSource.Data.Builder> builder) {
+            return source(builder.apply(SpigotSource.Data.builder()).build());
         }
 
         /**
          * Sets whether a version check should be run upon building
          * @param seconds Number of seconds between checks (Default: 600 seconds. Set to -1 to disable)
          */
-        public Builder checkSchedule(long seconds) {
+        public Builder<T> checkSchedule(long seconds) {
             this.checkFrequency = seconds;
             return this;
         }
@@ -250,8 +231,17 @@ public class Updater {
          * Sets whether notifications should be sent for this
          * @param shouldSend Whether notifications should be sent.
          */
-        public Builder notify(boolean shouldSend) {
+        public Builder<T> notify(boolean shouldSend) {
             this.notify = shouldSend;
+            return this;
+        }
+
+        /**
+         * Sets the update notification message.
+         * @param message The notification message.
+         */
+        public Builder<T> notificationMessage(String message) {
+            this.notificationMessage = message;
             return this;
         }
 
@@ -260,27 +250,8 @@ public class Updater {
          * @param permission The permission that players need to receive notifications.
          *                   Defaults to {@code pluginupdater.notifications}
          */
-        public Builder notificationPermission(@Nullable String permission) {
+        public Builder<T> notificationPermission(@Nullable String permission) {
             this.notificationPermission = permission;
-            return this;
-        }
-
-        /**
-         * Sets the update notification message.
-         * @param message The notification message.
-         */
-        public Builder notificationMessage(@NotNull String message) {
-            this.notificationMessage = message;
-            return this;
-        }
-
-        /**
-         * Sets the notification handler constructor, this is mainly to
-         * allow for supporting multiple different platforms
-         * @param notifierConstructor The notification handler constructor
-         */
-        public Builder notifier(@NotNull UpdateNotifier.Constructor notifierConstructor) {
-            this.notifierConstructor = notifierConstructor;
             return this;
         }
 
@@ -288,8 +259,17 @@ public class Updater {
          * Sets the log file to log downloads in
          * @param logFile The log file. Defaults to null.
          */
-        public Builder logDownloads(@Nullable File logFile) {
+        public Builder<T> logDownloads(@Nullable File logFile) {
             this.downloadLogFile = logFile;
+            return this;
+        }
+
+        /**
+         * Define a task to be run after the {@link Updater} has been built
+         * @param consumer The task to run after building the {@link Updater}
+         */
+        public Builder<T> onBuild(Consumer<Updater<T>> consumer) {
+            this.postBuild = consumer;
             return this;
         }
 
@@ -297,25 +277,27 @@ public class Updater {
          * Builds and starts the Updater.
          * @return The created Updater instance.
          */
-        public Updater build() {
-            if (pluginData.getSourceData().isEmpty()) {
+        public Updater<T> build() {
+            if (pluginData.sourceData().isEmpty()) {
                 throw new IllegalStateException("At least 1 source must be registered before building the Updater.");
             }
 
             DownloadLogger.setLogFile(downloadLogFile);
-            Updater updater = new Updater(
+            Updater<T> updater = new Updater<>(
+                platform,
                 plugin,
                 pluginData,
                 downloadDir,
                 notify,
-                notificationPermission,
-                notificationMessage,
-                notifierConstructor
+                Objects.requireNonNull(notificationMessage),
+                notificationPermission
             );
 
             if (checkFrequency > 0) {
-                updater.getScheduler().scheduleAtFixedRate(updater::checkForUpdate, 0, checkFrequency, TimeUnit.SECONDS);
+                updater.scheduler().scheduleAtFixedRate(updater::checkForUpdate, 0, checkFrequency, TimeUnit.SECONDS);
             }
+
+            postBuild.accept(updater);
 
             return updater;
         }

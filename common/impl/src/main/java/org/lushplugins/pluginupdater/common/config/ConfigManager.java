@@ -11,32 +11,38 @@ import org.lushplugins.pluginupdater.common.UpdaterImpl;
 import org.lushplugins.pluginupdater.common.updater.UpdateHandler;
 import org.lushplugins.pluginupdater.common.util.ConfigUtil;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 public class ConfigManager {
-    private final UpdaterImpl updater;
+    private final UpdaterImpl<?> updater;
     private boolean allowDownloads;
     private final Map<String, PluginData> plugins = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
     private final Set<String> disabledPlugins = new HashSet<>();
     private Messages messages;
 
-    public ConfigManager(UpdaterImpl updater) {
+    public ConfigManager(UpdaterImpl<?> updater) {
         this.updater = updater;
     }
 
-    public void reload() {
-        updater.platform().getDataPath().toFile().mkdirs();
+    public void reload(boolean skipCheck) {
+        try {
+            Files.createDirectories(updater.updaterPlugin().getDataPath());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
-        FileConfig config = FileConfig.builder(updater.platform().getDataPath().resolve("config.yml"))
+        FileConfig config = FileConfig.builder(updater.updaterPlugin().getDataPath().resolve("config.yml"))
             .defaultData(updater.platform().getClass().getResource("/config.yml"))
             .build();
         config.load();
 
         boolean checkOnReload = ConfigUtil.getOrAliasOrElse(
             config, "check-updates-on-reload", "check-updates-on-start", true,
-            () -> updater.platform().getLogger().log(Level.WARNING, "Deprecated: The config section 'check-updates-on-start' has been renamed to 'check-updates-on-reload'")
+            () -> updater.updaterPlugin().getLogger().log(Level.WARNING, "Deprecated: The config section 'check-updates-on-start' has been renamed to 'check-updates-on-reload'")
         );
 
         this.allowDownloads = config.getOrElse("allow-downloads", true);
@@ -51,7 +57,7 @@ public class ConfigManager {
         Collection<PluginData> dataSnapshot = new ArrayList<>(plugins.values());
         for (PluginData snapshot : dataSnapshot) {
             if (!snapshot.isAlreadyDownloaded()) {
-                plugins.remove(snapshot.getPluginName());
+                plugins.remove(snapshot.pluginName());
             }
         }
 
@@ -78,14 +84,18 @@ public class ConfigManager {
                 addPlugin(pluginData);
             }
 
-            if (checkOnReload) {
-                UpdateHandler updateHandler = updater.updateHandler();
+            if (checkOnReload && !skipCheck) {
+                UpdateHandler<?> updateHandler = updater.updateHandler();
                 getPlugins().forEach(updateHandler::queueUpdateCheck);
                 updateHandler.queueBroadcastNotification();
             }
         });
 
         config.close();
+    }
+
+    public void reload() {
+        reload(false);
     }
 
     public boolean shouldAllowDownloads() {
@@ -109,7 +119,7 @@ public class ConfigManager {
     }
 
     public void addPlugin(@NotNull PluginData pluginData) {
-        addPlugin(pluginData.getPluginName(), pluginData);
+        addPlugin(pluginData.pluginName(), pluginData);
     }
 
     public void addPlugin(String pluginName, @NotNull PluginData pluginData) {

@@ -6,7 +6,7 @@ import com.velocitypowered.api.proxy.Player;
 import org.lushplugins.pluginupdater.common.UpdaterImpl;
 import org.lushplugins.pluginupdater.common.updater.UpdateHandler;
 import org.lushplugins.pluginupdater.velocity.VelocityUpdaterPlugin;
-import org.lushplugins.pluginupdater.velocity.platform.VelocityUpdaterPlatform;
+import org.lushplugins.pluginupdater.velocity.api.platform.VelocityUpdaterPlatform;
 
 import java.util.concurrent.TimeUnit;
 
@@ -24,7 +24,7 @@ public class PlayerListener {
             return;
         }
 
-        UpdaterImpl updater = instance.updater();
+        UpdaterImpl<?> updater = instance.updater();
         if (updater.updateHandler().remainingWithState(UpdateHandler.ProcessingData.State.SEND_NOTIFICATION) == 0) {
             String message = updater.constructUpdateMessage();
             if (message != null) {

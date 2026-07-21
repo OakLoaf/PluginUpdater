@@ -2,24 +2,24 @@ package org.lushplugins.pluginupdater.common.updater;
 
 import org.lushplugins.pluginupdater.api.source.SourceData;
 import org.lushplugins.pluginupdater.api.updater.PluginData;
-import org.lushplugins.pluginupdater.api.source.Source;
 import org.lushplugins.pluginupdater.api.version.VersionDifference;
 import org.lushplugins.pluginupdater.common.UpdaterImpl;
 
 import java.io.IOException;
 import java.util.ArrayDeque;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.*;
 import java.util.logging.Level;
 
-public class UpdateHandler {
-    private final UpdaterImpl updater;
+public class UpdateHandler<T> {
+    private final UpdaterImpl<T> updater;
     private final ScheduledExecutorService threads = Executors.newScheduledThreadPool(1);
     private final ArrayDeque<ProcessingData> queue = new ArrayDeque<>();
     private final Map<ProcessingData.State, Integer> currentlyProcessing = new HashMap<>();
 
-    public UpdateHandler(UpdaterImpl updater) {
+    public UpdateHandler(UpdaterImpl<T> updater) {
         this.updater = updater;
     }
 
@@ -85,7 +85,15 @@ public class UpdateHandler {
         ProcessingData.State state = processingData.getState();
         this.currentlyProcessing.compute(state, (key, oldValue) -> oldValue != null ? oldValue + 1 : 1);
         if (state != ProcessingData.State.SEND_NOTIFICATION) {
-            updater.platform().sendProcessingActionBar(this, state);
+            List<T> users = updater.platform().getOnlineUsersWithPermission("pluginupdater.notify");
+            if (!users.isEmpty()) {
+                int processed = this.currentlyProcessing.getOrDefault(state, 1);
+                int total = processed + this.remainingWithState(state);
+                String message = "<#b7faa2>Updater processing: <#66b04f>%s<#b7faa2>/<#66b04f>%s"
+                    .formatted(processed, total);
+
+                updater.platform().broadcastActionBar(users, message);
+            }
         }
 
         switch (state) {
@@ -93,15 +101,15 @@ public class UpdateHandler {
                 PluginData pluginData = processingData.getPluginData();
 
                 try {
-                    processingData.getFuture().complete(Source.isUpdateAvailable(pluginData));
+                    processingData.getFuture().complete(pluginData.checkForUpdate());
                     pluginData.setCheckRan(true);
                     return;
                 } catch (Exception e) {
-                    updater.platform().getLogger().log(Level.SEVERE, e.getMessage(), e);
+                    updater.updaterPlugin().getLogger().log(Level.SEVERE, e.getMessage(), e);
                 }
 
-                String sourceNames = String.join(", ", pluginData.getSourceData().stream().map(SourceData::sourceName).toList());
-                processingData.getFuture().completeExceptionally(new IOException("Failed to run check for plugin '" + pluginData.getPluginName() + "' using defined sources: '" + sourceNames + "'"));
+                String sourceNames = String.join(", ", pluginData.sourceData().stream().map(SourceData::sourceName).toList());
+                processingData.getFuture().completeExceptionally(new IOException("Failed to run check for plugin '" + pluginData.pluginName() + "' using defined sources: '" + sourceNames + "'"));
             }
             case DOWNLOAD -> {
                 PluginData pluginData = processingData.getPluginData();
@@ -111,8 +119,8 @@ public class UpdateHandler {
                 }
 
                 try {
-                    if (Source.download(pluginData, updater.platform().getDownloadDir())) {
-                        pluginData.setVersionDifference(VersionDifference.UNKNOWN);
+                    if (pluginData.downloadUpdate(updater.updaterPlugin().getDownloadDir())) {
+                        pluginData.versionDifference(VersionDifference.UNKNOWN);
                         pluginData.setAlreadyDownloaded(true);
                         processingData.getFuture().complete(true);
                         return;
@@ -123,25 +131,26 @@ public class UpdateHandler {
                     processingData.getFuture().completeExceptionally(e);
                 }
 
-                String sourceNames = String.join(", ", pluginData.getSourceData().stream().map(SourceData::sourceName).toList());
-                processingData.getFuture().completeExceptionally(new IOException("Failed to download update for plugin '%s' using defined sources: '%s'".formatted(pluginData.getPluginName(), sourceNames)));
+                String sourceNames = String.join(", ", pluginData.sourceData().stream().map(SourceData::sourceName).toList());
+                processingData.getFuture().completeExceptionally(new IOException("Failed to download update for plugin '%s' using defined sources: '%s'".formatted(pluginData.pluginName(), sourceNames)));
             }
             case SEND_NOTIFICATION -> {
                 String message = updater.constructUpdateMessage();
                 if (message != null) {
-                    updater.platform().broadcastNotification(message);
+                    List<T> users = updater.platform().getOnlineUsersWithPermission("pluginupdater.notify");
+                    updater.platform().broadcastMessage(users, message);
                 }
             }
         }
     }
 
     public static class ProcessingData {
-        private final UpdaterImpl updater;
+        private final UpdaterImpl<?> updater;
         private final String pluginName;
         private final State state;
         private final CompletableFuture<Boolean> future;
 
-        public ProcessingData(UpdaterImpl updater, String pluginName, State state) {
+        public ProcessingData(UpdaterImpl<?> updater, String pluginName, State state) {
             this.updater = updater;
             this.pluginName = pluginName;
             this.state = state;

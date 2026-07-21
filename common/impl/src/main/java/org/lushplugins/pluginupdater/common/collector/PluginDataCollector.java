@@ -17,6 +17,6 @@ public interface PluginDataCollector {
 
     @FunctionalInterface
     interface Factory {
-        PluginDataCollector create(UpdaterImpl updater);
+        PluginDataCollector create(UpdaterImpl<?> updater);
     }
 }

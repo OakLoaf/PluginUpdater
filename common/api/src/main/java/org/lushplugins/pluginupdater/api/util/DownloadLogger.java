@@ -37,7 +37,12 @@ public class DownloadLogger {
 
         try {
             PrintWriter writer = new PrintWriter(new FileWriter(logFile, true));
-            writer.print("[" + LocalDateTime.now().format(DATE_TIME_FORMATTER) + "] Downloaded " + pluginData.getPluginName() + ": " + pluginData.getCurrentVersion().rawVersionString() + " -> " + pluginData.getLatestVersion().rawVersionString() + "\n");
+            writer.print("[%s] Downloaded %s: %s -> %s\n"
+                .formatted(
+                    LocalDateTime.now().format(DATE_TIME_FORMATTER),
+                    pluginData.pluginName(),
+                    pluginData.currentVersion().rawVersionString(),
+                    pluginData.latestVersion().orElseThrow().rawVersionString()));
             writer.close();
         } catch (IOException e) {
             e.printStackTrace();

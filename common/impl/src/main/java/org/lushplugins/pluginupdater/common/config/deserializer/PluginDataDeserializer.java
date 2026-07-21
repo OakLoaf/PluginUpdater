@@ -16,7 +16,7 @@ import java.util.logging.Level;
 
 public class PluginDataDeserializer {
 
-    public static PluginData deserialize(UpdaterImpl updater, String pluginName, Config config) {
+    public static PluginData deserialize(UpdaterImpl<?> updater, String pluginName, Config config) {
         PluginInfo currPlugin = updater.platform().getPlugin(pluginName);
         if (currPlugin == null) {
             return null;
@@ -38,7 +38,7 @@ public class PluginDataDeserializer {
         boolean allowDownloads = config.getOrElse("allow-downloads", true);
 
         try {
-            SourceData sourceData = SourceDataDeserializer.deserialize(updater.platform(), config);
+            SourceData sourceData = SourceDataDeserializer.deserialize(updater.updaterPlugin(), config);
             if (sourceData != null) {
                 return PluginData.builder(currPlugin)
                     .versionParser(versionParser)
@@ -50,7 +50,7 @@ public class PluginDataDeserializer {
                     .build();
             }
         } catch (Exception e) {
-            updater.platform().getLogger().log(Level.SEVERE, "Caught error whilst reading data for '%s'"
+            updater.updaterPlugin().getLogger().log(Level.SEVERE, "Caught error whilst reading data for '%s'"
                 .formatted(pluginName), e);
         }
 

@@ -13,18 +13,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 @SuppressWarnings("unused")
-public record UpdatesCommand(UpdaterImpl updater) implements OrphanCommand {
+public record UpdatesCommand(UpdaterImpl<?> updater) implements OrphanCommand {
 
     @CommandPlaceholder
     @CommandPermission("pluginupdater.checkupdates")
-    public static String updates(UpdaterImpl updater) {
+    public static String updates(UpdaterImpl<?> updater) {
         ConfigManager configManager = updater.config();
         List<String> plugins = configManager.getAllPluginData().stream()
             .map(pluginData -> {
-                String pluginName = pluginData.getPluginName();
-                VersionDifference versionDifference = pluginData.getVersionDifference();
+                String pluginName = pluginData.pluginName();
+                VersionDifference versionDifference = pluginData.versionDifference();
                 if (!pluginData.hasCheckRan()) {
-                    return configManager.getMessage("unchecked-color", "&8")
+                    return configManager.getMessage("unchecked-color", "<gray>")
                         + pluginName;
                 } else if (pluginData.isAlreadyDownloaded()) {
                     return configManager.getMessage("latest-version-color", "<#b7faa2>")
@@ -35,8 +35,7 @@ public record UpdatesCommand(UpdaterImpl updater) implements OrphanCommand {
                     String name = configManager.getMessage("major-update-available-color", "<#ff6969>")
                         + pluginName;
 
-                    Version latestVersion = pluginData.getLatestVersion();
-                    if (latestVersion != null && latestVersion.potentiallyUnsafe()) {
+                    if (pluginData.latestVersion().map(Version::potentiallyUnsafe).orElse(false)) {
                         name += "<hover:show_text:This version is marked as potentially unsafe for your server version>"
                             + configManager.getMessage("major-update-available-color", "<#ff6969>")
                             + "*"
@@ -48,8 +47,7 @@ public record UpdatesCommand(UpdaterImpl updater) implements OrphanCommand {
                     String name = configManager.getMessage("update-available-color", "<#ffda54>")
                         + pluginName;
 
-                    Version latestVersion = pluginData.getLatestVersion();
-                    if (latestVersion != null && latestVersion.potentiallyUnsafe()) {
+                    if (pluginData.latestVersion().map(Version::potentiallyUnsafe).orElse(false)) {
                         name += "<hover:show_text:This version is marked as potentially unsafe for your server version>"
                             + configManager.getMessage("major-update-available-color", "<#ff6969>")
                             + "*"
@@ -73,7 +71,7 @@ public record UpdatesCommand(UpdaterImpl updater) implements OrphanCommand {
 
     @Subcommand("list")
     @CommandPermission("pluginupdater.checkupdates")
-    public static String listUpdates(UpdaterImpl updater) {
+    public static String listUpdates(UpdaterImpl<?> updater) {
         ConfigManager configManager = updater.config();
         String updateAvailableColor = configManager.getMessage("update-available-color", "<#ffda54>");
         String majorUpdateAvailableColor = configManager.getMessage("major-update-available-color", "<#ff6969>");
@@ -81,30 +79,27 @@ public record UpdatesCommand(UpdaterImpl updater) implements OrphanCommand {
 
         List<String> plugins = new ArrayList<>();
         configManager.getAllPluginData().forEach(pluginData -> {
-            VersionDifference versionDifference = pluginData.getVersionDifference();
+            VersionDifference versionDifference = pluginData.versionDifference();
             if (!pluginData.isAlreadyDownloaded() && (versionDifference.equals(VersionDifference.LATEST) || versionDifference.equals(VersionDifference.UNKNOWN))) {
                 return;
             }
 
-            String changelogUrl = pluginData.getChangelogUrl();
-            String interactComponent;
-            if (changelogUrl != null) {
-                interactComponent = "<hover:show_text:Open %s changelog><click:open_url:%s>"
-                    .formatted(pluginData.getPluginName(), changelogUrl);
-            } else {
-                interactComponent = "";
-            }
+            String interactComponent = pluginData.getChangelogUrl()
+                .map((changelogUrl) -> "<hover:show_text:Open %s changelog><click:open_url:%s>"
+                    .formatted(pluginData.pluginName(), changelogUrl))
+                .orElse("");
 
+            Version latestVersion = pluginData.latestVersion().orElseThrow();
             String message = "%s<white>%s: <gray>%s <white>-> %s%s"
                 .formatted(
                     interactComponent,
-                    pluginData.getPluginName(),
-                    pluginData.getCurrentVersion().rawVersionString(),
+                    pluginData.pluginName(),
+                    pluginData.currentVersion().rawVersionString(),
                     versionDifference.equals(VersionDifference.MAJOR) ? majorUpdateAvailableColor : updateAvailableColor,
-                    pluginData.getLatestVersion().rawVersionString()
+                    pluginData.latestVersion().orElseThrow().rawVersionString()
                 );
 
-            if (pluginData.getLatestVersion().potentiallyUnsafe()) {
+            if (latestVersion.potentiallyUnsafe()) {
                 message += "<hover:show_text:This version is marked as potentially unsafe for your server version>"
                     + majorUpdateAvailableColor
                     + "*"
@@ -119,7 +114,7 @@ public record UpdatesCommand(UpdaterImpl updater) implements OrphanCommand {
         });
 
         if (!plugins.isEmpty()) {
-            return String.join("&r\n", plugins);
+            return String.join("<reset>\n", plugins);
         } else {
             return "<#ff6969>No updates found";
         }

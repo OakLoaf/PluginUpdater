@@ -22,7 +22,6 @@ public record PaperPluginInfo(Plugin plugin) implements PluginInfo {
 
     static {
         SourceRegistry.register(new GeyserSource("spigot"));
-
         SourceRegistry.register(new ModrinthSource(
                 List.of("bukkit", "spigot", "paper", "purpur", "folia"),
                 ServerBuildInfo.buildInfo().minecraftVersionId()));

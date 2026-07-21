@@ -13,7 +13,7 @@ import org.lushplugins.pluginupdater.api.version.Version;
 
 import java.io.IOException;
 import java.net.http.HttpResponse;
-import java.util.List;
+import java.util.Objects;
 
 public class SpigotSource implements Source {
     public static final String NAME = "spigot";
@@ -24,7 +24,7 @@ public class SpigotSource implements Source {
     }
 
     @Override
-    public Version getLatestVersion(PluginData pluginData, SourceData sourceData) throws IOException, InterruptedException {
+    public Version fetchLatestVersion(PluginData pluginData, SourceData sourceData) throws IOException, InterruptedException {
         if (!(sourceData instanceof Data(String resourceId))) {
             return null;
         }
@@ -33,17 +33,17 @@ public class SpigotSource implements Source {
             .formatted(UpdaterConstants.Endpoint.SPIGET, resourceId));
 
         if (response.statusCode() != 200) {
-            throw new IllegalStateException("Received invalid response code (" + response.statusCode() + ") whilst checking '" + pluginData.getPluginName() + "' for updates.");
+            throw new IllegalStateException("Received invalid response code (" + response.statusCode() + ") whilst checking '" + pluginData.pluginName() + "' for updates.");
         }
 
         JsonObject pluginJson = JsonParser.parseString(response.body()).getAsJsonObject();
         String version = pluginJson.get("name").getAsString();
 
-        return pluginData.getLatestVersionParser().parse(version);
+        return pluginData.latestVersionParser().parse(version);
     }
 
     @Override
-    public DownloadableRelease getDownloadableRelease(PluginData pluginData, SourceData sourceData) {
+    public DownloadableRelease fetchDownloadableRelease(PluginData pluginData, SourceData sourceData) {
         if (!(sourceData instanceof Data(String resourceId))) {
             return null;
         }
@@ -52,7 +52,10 @@ public class SpigotSource implements Source {
             UpdaterConstants.Endpoint.SPIGET,
             resourceId);
 
-        return new DownloadableRelease(downloadUrl, null, null);
+        return DownloadableRelease.builder()
+            .pluginData(pluginData)
+            .downloadUrl(downloadUrl)
+            .build();
     }
 
     @Override
@@ -78,6 +81,25 @@ public class SpigotSource implements Source {
         @Override
         public String sourceName() {
             return NAME;
+        }
+
+        public static Builder builder() {
+            return new Builder();
+        }
+
+        public static class Builder {
+            private String resourceId;
+
+            private Builder() {}
+
+            public Builder resourceId(String resourceId) {
+                this.resourceId = resourceId;
+                return this;
+            }
+
+            public Data build() {
+                return new Data(Objects.requireNonNull(resourceId));
+            }
         }
     }
 }

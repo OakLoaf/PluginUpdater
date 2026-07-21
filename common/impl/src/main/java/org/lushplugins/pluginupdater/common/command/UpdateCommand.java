@@ -17,11 +17,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Predicate;
 
 @SuppressWarnings("unused")
-public record UpdateCommand(UpdaterImpl updater) implements OrphanCommand {
+public record UpdateCommand(UpdaterImpl<?> updater) implements OrphanCommand {
 
     @Subcommand("update")
     @CommandPermission("pluginupdater.downloadupdates")
-    public String update(CommandActor actor, @PluginName(includeTags = true) String pluginName) {
+    public String update(CommandActor actor, @PluginName(includeTags = true, withUpdateAvailable = true) String pluginName) {
         if (!updater.config().shouldAllowDownloads()) {
             return "<#ff6969>Update downloads have been disabled in the config";
         }
@@ -32,7 +32,7 @@ public record UpdateCommand(UpdaterImpl updater) implements OrphanCommand {
             return null;
         } else if (pluginName.startsWith("$")) {
             String sourceName = pluginName.substring(1);
-            updateAll(actor, (pluginData) -> pluginData.getSourceData().stream().anyMatch(source -> {
+            updateAll(actor, (pluginData) -> pluginData.sourceData().stream().anyMatch(source -> {
                 return source.sourceName().equals(sourceName);
             }), true);
             return null;
@@ -48,8 +48,8 @@ public record UpdateCommand(UpdaterImpl updater) implements OrphanCommand {
         } else if (!pluginData.isUpdateAvailable()) {
             return "<#ff6969>No update has been found for this plugin";
         } else {
-            updater.updateHandler().queueDownload(pluginData.getPluginName());
-            return "<#b7faa2>Successfully queued an update for '%s'".formatted(pluginData.getPluginName());
+            updater.updateHandler().queueDownload(pluginData.pluginName());
+            return "<#b7faa2>Successfully queued an update for '%s'".formatted(pluginData.pluginName());
         }
     }
 
@@ -60,7 +60,7 @@ public record UpdateCommand(UpdaterImpl updater) implements OrphanCommand {
     }
 
     public void updateAll(CommandActor actor, Predicate<PluginData> predicate, boolean force) {
-        UpdateHandler updateHandler = updater.updateHandler();
+        UpdateHandler<?> updateHandler = updater.updateHandler();
         AtomicInteger updateCount = new AtomicInteger(0);
         AtomicInteger majorUpdateCount = new AtomicInteger(0);
         updater.config().getAllPluginData().stream()
@@ -74,18 +74,17 @@ public record UpdateCommand(UpdaterImpl updater) implements OrphanCommand {
                     return;
                 }
 
-                if (pluginData.getVersionDifference().equals(VersionDifference.MAJOR) && !force) {
+                if (pluginData.versionDifference().equals(VersionDifference.MAJOR) && !force) {
                     majorUpdateCount.incrementAndGet();
                     return;
                 }
 
-                Version latestVersion = pluginData.getLatestVersion();
-                if (latestVersion != null && latestVersion.potentiallyUnsafe() && !force) {
+                if (pluginData.latestVersion().map(Version::potentiallyUnsafe).orElse(false) && !force) {
                     majorUpdateCount.incrementAndGet();
                     return;
                 }
 
-                updateHandler.queueDownload(pluginData.getPluginName());
+                updateHandler.queueDownload(pluginData.pluginName());
                 updateCount.incrementAndGet();
             });
 

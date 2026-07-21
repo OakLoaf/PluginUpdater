@@ -17,12 +17,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public class PluginYamlCollector implements PluginDataCollector {
-    private final UpdaterImpl updater;
-
-    public PluginYamlCollector(UpdaterImpl updater) {
-        this.updater = updater;
-    }
+public record PluginYamlCollector(UpdaterImpl<?> updater) implements PluginDataCollector {
 
     @Override
     public List<PluginData> collect(Collection<PluginInfo> plugins) {
@@ -33,9 +28,9 @@ public class PluginYamlCollector implements PluginDataCollector {
                 continue;
             }
 
-            InputStream resource = updater.platform().getResourceStream(plugin, "plugin.yml");
+            InputStream resource = updater.updaterPlugin().getResourceStream(plugin, "plugin.yml");
             if (resource == null) {
-                resource = updater.platform().getResourceStream(plugin, "paper-plugin.yml");
+                resource = updater.updaterPlugin().getResourceStream(plugin, "paper-plugin.yml");
 
                 if (resource == null) {
                     continue;
@@ -46,27 +41,25 @@ public class PluginYamlCollector implements PluginDataCollector {
 
             SourceData sourceData = null;
             if (config.contains("modrinth-project-id")) {
-                sourceData = new ModrinthSource.Data(
-                    config.get("modrinth-project-id"),
-                    ModrinthSource.ReleaseChannel.ALL
-                );
+                sourceData = ModrinthSource.Data.builder()
+                    .projectId(config.get("modrinth-project-id"))
+                    .releaseChannels(ModrinthSource.ReleaseChannel.ALL)
+                    .build();
             }
             else if (config.contains("spigot-resource-id")) {
-                sourceData = new SpigotSource.Data(
-                    config.get("spigot-resource-id")
-                );
+                sourceData = SpigotSource.Data.builder()
+                    .resourceId(config.get("spigot-resource-id"))
+                    .build();
             }
             else if (config.contains("hangar-project-slug")) {
-                sourceData = new HangarSource.Data(
-                    config.get("hangar-project-slug")
-                );
+                sourceData = HangarSource.Data.builder()
+                    .projectSlug(config.get("hangar-project-slug"))
+                    .build();
             }
             else if (config.contains("github-repo")) {
-                sourceData = new GithubSource.Data(
-                    config.get("github-repo"),
-                    null,
-                    null
-                );
+                sourceData = GithubSource.Data.builder()
+                    .repo(config.get("github-repo"))
+                    .build();
             }
 
             if (sourceData != null) {

@@ -8,7 +8,7 @@ public class BuildComparator implements VersionComparator {
     public static final BuildComparator INSTANCE = new BuildComparator();
 
     @Override
-    public VersionDifference getVersionDifference(Version currentVersion, Version latestVersion) throws InvalidVersionFormatException {
-        return VersionDifference.getBuildDifference(currentVersion, latestVersion);
+    public VersionDifference compare(Version currentVersion, Version latestVersion) throws InvalidVersionFormatException {
+        return VersionDifference.compareBuildDifference(currentVersion, latestVersion);
     }
 }

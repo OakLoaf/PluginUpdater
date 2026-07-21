@@ -8,9 +8,14 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.lushplugins.pluginupdater.common.UpdaterImpl;
 import org.lushplugins.pluginupdater.common.updater.UpdateHandler;
 import org.lushplugins.pluginupdater.paper.PaperUpdaterPlugin;
-import org.lushplugins.pluginupdater.paper.platform.PaperUpdaterPlatform;
+import org.lushplugins.pluginupdater.paper.api.platform.PaperUpdaterPlatform;
 
 public class PlayerListener implements Listener {
+    private final PaperUpdaterPlatform platform;
+
+    public PlayerListener(PaperUpdaterPlatform platform) {
+        this.platform = platform;
+    }
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
@@ -19,11 +24,10 @@ public class PlayerListener implements Listener {
             return;
         }
 
-        UpdaterImpl updater = PaperUpdaterPlugin.getInstance().updater();
+        UpdaterImpl<?> updater = PaperUpdaterPlugin.getInstance().updater();
         if (updater.updateHandler().remainingWithState(UpdateHandler.ProcessingData.State.SEND_NOTIFICATION) == 0) {
              String message = updater.constructUpdateMessage();
              if (message != null) {
-                 PaperUpdaterPlatform platform = (PaperUpdaterPlatform) updater.platform();
                  Bukkit.getScheduler().runTaskLaterAsynchronously(PaperUpdaterPlugin.getInstance(), () -> {
                      platform.sendMessage(player, updater.constructUpdateMessage());
                  }, 100);

@@ -17,7 +17,7 @@ public record VelocityPluginInfo(PluginContainer container, @Nullable Logger log
 
     static {
         SourceRegistry.register(new GeyserSource("velocity"));
-        SourceRegistry.register(new ModrinthSource(List.of("velocity")));
+        SourceRegistry.register(new ModrinthSource(List.of("velocity"), null));
     }
 
     @Override

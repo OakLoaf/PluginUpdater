@@ -7,7 +7,7 @@ import org.lushplugins.pluginupdater.common.platform.UpdaterAPI;
 
 public class PaperUpdaterAPI extends UpdaterAPI {
 
-    public PaperUpdaterAPI(UpdaterImpl updater) {
+    public PaperUpdaterAPI(UpdaterImpl<?> updater) {
         super(updater);
     }
 

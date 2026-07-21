@@ -13,6 +13,7 @@ import org.lushplugins.pluginupdater.api.version.Version;
 
 import java.io.IOException;
 import java.net.http.HttpResponse;
+import java.util.Objects;
 
 public class GeyserSource implements Source {
     public static final String NAME = "geyser";
@@ -29,7 +30,7 @@ public class GeyserSource implements Source {
     }
 
     @Override
-    public Version getLatestVersion(PluginData pluginData, SourceData sourceData) throws IOException, InterruptedException {
+    public Version fetchLatestVersion(PluginData pluginData, SourceData sourceData) throws IOException, InterruptedException {
         if (!(sourceData instanceof GeyserSource.Data(String projectName))) {
             return null;
         }
@@ -38,25 +39,25 @@ public class GeyserSource implements Source {
             .formatted(UpdaterConstants.Endpoint.GEYSER, projectName));
 
         if (response.statusCode() != 200) {
-            throw new IllegalStateException("Received invalid response code (" + response.statusCode() + ") whilst checking '" + pluginData.getPluginName() + "' for updates.");
+            throw new IllegalStateException("Received invalid response code (" + response.statusCode() + ") whilst checking '" + pluginData.pluginName() + "' for updates.");
         }
 
         JsonObject releaseJson = JsonParser.parseString(response.body()).getAsJsonObject();
         String version = releaseJson.get("version").getAsString();
         int buildNum = releaseJson.get("build").getAsInt();
 
-        return pluginData.getLatestVersionParser().parse(version)
+        return pluginData.latestVersionParser().parse(version)
             .withRawVersionString("%s (b%s)".formatted(version, buildNum))
             .withBuildNum(buildNum);
     }
 
     @Override
-    public DownloadableRelease getDownloadableRelease(PluginData pluginData, SourceData sourceData) {
+    public DownloadableRelease fetchDownloadableRelease(PluginData pluginData, SourceData sourceData) {
         if (!(sourceData instanceof Data(String projectName))) {
             return null;
         }
 
-        Version version = pluginData.getLatestVersion();
+        Version version = pluginData.latestVersion().orElseThrow();
         String downloadUrl = "%s/projects/%s/versions/%s/builds/%s/downloads/%s".formatted(
             UpdaterConstants.Endpoint.GEYSER,
             projectName,
@@ -64,7 +65,10 @@ public class GeyserSource implements Source {
             version.buildNum(),
             this.platform);
 
-        return new DownloadableRelease(downloadUrl, null, null);
+        return DownloadableRelease.builder()
+            .pluginData(pluginData)
+            .downloadUrl(downloadUrl)
+            .build();
     }
 
     @Override
@@ -90,6 +94,25 @@ public class GeyserSource implements Source {
         @Override
         public String sourceName() {
             return NAME;
+        }
+
+        public static Builder builder() {
+            return new Builder();
+        }
+
+        public static class Builder {
+            private String projectName;
+
+            private Builder() {}
+
+            public Builder projectName(String projectName) {
+                this.projectName = projectName;
+                return this;
+            }
+
+            public Data build() {
+                return new Data(Objects.requireNonNull(projectName));
+            }
         }
     }
 }

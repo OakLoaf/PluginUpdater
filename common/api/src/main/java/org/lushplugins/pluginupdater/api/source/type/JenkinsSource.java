@@ -9,7 +9,7 @@ import org.lushplugins.pluginupdater.api.source.Source;
 import org.lushplugins.pluginupdater.api.source.SourceData;
 import org.lushplugins.pluginupdater.api.updater.PluginData;
 import org.lushplugins.pluginupdater.api.util.HttpUtil;
-import org.lushplugins.pluginupdater.api.util.StringComparison;
+import org.lushplugins.pluginupdater.api.util.StringFilter;
 import org.lushplugins.pluginupdater.api.version.DownloadableRelease;
 import org.lushplugins.pluginupdater.api.version.Version;
 import org.lushplugins.pluginupdater.api.version.comparator.BuildComparator;
@@ -17,6 +17,8 @@ import org.lushplugins.pluginupdater.api.version.comparator.VersionComparator;
 
 import java.io.IOException;
 import java.net.http.HttpResponse;
+import java.util.Objects;
+import java.util.Optional;
 
 public class JenkinsSource implements Source {
     public static final String NAME = "jenkins";
@@ -27,7 +29,7 @@ public class JenkinsSource implements Source {
     }
 
     @Override
-    public Version getLatestVersion(PluginData pluginData, SourceData sourceData) throws IOException, InterruptedException, InvalidVersionFormatException {
+    public Version fetchLatestVersion(PluginData pluginData, SourceData sourceData) throws IOException, InterruptedException, InvalidVersionFormatException {
         if (!(sourceData instanceof Data jenkinsData)) {
             return null;
         }
@@ -45,7 +47,7 @@ public class JenkinsSource implements Source {
     }
 
     @Override
-    public DownloadableRelease getDownloadableRelease(PluginData pluginData, SourceData sourceData) throws IOException, InterruptedException {
+    public DownloadableRelease fetchDownloadableRelease(PluginData pluginData, SourceData sourceData) throws IOException, InterruptedException {
         if (!(sourceData instanceof Data jenkinsData)) {
             return null;
         }
@@ -54,25 +56,20 @@ public class JenkinsSource implements Source {
 
         JsonObject artifactJson = buildJson.get("artifacts").getAsJsonArray().asList().stream()
             .map(JsonElement::getAsJsonObject)
-            .filter(artifact -> {
-                String assetNameFilter = jenkinsData.artifactName();
-                if (assetNameFilter == null) {
-                    return true;
-                }
-
-                return StringComparison.matchesFilter(artifact.get("fileName").getAsString(), assetNameFilter);
-            })
+            .filter(artifact -> jenkinsData.artifactName()
+                .map(filter -> StringFilter.matchesFilter(artifact.get("fileName").getAsString(), filter))
+                .orElse(true))
             .findFirst()
             .orElseThrow(() -> new IllegalStateException("Failed to find an artifact matching the artifact name format '%s'."
                 .formatted(jenkinsData.artifactName())));
 
         String fileName = artifactJson.get("fileName").getAsString();
-        return new DownloadableRelease(
-            "%s/job/%s/lastSuccessfulBuild/artifact/artifacts/%s"
-                .formatted(jenkinsData.url(), jenkinsData.job(), fileName),
-            null,
-            fileName
-        );
+        return DownloadableRelease.builder()
+            .pluginData(pluginData)
+            .downloadUrl("%s/job/%s/lastSuccessfulBuild/artifact/artifacts/%s"
+                .formatted(jenkinsData.url(), jenkinsData.job(), fileName))
+            .jarName(fileName)
+            .build();
     }
 
     public JsonObject getLatestSuccessfulBuild(PluginData pluginData, Data jenkinsData) throws IOException, InterruptedException {
@@ -80,7 +77,7 @@ public class JenkinsSource implements Source {
             .formatted(jenkinsData.url(), jenkinsData.job()));
 
         if (response.statusCode() != 200) {
-            throw new IllegalStateException("Received invalid response code (" + response.statusCode() + ") whilst checking '" + pluginData.getPluginName() + "' for updates.");
+            throw new IllegalStateException("Received invalid response code (" + response.statusCode() + ") whilst checking '" + pluginData.pluginName() + "' for updates.");
         }
 
         return JsonParser.parseString(response.body()).getAsJsonObject();
@@ -88,7 +85,7 @@ public class JenkinsSource implements Source {
 
     @Override
     public @Nullable String getChangelogUrl(PluginData pluginData, SourceData sourceData) {
-        if (sourceData instanceof Data(String url, String job, String artifactName)) {
+        if (sourceData instanceof Data(String url, String job, var artifactName)) {
             return "%s/job/%s/changes"
                 .formatted(url, job);
         }
@@ -96,7 +93,12 @@ public class JenkinsSource implements Source {
         return null;
     }
 
-    public record Data(String url, String job, @Nullable String artifactName) implements SourceData {
+    /**
+     * @param url The plugin's Jenkins url (e.g. 'https://ci.jenkins.io')
+     * @param job The Jenkins job
+     * @param artifactName A string that the artifact name of the build must include
+     */
+    public record Data(String url, String job, Optional<String> artifactName) implements SourceData {
 
         @Override
         public String sourceName() {
@@ -104,8 +106,43 @@ public class JenkinsSource implements Source {
         }
 
         @Override
-        public VersionComparator getDefaultComparator() {
+        public VersionComparator defaultComparator() {
             return BuildComparator.INSTANCE;
+        }
+
+        public static Builder builder() {
+            return new Builder();
+        }
+
+        public static class Builder {
+            private String url;
+            private String job;
+            private String artifactName;
+
+            private Builder() {}
+
+            public Builder url(String url) {
+                this.url = url;
+                return this;
+            }
+
+            public Builder job(String job) {
+                this.job = job;
+                return this;
+            }
+
+            public Builder artifactName(@Nullable String artifactName) {
+                this.artifactName = artifactName;
+                return this;
+            }
+
+            public Data build() {
+                return new Data(
+                    Objects.requireNonNull(url),
+                    Objects.requireNonNull(job),
+                    Optional.ofNullable(artifactName)
+                );
+            }
         }
     }
 }

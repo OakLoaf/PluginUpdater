@@ -11,6 +11,7 @@ import org.lushplugins.pluginupdater.api.version.Version;
 
 import java.io.IOException;
 import java.net.http.HttpResponse;
+import java.util.Objects;
 
 public class HangarSource implements Source {
     public static final String NAME = "hangar";
@@ -21,7 +22,7 @@ public class HangarSource implements Source {
     }
 
     @Override
-    public Version getLatestVersion(PluginData pluginData, SourceData sourceData) throws IOException, InterruptedException {
+    public Version fetchLatestVersion(PluginData pluginData, SourceData sourceData) throws IOException, InterruptedException {
         if (!(sourceData instanceof Data(String projectSlug))) {
             return null;
         }
@@ -29,27 +30,30 @@ public class HangarSource implements Source {
         HttpResponse<String> response = HttpUtil.sendRequest(String.format("%s/projects/%s/latestrelease", UpdaterConstants.Endpoint.HANGAR, projectSlug));
 
         if (response.statusCode() != 200) {
-            throw new IllegalStateException("Received invalid response code (" + response.statusCode() + ") whilst checking '" + pluginData.getPluginName() + "' for updates.");
+            throw new IllegalStateException("Received invalid response code (" + response.statusCode() + ") whilst checking '" + pluginData.pluginName() + "' for updates.");
         }
 
         String version = response.body();
 
-        return pluginData.getLatestVersionParser().parse(version);
+        return pluginData.latestVersionParser().parse(version);
     }
 
     @Override
-    public DownloadableRelease getDownloadableRelease(PluginData pluginData, SourceData sourceData) {
+    public DownloadableRelease fetchDownloadableRelease(PluginData pluginData, SourceData sourceData) {
         if (!(sourceData instanceof Data(String projectSlug))) {
             return null;
         }
 
-        Version version = pluginData.getLatestVersion();
+        Version version = pluginData.latestVersion().orElseThrow();
         String downloadUrl = "%s/projects/%s/versions/%s/PAPER/download".formatted(
             UpdaterConstants.Endpoint.HANGAR,
             projectSlug,
             version.version());
 
-        return new DownloadableRelease(downloadUrl, null, null);
+        return DownloadableRelease.builder()
+            .pluginData(pluginData)
+            .downloadUrl(downloadUrl)
+            .build();
     }
 
     @Override
@@ -70,6 +74,25 @@ public class HangarSource implements Source {
         @Override
         public String sourceName() {
             return NAME;
+        }
+
+        public static Builder builder() {
+            return new Builder();
+        }
+
+        public static class Builder {
+            private String projectSlug;
+
+            private Builder() {}
+
+            public Builder projectSlug(String projectSlug) {
+                this.projectSlug = projectSlug;
+                return this;
+            }
+
+            public Data build() {
+                return new Data(Objects.requireNonNull(projectSlug));
+            }
         }
     }
 }

@@ -8,9 +8,9 @@ import revxrsal.commands.annotation.list.AnnotationList;
 import revxrsal.commands.command.CommandActor;
 
 public class CommandPermissionFactory implements revxrsal.commands.command.CommandPermission.Factory<CommandActor> {
-    private final UpdaterImpl updater;
+    private final UpdaterImpl<?> updater;
 
-    public CommandPermissionFactory(UpdaterImpl updater) {
+    public CommandPermissionFactory(UpdaterImpl<?> updater) {
         this.updater = updater;
     }
 
@@ -22,6 +22,6 @@ public class CommandPermissionFactory implements revxrsal.commands.command.Comma
         }
 
         String permission = annotation.value();
-        return actor -> updater.platform().hasPermission(actor, permission);
+        return actor -> updater.commandPlatform().hasPermission(actor, permission);
     }
 }

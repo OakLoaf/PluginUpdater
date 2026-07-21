@@ -3,10 +3,10 @@ package org.lushplugins.pluginupdater.api.source;
 import org.lushplugins.pluginupdater.api.source.type.*;
 
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Optional;
 
 public class SourceRegistry {
     private static final HashMap<String, Source> sources = new HashMap<>();
@@ -18,8 +18,8 @@ public class SourceRegistry {
         register(new SpigotSource());
     }
 
-    public static @Nullable Source get(String name) {
-        return sources.get(name);
+    public static Optional<Source> get(String name) {
+        return Optional.ofNullable(sources.get(name));
     }
 
     public static Collection<Source> values() {

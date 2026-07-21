@@ -1,10 +1,12 @@
 package org.lushplugins.pluginupdater.api.updater;
 
 import org.jetbrains.annotations.Nullable;
+import org.lushplugins.pluginupdater.api.exception.FailedAttemptsOnSourcesException;
 import org.lushplugins.pluginupdater.api.exception.InvalidVersionFormatException;
-import org.lushplugins.pluginupdater.api.source.Source;
-import org.lushplugins.pluginupdater.api.source.SourceData;
-import org.lushplugins.pluginupdater.api.source.SourceRegistry;
+import org.lushplugins.pluginupdater.api.source.*;
+import org.lushplugins.pluginupdater.api.util.UpdaterConstants;
+import org.lushplugins.pluginupdater.api.version.DownloadableRelease;
+import org.lushplugins.pluginupdater.api.version.FetchedVersion;
 import org.lushplugins.pluginupdater.api.version.Version;
 import org.lushplugins.pluginupdater.api.version.VersionDifference;
 import org.lushplugins.pluginupdater.api.version.comparator.SemVerComparator;
@@ -12,7 +14,10 @@ import org.lushplugins.pluginupdater.api.version.comparator.VersionComparator;
 import org.lushplugins.pluginupdater.api.version.parser.RegexVersionParser;
 import org.lushplugins.pluginupdater.api.version.parser.VersionParser;
 
+import java.io.IOException;
+import java.nio.file.Path;
 import java.util.*;
+import java.util.logging.Level;
 
 public class PluginData {
     private final String pluginName;
@@ -47,44 +52,40 @@ public class PluginData {
         this.allowDownloads = allowDownloads;
     }
 
-    public String getPluginName() {
+    public String pluginName() {
         return pluginName;
     }
 
-    public Version getCurrentVersion() {
+    public Version currentVersion() {
         return currentVersion;
     }
 
-    public VersionParser getLatestVersionParser() {
+    public VersionParser latestVersionParser() {
         return latestVersionParser;
     }
 
-    public List<SourceData> getSourceData() {
+    public List<SourceData> sourceData() {
         return sourceData;
-    }
-
-    public VersionComparator getComparator() {
-        return comparator;
-    }
-
-    public Optional<VersionComparator> getOptionalComparator() {
-        return Optional.ofNullable(comparator);
     }
 
     public void addSource(SourceData sourceData) {
         this.sourceData.add(sourceData);
     }
 
-    public Version getLatestVersion() {
-        return latestVersion;
+    public Optional<VersionComparator> versionComparator() {
+        return Optional.ofNullable(comparator);
     }
 
-    public void setLatestVersion(Version latestVersion) {
+    public Optional<Version> latestVersion() {
+        return Optional.ofNullable(latestVersion);
+    }
+
+    public void latestVersion(Version latestVersion) {
         this.latestVersion = latestVersion;
     }
 
-    public void setLatestVersion(String latestVersion) {
-        setLatestVersion(this.latestVersionParser.parse(latestVersion));
+    public void latestVersion(String latestVersion) {
+        latestVersion(this.latestVersionParser.parse(latestVersion));
     }
 
     public boolean isEnabled() {
@@ -99,11 +100,11 @@ public class PluginData {
         return !versionDifference.equals(VersionDifference.LATEST) && !versionDifference.equals(VersionDifference.UNKNOWN);
     }
 
-    public VersionDifference getVersionDifference() {
+    public VersionDifference versionDifference() {
         return versionDifference;
     }
 
-    public void setVersionDifference(VersionDifference versionDifference) {
+    public void versionDifference(VersionDifference versionDifference) {
         this.versionDifference = versionDifference;
     }
 
@@ -135,10 +136,94 @@ public class PluginData {
         this.checkRan = checkRan;
     }
 
-    public @Nullable String getChangelogUrl() {
-        SourceData sourceData = this.sourceData.getFirst();
-        Source source = SourceRegistry.get(sourceData.sourceName());
-        return source != null ? source.getChangelogUrl(this, sourceData) : null;
+    public Optional<String> getChangelogUrl() {
+        return this.sourceData.stream()
+            .map(sourceData -> SourceRegistry.get(sourceData.sourceName())
+                .flatMap(source -> Optional.ofNullable(source.getChangelogUrl(this, sourceData))))
+            .filter(Optional::isPresent)
+            .map(Optional::get)
+            .findFirst();
+    }
+
+    public FetchedVersion fetchLatestVersion() throws InvalidVersionFormatException {
+        try {
+            return attemptOnSources((context) -> {
+                Version version = context.source().fetchLatestVersion(this, context.sourceData());
+                return new FetchedVersion(version, context);
+            });
+        } catch (FailedAttemptsOnSourcesException e) {
+            throw new RuntimeException("Failed to fetch latest version for plugin '" + this.pluginName + "'.");
+        }
+    }
+
+    public boolean checkForUpdate() {
+        Version latestVersion;
+        SourceContext sourceContext;
+        try {
+            FetchedVersion fetchedVersion = fetchLatestVersion();
+            latestVersion = fetchedVersion.version();
+            sourceContext = fetchedVersion.sourceContext();
+        } catch (InvalidVersionFormatException e) {
+            UpdaterConstants.LOGGER.severe("Failed to read latest version for '%s': %s".formatted(this.pluginName, e.getMessage()));
+            return false;
+        }
+
+        VersionDifference versionDifference;
+        try {
+            VersionComparator comparator = versionComparator().orElse(sourceContext.sourceData().defaultComparator());
+            versionDifference = comparator.compare(this.currentVersion, latestVersion);
+        } catch (InvalidVersionFormatException e) {
+            UpdaterConstants.LOGGER.severe("Failed to compare versions for '%s': %s".formatted(this.pluginName, e.getMessage()));
+            return false;
+        }
+
+        this.checkRan = true;
+        this.versionDifference = versionDifference;
+
+        if (!versionDifference.equals(VersionDifference.LATEST)) {
+            this.latestVersion = latestVersion;
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public DownloadableRelease prepareDownloadableRelease() {
+        try {
+            return attemptOnSources((context) -> {
+                return context.source().fetchDownloadableRelease(this, context.sourceData());
+            });
+        } catch (FailedAttemptsOnSourcesException e) {
+            throw new RuntimeException("Failed to prepare downloadable release for plugin '" + this.pluginName + "'.");
+        }
+    }
+
+    public boolean downloadUpdate(Path destinationDir) {
+        try {
+            prepareDownloadableRelease()
+                .downloadTo(destinationDir);
+            return true;
+        } catch (IOException | InterruptedException e) {
+            UpdaterConstants.LOGGER.log(Level.SEVERE, "Failed to download update for plugin '" + this.pluginName + "'.", e);
+            return false;
+        }
+    }
+
+    private <T> T attemptOnSources(SourceSupplier<T> supplier) throws FailedAttemptsOnSourcesException {
+        for (SourceData sourceData : this.sourceData) {
+            Source source = SourceRegistry.get(sourceData.sourceName()).orElse(null);
+            if (source == null) {
+                continue;
+            }
+
+            try {
+                return supplier.apply(new SourceContext(source, sourceData));
+            } catch (Throwable e) {
+                UpdaterConstants.LOGGER.log(Level.SEVERE, e.getMessage(), e);
+            }
+        }
+
+        throw new FailedAttemptsOnSourcesException("Failed attempts on all available sources for plugin '" + this.pluginName + "'.");
     }
 
     public static Builder builder(String pluginName, String currentVersion) {

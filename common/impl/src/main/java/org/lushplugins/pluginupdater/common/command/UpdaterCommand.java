@@ -7,6 +7,7 @@ import org.lushplugins.pluginupdater.common.command.annotation.PluginName;
 import org.lushplugins.pluginupdater.common.UpdaterImpl;
 import org.lushplugins.pluginupdater.common.updater.UpdateHandler;
 import revxrsal.commands.annotation.Subcommand;
+import revxrsal.commands.annotation.Switch;
 import revxrsal.commands.command.CommandActor;
 import revxrsal.commands.orphan.OrphanCommand;
 
@@ -15,15 +16,15 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 
 @SuppressWarnings("unused")
-public record UpdaterCommand(UpdaterImpl updater) implements OrphanCommand {
+public record UpdaterCommand(UpdaterImpl<?> updater) implements OrphanCommand {
 
     @Subcommand("reload")
     @CommandPermission("pluginupdater.reload")
-    public String reload() {
+    public String reload(@Switch("skip-check") boolean skipCheck) {
         try {
-            updater.config().reload();
+            updater.config().reload(skipCheck);
         } catch (Throwable e) {
-            updater.platform().getLogger().log(Level.SEVERE, "Caught error whilst reloading: ", e);
+            updater.updaterPlugin().getLogger().log(Level.SEVERE, "Caught error whilst reloading: ", e);
             return "<#ff6969>Something went wrong whilst reloading the plugin, check the console for errors";
         }
 
@@ -37,15 +38,15 @@ public record UpdaterCommand(UpdaterImpl updater) implements OrphanCommand {
 
         processingData.getFuture().thenAccept(success -> {
             PluginData pluginData = processingData.getPluginData();
-            switch (pluginData.getVersionDifference()) {
-                case MAJOR, MINOR, PATCH, BUILD -> updater.platform().sendMessage(actor, "<#b7faa2>New version <#b7faa2>found for %s <white>(%s <gray>-> <white>%s)"
-                    .formatted(pluginData.getPluginName(),
-                        pluginData.getCurrentVersion().rawVersionString(),
-                        pluginData.getLatestVersion().rawVersionString()));
-                case LATEST -> updater.platform().sendMessage(actor, ("<#b7faa2>No update has been found for %s")
-                    .formatted(pluginData.getPluginName()));
-                case UNKNOWN -> updater.platform().sendMessage(actor, "<#ff6969>Something went wrong when checking %s for a new version"
-                    .formatted(pluginData.getPluginName()));
+            switch (pluginData.versionDifference()) {
+                case MAJOR, MINOR, PATCH, BUILD -> updater.commandPlatform().sendMessage(actor, "<#b7faa2>New version <#b7faa2>found for %s <white>(%s <gray>-> <white>%s)"
+                    .formatted(pluginData.pluginName(),
+                        pluginData.currentVersion().rawVersionString(),
+                        pluginData.latestVersion().orElseThrow().rawVersionString()));
+                case LATEST -> updater.commandPlatform().sendMessage(actor, ("<#b7faa2>No update has been found for %s")
+                    .formatted(pluginData.pluginName()));
+                case UNKNOWN -> updater.commandPlatform().sendMessage(actor, "<#ff6969>Something went wrong when checking %s for a new version"
+                    .formatted(pluginData.pluginName()));
             }
         });
 
@@ -82,7 +83,7 @@ public record UpdaterCommand(UpdaterImpl updater) implements OrphanCommand {
     public String listUnregisteredPlugins() {
         List<String> unregisteredPlugins = updater.platform().getPlugins().stream()
             .map(PluginInfo::getName)
-            .filter(pluginName -> updater.config().getPluginData(pluginName) == null)
+            .filter(pluginName -> updater.config().canRegisterPluginData(pluginName))
             .sorted(String.CASE_INSENSITIVE_ORDER)
             .toList();
 

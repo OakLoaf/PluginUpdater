@@ -10,16 +10,11 @@ import org.lushplugins.pluginupdater.common.config.deserializer.PluginDataDeseri
 import java.io.InputStream;
 import java.util.*;
 
-public class CommonPluginCollector implements PluginDataCollector {
-    private final UpdaterImpl updater;
-
-    public CommonPluginCollector(UpdaterImpl updater) {
-        this.updater = updater;
-    }
+public record CommonPluginCollector(UpdaterImpl<?> updater) implements PluginDataCollector {
 
     @Override
     public List<PluginData> collect(Collection<PluginInfo> plugins) {
-        InputStream resource = updater.platform().getResourceStream("common-plugins.yml");
+        InputStream resource = updater.updaterPlugin().getResourceStream("common-plugins.yml");
         Config config = YamlFormat.defaultInstance().createParser().parse(resource);
 
         List<PluginData> collectedPluginData = new ArrayList<>();
