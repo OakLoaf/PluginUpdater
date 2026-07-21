@@ -86,16 +86,14 @@ public class UpdateHandler<T> {
         this.currentlyProcessing.compute(state, (key, oldValue) -> oldValue != null ? oldValue + 1 : 1);
         if (state != ProcessingData.State.SEND_NOTIFICATION) {
             List<T> users = updater.platform().getOnlineUsersWithPermission("pluginupdater.notify");
-            if (users.isEmpty()) {
-                return;
+            if (!users.isEmpty()) {
+                int processed = this.currentlyProcessing.getOrDefault(state, 1);
+                int total = processed + this.remainingWithState(state);
+                String message = "<#b7faa2>Updater processing: <#66b04f>%s<#b7faa2>/<#66b04f>%s"
+                    .formatted(processed, total);
+
+                updater.platform().broadcastActionBar(users, message);
             }
-
-            int processed = this.currentlyProcessing.getOrDefault(state, 1);
-            int total = processed + this.remainingWithState(state);
-            String message = "<#b7faa2>Updater processing: <#66b04f>%s<#b7faa2>/<#66b04f>%s"
-                .formatted(processed, total);
-
-            updater.platform().broadcastActionBar(users, message);
         }
 
         switch (state) {
