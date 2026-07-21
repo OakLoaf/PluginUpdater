@@ -9,7 +9,7 @@ By default, PluginUpdater comes with support for 50+ commonly used plugins, you 
 
 ## Commonly Asked Questions
 **What if there is a major update to a plugin?**
-- Plugins with major version updates _(according to [semver](https://semver.org/))_ will appear red in `/updates` and will not be updated when running `/updater update all`, this is to encourage server admins to take time to read changelogs. You can bypass this by either running `/updater update all -f` or `/updater update <plugin>`
+- Plugins with major version updates _(according to [semver](https://semver.org/))_ will appear red in `/updates` and will not be updated when running `/updater update all`, this is to encourage server admins to take time to read changelogs. You can bypass this by either running `/updater update all --force` or `/updater update <plugin>`
 
 **X plugin broke when I updated!**
 - PluginUpdater only downloads plugins to the update folder and **does not** modify any plugin jars. If you have an issue with an update, report this to the developer of the plugin with the issue!
