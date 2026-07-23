@@ -2,14 +2,19 @@ package org.lushplugins.pluginupdater.api.util;
 
 import java.util.regex.Pattern;
 
-public class StringFilter {
+public class StringUtil {
+
+    public static boolean isNumeric(String string) {
+        return !string.isEmpty() && string.chars().allMatch(Character::isDigit);
+    }
 
     /**
      * Apply the following regex placeholders to a {@link String}
      * <ul>
      *     <li>{@code <version>} replaced with regex pattern {@code (?<version>\d+(?:\.\d+)*)}</li>
      *     <li>{@code <build>} replaced with regex pattern {@code (?<build>\d+)}</li>
-     *     <li>{@code <commit>} replaced with regex pattern {@code (?<commit>.+)}</li>
+     *     <li>{@code <buildmeta>} replaced with regex pattern {@code (?<buildmeta>.+)}</li>
+     *     <li>{@code <commit>} replaced with regex pattern {@code (?<buildmeta>.+)}</li>
      * </ul>
      *
      * @param rawPattern {@link String} to apply placeholders to
@@ -18,8 +23,10 @@ public class StringFilter {
     public static String applyRegexPlaceholders(String rawPattern) {
         return rawPattern
             .replace("<version>", "(?<version>\\d+(?:\\.\\d+)*)")
+            .replace("<prerelease>", "(?<prerelease>(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*))*)")
             .replace("<build>", "(?<build>\\d+)")
-            .replace("<commit>", "(?<commit>.+)");
+            .replace("<buildmeta>", "(?<buildmeta>.+)")
+            .replace("<commit>", "(?<buildmeta>.+)");
     }
 
     /**

@@ -31,7 +31,8 @@ public class CalVerComparator implements VersionComparator {
         LocalDateTime currentVersionDateTime = parseDateTime(currentVersion.rawVersionString());
         LocalDateTime latestVersionDateTime = parseDateTime(latestVersion.rawVersionString());
         if (!latestVersionDateTime.isAfter(currentVersionDateTime)) {
-            return VersionDifference.compareBuildDifference(currentVersion, latestVersion);
+            return VersionDifference.comparePreReleaseMeta(currentVersion, latestVersion)
+                .ifLatestGet(() -> VersionDifference.compareBuildNum(currentVersion, latestVersion));
         }
 
         LocalDate currentVersionDate = currentVersionDateTime.toLocalDate();

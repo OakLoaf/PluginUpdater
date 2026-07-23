@@ -6,7 +6,7 @@ import com.google.gson.JsonParser;
 import org.jetbrains.annotations.Nullable;
 import org.lushplugins.pluginupdater.api.source.SourceData;
 import org.lushplugins.pluginupdater.api.util.HttpUtil;
-import org.lushplugins.pluginupdater.api.util.StringFilter;
+import org.lushplugins.pluginupdater.api.util.StringUtil;
 import org.lushplugins.pluginupdater.api.util.UpdaterConstants;
 import org.lushplugins.pluginupdater.api.source.Source;
 import org.lushplugins.pluginupdater.api.updater.PluginData;
@@ -52,7 +52,7 @@ public class GithubSource implements Source {
         JsonObject assetJson = releaseJson.get("assets").getAsJsonArray().asList().stream()
             .map(JsonElement::getAsJsonObject)
             .filter(asset -> githubData.assetName()
-                .map(filter -> StringFilter.matchesFilter(asset.get("name").getAsString(), githubData.assetName().get()))
+                .map(filter -> StringUtil.matchesFilter(asset.get("name").getAsString(), githubData.assetName().get()))
                 .orElse(true))
             .findFirst()
             .orElseThrow(() -> new IllegalStateException("Failed to find an asset matching the asset name format '%s'."

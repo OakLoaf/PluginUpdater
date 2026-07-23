@@ -1,6 +1,7 @@
 package org.lushplugins.pluginupdater.api.version.parser;
 
 import org.lushplugins.pluginupdater.api.exception.InvalidVersionFormatException;
+import org.lushplugins.pluginupdater.api.util.StringUtil;
 import org.lushplugins.pluginupdater.api.version.Version;
 
 import java.util.Map;
@@ -8,13 +9,13 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class RegexVersionParser implements VersionParser {
-    public static final String DEFAULT_FORMAT = "<version>";
+    public static final String DEFAULT_FORMAT = "<version>(?:-<prerelease>)?(?:\\+<buildmeta>)?";
     public static final RegexVersionParser INSTANCE = new RegexVersionParser(DEFAULT_FORMAT);
 
     private final Pattern pattern;
 
     public RegexVersionParser(String versionFormat) {
-        this.pattern = parsePattern(versionFormat);
+        this.pattern = Pattern.compile(StringUtil.applyRegexPlaceholders(versionFormat));
     }
 
     @Override
@@ -27,21 +28,14 @@ public class RegexVersionParser implements VersionParser {
 
         String version = getNamedGroupContent(matcher, "version");
 
+        String preReleaseMeta = getNamedGroupContent(matcher, "prerelease");
+
         String rawBuildNum = getNamedGroupContent(matcher, "build");
         Integer buildNum = rawBuildNum != null ? Integer.parseInt(rawBuildNum) : null;
 
-        String commitHash = getNamedGroupContent(matcher, "commit");
+        String buildMeta = getNamedGroupContent(matcher, "buildmeta");
 
-        return new Version(rawVersion, version, buildNum, commitHash, false);
-    }
-
-    public static Pattern parsePattern(String rawPattern) {
-        return Pattern.compile(rawPattern
-            .replace("(", "\\(")
-            .replace(")", "\\)")
-            .replace("<version>", "(?<version>\\d+(?:\\.\\d+)*)")
-            .replace("<build>", "(?<build>\\d+)")
-            .replace("<commit>", "(?<commit>.+)"));
+        return new Version(rawVersion, version, preReleaseMeta, buildNum, buildMeta, false);
     }
 
     public static String getNamedGroupContent(Matcher matcher, String namedGroup) {

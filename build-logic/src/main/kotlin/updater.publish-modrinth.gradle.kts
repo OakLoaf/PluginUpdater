@@ -7,7 +7,7 @@ modrinth {
         versionNumber.set(rootProject.version.toString())
         changelog.set(rootProject.getChangelogSinceLastTag())
     } else {
-        versionNumber.set("${rootProject.version}-${rootProject.getCurrentCommitHash()}")
+        versionNumber.set("${rootProject.version}+${rootProject.getCurrentCommitHash()}")
     }
     uploadFile.set(file("build/libs/${rootProject.name}-${project.name.replace("-plugin", "")}-${project.version}.jar"))
     versionType.set(System.getenv("RELEASE_TYPE"))

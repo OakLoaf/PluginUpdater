@@ -9,7 +9,7 @@ import org.lushplugins.pluginupdater.api.source.Source;
 import org.lushplugins.pluginupdater.api.source.SourceData;
 import org.lushplugins.pluginupdater.api.updater.PluginData;
 import org.lushplugins.pluginupdater.api.util.HttpUtil;
-import org.lushplugins.pluginupdater.api.util.StringFilter;
+import org.lushplugins.pluginupdater.api.util.StringUtil;
 import org.lushplugins.pluginupdater.api.version.DownloadableRelease;
 import org.lushplugins.pluginupdater.api.version.Version;
 import org.lushplugins.pluginupdater.api.version.comparator.BuildComparator;
@@ -40,6 +40,7 @@ public class JenkinsSource implements Source {
         return new Version(
             "b" + buildNum,
             null,
+            null,
             buildNum,
             null,
             false
@@ -57,7 +58,7 @@ public class JenkinsSource implements Source {
         JsonObject artifactJson = buildJson.get("artifacts").getAsJsonArray().asList().stream()
             .map(JsonElement::getAsJsonObject)
             .filter(artifact -> jenkinsData.artifactName()
-                .map(filter -> StringFilter.matchesFilter(artifact.get("fileName").getAsString(), filter))
+                .map(filter -> StringUtil.matchesFilter(artifact.get("fileName").getAsString(), filter))
                 .orElse(true))
             .findFirst()
             .orElseThrow(() -> new IllegalStateException("Failed to find an artifact matching the artifact name format '%s'."

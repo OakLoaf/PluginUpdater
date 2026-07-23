@@ -9,6 +9,6 @@ public class BuildComparator implements VersionComparator {
 
     @Override
     public VersionDifference compare(Version currentVersion, Version latestVersion) throws InvalidVersionFormatException {
-        return VersionDifference.compareBuildDifference(currentVersion, latestVersion);
+        return VersionDifference.compareBuildNum(currentVersion, latestVersion);
     }
 }
