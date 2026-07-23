@@ -31,7 +31,7 @@ import java.util.logging.Logger;
 @Plugin(
     id = "pluginupdater",
     name = "PluginUpdater",
-    version = BuildParameters.VERSION + "-" + BuildParameters.COMMIT
+    version = BuildParameters.VERSION + "+" + BuildParameters.COMMIT
 )
 public class VelocityUpdaterPlugin implements UpdaterPlugin {
     private static VelocityUpdaterPlugin instance;
