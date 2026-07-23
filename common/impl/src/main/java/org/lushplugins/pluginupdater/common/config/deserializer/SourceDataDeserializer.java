@@ -89,7 +89,7 @@ public class SourceDataDeserializer {
 
     public static SpigotSource.Data spigotSourceData(Config config) {
         return SpigotSource.Data.builder()
-            .resourceId(config.get("spigot-resource-id"))
+            .resourceId(config.get("spigot-resource-id").toString())
             .build();
     }
 }
