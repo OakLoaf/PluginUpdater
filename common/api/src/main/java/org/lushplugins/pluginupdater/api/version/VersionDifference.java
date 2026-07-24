@@ -25,8 +25,11 @@ public enum VersionDifference {
     public static VersionDifference comparePreReleaseMeta(Version currentVersion, Version latestVersion) {
         String currentPreReleaseMeta = currentVersion.buildMeta().orElse(null);
         String latestPreReleaseMeta = latestVersion.buildMeta().orElse(null);
-        if (currentPreReleaseMeta == null || latestPreReleaseMeta == null) {
+        if (currentPreReleaseMeta == null) {
             return VersionDifference.LATEST;
+        }
+        if (latestPreReleaseMeta == null) {
+            return VersionDifference.BUILD;
         }
 
         String[] currentPreReleaseMetaParts = currentPreReleaseMeta.split("\\.");
