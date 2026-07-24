@@ -5,6 +5,8 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import org.jetbrains.annotations.Nullable;
 import org.lushplugins.pluginupdater.api.exception.InvalidVersionFormatException;
+import org.lushplugins.pluginupdater.api.http.Endpoint;
+import org.lushplugins.pluginupdater.api.http.RateLimit;
 import org.lushplugins.pluginupdater.api.source.Source;
 import org.lushplugins.pluginupdater.api.source.SourceData;
 import org.lushplugins.pluginupdater.api.updater.PluginData;
@@ -17,15 +19,24 @@ import org.lushplugins.pluginupdater.api.version.comparator.VersionComparator;
 
 import java.io.IOException;
 import java.net.http.HttpResponse;
+import java.time.Duration;
 import java.util.Objects;
 import java.util.Optional;
 
 public class JenkinsSource implements Source {
     public static final String NAME = "jenkins";
+    // The jenkins endpoint has no published rate limit but recommends 10 requests per second
+    private static final RateLimit RATE_LIMIT = new RateLimit(10, Duration.ofSeconds(1));
+
 
     @Override
     public String getName() {
         return NAME;
+    }
+
+    @Override
+    public RateLimit getRateLimit() {
+        return RATE_LIMIT;
     }
 
     @Override
@@ -67,6 +78,7 @@ public class JenkinsSource implements Source {
         String fileName = artifactJson.get("fileName").getAsString();
         return DownloadableRelease.builder()
             .pluginData(pluginData)
+            .endpoint(sourceData.endpoint())
             .downloadUrl("%s/job/%s/lastSuccessfulBuild/artifact/artifacts/%s"
                 .formatted(jenkinsData.url(), jenkinsData.job(), fileName))
             .jarName(fileName)
@@ -74,12 +86,10 @@ public class JenkinsSource implements Source {
     }
 
     public JsonObject getLatestSuccessfulBuild(PluginData pluginData, Data jenkinsData) throws IOException, InterruptedException {
+        jenkinsData.endpoint().markRequest();
         HttpResponse<String> response = HttpUtil.sendRequest("%s/job/%s/lastSuccessfulBuild/api/json"
             .formatted(jenkinsData.url(), jenkinsData.job()));
-
-        if (response.statusCode() != 200) {
-            throw new IllegalStateException("Received invalid response code (" + response.statusCode() + ") whilst checking '" + pluginData.pluginName() + "' for updates.");
-        }
+        HttpUtil.validateResponse(jenkinsData.endpoint(), pluginData, response);
 
         return JsonParser.parseString(response.body()).getAsJsonObject();
     }
@@ -104,6 +114,11 @@ public class JenkinsSource implements Source {
         @Override
         public String sourceName() {
             return NAME;
+        }
+
+        @Override
+        public Endpoint endpoint() {
+            return Endpoint.create(url, RATE_LIMIT);
         }
 
         @Override

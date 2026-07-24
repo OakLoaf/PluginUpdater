@@ -145,6 +145,10 @@ public class PluginData {
             .findFirst();
     }
 
+    public boolean canCheckForUpdate() {
+        return sourceData.getFirst().endpoint().canMakeRequest();
+    }
+
     public FetchedVersion fetchLatestVersion() throws InvalidVersionFormatException {
         try {
             return attemptOnSources((context) -> {

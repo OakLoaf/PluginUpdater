@@ -6,10 +6,7 @@ import org.lushplugins.pluginupdater.api.version.VersionDifference;
 import org.lushplugins.pluginupdater.common.UpdaterImpl;
 
 import java.io.IOException;
-import java.util.ArrayDeque;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.*;
 import java.util.logging.Level;
 
@@ -76,69 +73,83 @@ public class UpdateHandler<T> {
     }
 
     private void processQueue() {
-        ProcessingData processingData = queue.poll();
-        if (processingData == null) {
+        if (queue.isEmpty()) {
             this.currentlyProcessing.clear();
             return;
         }
 
-        ProcessingData.State state = processingData.getState();
-        this.currentlyProcessing.compute(state, (key, oldValue) -> oldValue != null ? oldValue + 1 : 1);
-        if (state != ProcessingData.State.SEND_NOTIFICATION) {
-            List<T> users = updater.platform().getOnlineUsersWithPermission("pluginupdater.notify");
-            if (!users.isEmpty()) {
-                int processed = this.currentlyProcessing.getOrDefault(state, 1);
-                int total = processed + this.remainingWithState(state);
-                String message = "<#b7faa2>Updater processing: <#66b04f>%s<#b7faa2>/<#66b04f>%s"
-                    .formatted(processed, total);
-
-                updater.platform().broadcastActionBar(users, message);
-            }
-        }
-
-        switch (state) {
-            case UPDATE_CHECK -> {
-                PluginData pluginData = processingData.getPluginData();
-
-                try {
-                    processingData.getFuture().complete(pluginData.checkForUpdate());
-                    pluginData.setCheckRan(true);
-                    return;
-                } catch (Exception e) {
-                    updater.updaterPlugin().getLogger().log(Level.SEVERE, e.getMessage(), e);
-                }
-
-                String sourceNames = String.join(", ", pluginData.sourceData().stream().map(SourceData::sourceName).toList());
-                processingData.getFuture().completeExceptionally(new IOException("Failed to run check for plugin '" + pluginData.pluginName() + "' using defined sources: '" + sourceNames + "'"));
-            }
-            case DOWNLOAD -> {
-                PluginData pluginData = processingData.getPluginData();
-                if (!pluginData.isEnabled() || !pluginData.isUpdateAvailable() || pluginData.isAlreadyDownloaded()) {
-                    processingData.getFuture().complete(false);
-                    return;
-                }
-
-                try {
-                    if (pluginData.downloadUpdate(updater.updaterPlugin().getDownloadDir())) {
-                        pluginData.versionDifference(VersionDifference.UNKNOWN);
-                        pluginData.setAlreadyDownloaded(true);
-                        processingData.getFuture().complete(true);
-                        return;
-                    } else {
-                        processingData.getFuture().complete(false);
+        Iterator<ProcessingData> iterator = queue.iterator();
+        while (iterator.hasNext()) {
+            ProcessingData processingData = iterator.next();
+            ProcessingData.State state = processingData.getState();
+            switch (state) {
+                case UPDATE_CHECK -> {
+                    PluginData pluginData = processingData.getPluginData();
+                    if (!pluginData.canCheckForUpdate()) {
+                        continue;
                     }
-                } catch (Exception e) {
-                    processingData.getFuture().completeExceptionally(e);
-                }
 
-                String sourceNames = String.join(", ", pluginData.sourceData().stream().map(SourceData::sourceName).toList());
-                processingData.getFuture().completeExceptionally(new IOException("Failed to download update for plugin '%s' using defined sources: '%s'".formatted(pluginData.pluginName(), sourceNames)));
+                    iterator.remove();
+
+                    try {
+                        processingData.getFuture().complete(pluginData.checkForUpdate());
+                        pluginData.setCheckRan(true);
+                        break;
+                    } catch (Exception e) {
+                        updater.updaterPlugin().getLogger().log(Level.SEVERE, e.getMessage(), e);
+                    }
+
+                    String sourceNames = String.join(", ", pluginData.sourceData().stream().map(SourceData::sourceName).toList());
+                    processingData.getFuture().completeExceptionally(new IOException("Failed to run check for plugin '" + pluginData.pluginName() + "' using defined sources: '" + sourceNames + "'"));
+                }
+                case DOWNLOAD -> {
+                    PluginData pluginData = processingData.getPluginData();
+                    if (!pluginData.canCheckForUpdate()) {
+                        continue;
+                    }
+
+                    iterator.remove();
+                    if (!pluginData.isEnabled() || !pluginData.isUpdateAvailable() || pluginData.isAlreadyDownloaded()) {
+                        processingData.getFuture().complete(false);
+                        break;
+                    }
+
+                    try {
+                        if (pluginData.downloadUpdate(updater.updaterPlugin().getDownloadDir())) {
+                            pluginData.versionDifference(VersionDifference.UNKNOWN);
+                            pluginData.setAlreadyDownloaded(true);
+                            processingData.getFuture().complete(true);
+                            break;
+                        } else {
+                            processingData.getFuture().complete(false);
+                        }
+                    } catch (Exception e) {
+                        processingData.getFuture().completeExceptionally(e);
+                    }
+
+                    String sourceNames = String.join(", ", pluginData.sourceData().stream().map(SourceData::sourceName).toList());
+                    processingData.getFuture().completeExceptionally(new IOException("Failed to download update for plugin '%s' using defined sources: '%s'".formatted(pluginData.pluginName(), sourceNames)));
+                }
+                case SEND_NOTIFICATION -> {
+                    iterator.remove();
+                    String message = updater.constructUpdateMessage();
+                    if (message != null) {
+                        List<T> users = updater.platform().getOnlineUsersWithPermission("pluginupdater.notify");
+                        updater.platform().broadcastMessage(users, message);
+                    }
+                }
             }
-            case SEND_NOTIFICATION -> {
-                String message = updater.constructUpdateMessage();
-                if (message != null) {
-                    List<T> users = updater.platform().getOnlineUsersWithPermission("pluginupdater.notify");
-                    updater.platform().broadcastMessage(users, message);
+
+            this.currentlyProcessing.compute(state, (key, oldValue) -> oldValue != null ? oldValue + 1 : 1);
+            if (state != ProcessingData.State.SEND_NOTIFICATION) {
+                List<T> users = updater.platform().getOnlineUsersWithPermission("pluginupdater.notify");
+                if (!users.isEmpty()) {
+                    int processed = this.currentlyProcessing.getOrDefault(state, 1);
+                    int total = processed + this.remainingWithState(state);
+                    String message = "<#b7faa2>Updater processing: <#66b04f>%s<#b7faa2>/<#66b04f>%s"
+                        .formatted(processed, total);
+
+                    updater.platform().broadcastActionBar(users, message);
                 }
             }
         }

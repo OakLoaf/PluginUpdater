@@ -1,9 +1,10 @@
 package org.lushplugins.pluginupdater.api.source.type;
 
 import org.jetbrains.annotations.Nullable;
+import org.lushplugins.pluginupdater.api.http.Endpoint;
+import org.lushplugins.pluginupdater.api.http.RateLimit;
 import org.lushplugins.pluginupdater.api.source.SourceData;
 import org.lushplugins.pluginupdater.api.util.HttpUtil;
-import org.lushplugins.pluginupdater.api.util.UpdaterConstants;
 import org.lushplugins.pluginupdater.api.source.Source;
 import org.lushplugins.pluginupdater.api.updater.PluginData;
 import org.lushplugins.pluginupdater.api.version.DownloadableRelease;
@@ -11,14 +12,21 @@ import org.lushplugins.pluginupdater.api.version.Version;
 
 import java.io.IOException;
 import java.net.http.HttpResponse;
+import java.time.Duration;
 import java.util.Objects;
 
 public class HangarSource implements Source {
     public static final String NAME = "hangar";
+    public static final Endpoint ENDPOINT = Endpoint.create("https://hangar.papermc.io/api/v1", new RateLimit(20, Duration.ofSeconds(5)));
 
     @Override
     public String getName() {
         return NAME;
+    }
+
+    @Override
+    public RateLimit getRateLimit() {
+        return ENDPOINT.rateLimit();
     }
 
     @Override
@@ -27,14 +35,12 @@ public class HangarSource implements Source {
             return null;
         }
 
-        HttpResponse<String> response = HttpUtil.sendRequest(String.format("%s/projects/%s/latestrelease", UpdaterConstants.Endpoint.HANGAR, projectSlug));
-
-        if (response.statusCode() != 200) {
-            throw new IllegalStateException("Received invalid response code (" + response.statusCode() + ") whilst checking '" + pluginData.pluginName() + "' for updates.");
-        }
+        sourceData.endpoint().markRequest();
+        HttpResponse<String> response = HttpUtil.sendRequest("%s/projects/%s/latestrelease"
+            .formatted(sourceData.endpoint().url(), projectSlug));
+        HttpUtil.validateResponse(sourceData.endpoint(), pluginData, response);
 
         String version = response.body();
-
         return pluginData.latestVersionParser().parse(version);
     }
 
@@ -46,12 +52,13 @@ public class HangarSource implements Source {
 
         Version version = pluginData.latestVersion().orElseThrow();
         String downloadUrl = "%s/projects/%s/versions/%s/PAPER/download".formatted(
-            UpdaterConstants.Endpoint.HANGAR,
+            sourceData.endpoint().url(),
             projectSlug,
             version.version());
 
         return DownloadableRelease.builder()
             .pluginData(pluginData)
+            .endpoint(sourceData.endpoint())
             .downloadUrl(downloadUrl)
             .build();
     }
@@ -59,11 +66,6 @@ public class HangarSource implements Source {
     @Override
     public @Nullable String getChangelogUrl(PluginData pluginData, SourceData sourceData) {
         return null;
-    }
-
-    @Override
-    public int getRateLimit() {
-        return 1;
     }
 
     /**
@@ -74,6 +76,11 @@ public class HangarSource implements Source {
         @Override
         public String sourceName() {
             return NAME;
+        }
+
+        @Override
+        public Endpoint endpoint() {
+            return ENDPOINT;
         }
 
         public static Builder builder() {

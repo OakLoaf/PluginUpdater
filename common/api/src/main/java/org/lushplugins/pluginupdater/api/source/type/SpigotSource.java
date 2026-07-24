@@ -3,24 +3,33 @@ package org.lushplugins.pluginupdater.api.source.type;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import org.jetbrains.annotations.Nullable;
+import org.lushplugins.pluginupdater.api.http.Endpoint;
+import org.lushplugins.pluginupdater.api.http.RateLimit;
 import org.lushplugins.pluginupdater.api.source.SourceData;
 import org.lushplugins.pluginupdater.api.updater.PluginData;
 import org.lushplugins.pluginupdater.api.util.HttpUtil;
-import org.lushplugins.pluginupdater.api.util.UpdaterConstants;
 import org.lushplugins.pluginupdater.api.source.Source;
 import org.lushplugins.pluginupdater.api.version.DownloadableRelease;
 import org.lushplugins.pluginupdater.api.version.Version;
 
 import java.io.IOException;
 import java.net.http.HttpResponse;
+import java.time.Duration;
 import java.util.Objects;
 
 public class SpigotSource implements Source {
     public static final String NAME = "spigot";
+    public static final Endpoint ENDPOINT = Endpoint.create("https://api.spiget.org/v2", new RateLimit(300, Duration.ofMinutes(1)));
 
     @Override
     public String getName() {
         return NAME;
+    }
+
+    @Override
+    public RateLimit getRateLimit() {
+        // The spiget endpoint has no rate limit but to be reasonable we have implemented one locally
+        return ENDPOINT.rateLimit();
     }
 
     @Override
@@ -29,12 +38,10 @@ public class SpigotSource implements Source {
             return null;
         }
 
+        sourceData.endpoint().markRequest();
         HttpResponse<String> response = HttpUtil.sendRequest("%s/resources/%s/versions/latest"
-            .formatted(UpdaterConstants.Endpoint.SPIGET, resourceId));
-
-        if (response.statusCode() != 200) {
-            throw new IllegalStateException("Received invalid response code (" + response.statusCode() + ") whilst checking '" + pluginData.pluginName() + "' for updates.");
-        }
+            .formatted(sourceData.endpoint().url(), resourceId));
+        HttpUtil.validateResponse(sourceData.endpoint(), pluginData, response);
 
         JsonObject pluginJson = JsonParser.parseString(response.body()).getAsJsonObject();
         String version = pluginJson.get("name").getAsString();
@@ -49,11 +56,12 @@ public class SpigotSource implements Source {
         }
 
         String downloadUrl = "%s/resources/%s/download".formatted(
-            UpdaterConstants.Endpoint.SPIGET,
+            sourceData.endpoint().url(),
             resourceId);
 
         return DownloadableRelease.builder()
             .pluginData(pluginData)
+            .endpoint(sourceData.endpoint())
             .downloadUrl(downloadUrl)
             .build();
     }
@@ -68,11 +76,6 @@ public class SpigotSource implements Source {
         return null;
     }
 
-    @Override
-    public int getRateLimit() {
-        return 1;
-    }
-
     /**
      * @param resourceId The Spigot Resource id
      */
@@ -81,6 +84,11 @@ public class SpigotSource implements Source {
         @Override
         public String sourceName() {
             return NAME;
+        }
+
+        @Override
+        public Endpoint endpoint() {
+            return ENDPOINT;
         }
 
         public static Builder builder() {

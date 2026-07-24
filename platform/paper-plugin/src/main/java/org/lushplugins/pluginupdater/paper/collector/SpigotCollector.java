@@ -37,7 +37,7 @@ public record SpigotCollector(UpdaterImpl<?> updater) implements PluginDataColle
     private @Nullable PluginData collectPlugin(PluginInfo unknownPlugin) {
         HttpResponse<String> response;
         try {
-            response = HttpUtil.sendRequest(String.format("%s/search/resources/%s", UpdaterConstants.Endpoint.SPIGET, unknownPlugin.getName()));
+            response = HttpUtil.sendRequest(String.format("%s/search/resources/%s", SpigotSource.ENDPOINT.url(), unknownPlugin.getName()));
         } catch (IOException | InterruptedException e) {
             updater.updaterPlugin().getLogger().log(Level.WARNING, "Caught error whilst searching for project on spiget: ", e);
             return null;

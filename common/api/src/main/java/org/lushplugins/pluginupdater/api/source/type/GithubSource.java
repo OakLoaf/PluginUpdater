@@ -4,10 +4,11 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import org.jetbrains.annotations.Nullable;
+import org.lushplugins.pluginupdater.api.http.Endpoint;
+import org.lushplugins.pluginupdater.api.http.RateLimit;
 import org.lushplugins.pluginupdater.api.source.SourceData;
 import org.lushplugins.pluginupdater.api.util.HttpUtil;
 import org.lushplugins.pluginupdater.api.util.StringUtil;
-import org.lushplugins.pluginupdater.api.util.UpdaterConstants;
 import org.lushplugins.pluginupdater.api.source.Source;
 import org.lushplugins.pluginupdater.api.updater.PluginData;
 import org.lushplugins.pluginupdater.api.version.DownloadableRelease;
@@ -18,16 +19,23 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.time.Duration;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
 public class GithubSource implements Source {
     public static final String NAME = "github";
+    public static final Endpoint ENDPOINT = Endpoint.create("https://api.github.com", new RateLimit(60, Duration.ofHours(1)));
 
     @Override
     public String getName() {
         return NAME;
+    }
+
+    @Override
+    public RateLimit getRateLimit() {
+        return ENDPOINT.rateLimit();
     }
 
     @Override
@@ -72,6 +80,7 @@ public class GithubSource implements Source {
 
         return DownloadableRelease.builder()
             .pluginData(pluginData)
+            .endpoint(sourceData.endpoint())
             .downloadUrl(downloadUrl)
             .downloadHeaders(downloadHeaders)
             .build();
@@ -89,21 +98,20 @@ public class GithubSource implements Source {
 
     private JsonObject getLatestRelease(PluginData pluginData, Data githubData) throws IOException, InterruptedException {
         HttpRequest.Builder requestBuilder = HttpUtil.prepareRequestBuilder(URI.create("%s/repos/%s/releases/latest"
-                .formatted(UpdaterConstants.Endpoint.GITHUB, githubData.repo())), null);
+                .formatted(githubData.endpoint().url(), githubData.repo())), null);
 
         githubData.token()
             .filter(token -> !token.isEmpty())
             .ifPresent(token -> requestBuilder.header("Authorization", "Bearer " + token));
 
+        githubData.endpoint().markRequest();
         HttpClient client = HttpClient.newHttpClient();
         HttpResponse<String> response = client.send(
             requestBuilder.build(),
             HttpResponse.BodyHandlers.ofString());
         client.close();
 
-        if (response.statusCode() != 200) {
-            throw new IllegalStateException("Received invalid response code (%s) whilst checking '%s' for updates.".formatted(response.statusCode(), pluginData.pluginName()));
-        }
+        HttpUtil.validateResponse(githubData.endpoint(), pluginData, response);
 
         return JsonParser.parseString(response.body()).getAsJsonObject();
     }
@@ -118,6 +126,11 @@ public class GithubSource implements Source {
         @Override
         public String sourceName() {
             return NAME;
+        }
+
+        @Override
+        public Endpoint endpoint() {
+            return ENDPOINT;
         }
 
         public static Builder builder() {

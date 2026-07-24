@@ -48,7 +48,7 @@ public record ModrinthCollector(UpdaterImpl<?> updater) implements PluginDataCol
 
         HttpResponse<String> response;
         try {
-            response = HttpUtil.sendRequest(String.format("%s/version_files", UpdaterConstants.Endpoint.MODRINTH), payload);
+            response = HttpUtil.sendRequest(String.format("%s/version_files", ModrinthSource.ENDPOINT.url()), payload);
         } catch (IOException | InterruptedException e) {
             updater.updaterPlugin().getLogger().log(Level.WARNING, "Caught error whilst getting project data from hashes: ", e);
             return Collections.emptyList();

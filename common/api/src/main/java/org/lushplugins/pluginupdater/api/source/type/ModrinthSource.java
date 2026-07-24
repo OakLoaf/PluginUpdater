@@ -7,9 +7,10 @@ import com.google.gson.JsonPrimitive;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 import org.lushplugins.pluginupdater.api.exception.InvalidVersionFormatException;
+import org.lushplugins.pluginupdater.api.http.Endpoint;
+import org.lushplugins.pluginupdater.api.http.RateLimit;
 import org.lushplugins.pluginupdater.api.source.SourceData;
 import org.lushplugins.pluginupdater.api.util.HttpUtil;
-import org.lushplugins.pluginupdater.api.util.UpdaterConstants;
 import org.lushplugins.pluginupdater.api.source.Source;
 import org.lushplugins.pluginupdater.api.updater.PluginData;
 import org.lushplugins.pluginupdater.api.version.DownloadableRelease;
@@ -19,6 +20,7 @@ import org.lushplugins.pluginupdater.api.version.comparator.VersionComparator;
 
 import java.io.IOException;
 import java.net.http.HttpResponse;
+import java.time.Duration;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -26,6 +28,7 @@ import java.util.stream.Collectors;
 
 public class ModrinthSource implements Source {
     public static final String NAME = "modrinth";
+    public static final Endpoint ENDPOINT = Endpoint.create("https://api.modrinth.com/v2", new RateLimit(300, Duration.ofMinutes(1)));
 
     private final List<String> defaultLoaders;
     private final String serverVersion;
@@ -39,6 +42,11 @@ public class ModrinthSource implements Source {
     @Override
     public String getName() {
         return NAME;
+    }
+
+    @Override
+    public RateLimit getRateLimit() {
+        return ENDPOINT.rateLimit();
     }
 
     @Override
@@ -66,6 +74,7 @@ public class ModrinthSource implements Source {
 
         return DownloadableRelease.builder()
             .pluginData(pluginData)
+            .endpoint(sourceData.endpoint())
             .downloadUrl(downloadUrl)
             .build();
     }
@@ -82,7 +91,7 @@ public class ModrinthSource implements Source {
 
     private JsonArray getVersions(PluginData pluginData, Data modrinthData, @Nullable String serverVersion) throws IOException, InterruptedException {
         StringBuilder uriBuilder = new StringBuilder("%s/project/%s/version"
-            .formatted(UpdaterConstants.Endpoint.MODRINTH, modrinthData.projectId()))
+            .formatted(modrinthData.endpoint().url(), modrinthData.projectId()))
             .append("?loaders=").append(modrinthData.loaders().orElse(this.defaultLoaders).stream()
                 .map(s -> "%22" + s + "%22")
                 .collect(Collectors.joining(",", "[", "]")))
@@ -96,11 +105,9 @@ public class ModrinthSource implements Source {
             uriBuilder.append("&version_type=").append(channel);
         });
 
+        modrinthData.endpoint().markRequest();
         HttpResponse<String> response = HttpUtil.sendRequest(uriBuilder.toString());
-        if (response.statusCode() != 200) {
-            throw new IllegalStateException("Received invalid response code (%s) whilst checking '%s' for updates."
-                .formatted(response.statusCode(), pluginData.pluginName()));
-        }
+        HttpUtil.validateResponse(modrinthData.endpoint(), pluginData, response);
 
         return JsonParser.parseString(response.body()).getAsJsonArray();
     }
@@ -135,11 +142,6 @@ public class ModrinthSource implements Source {
         return versions.get(0).getAsJsonObject();
     }
 
-    @Override
-    public int getRateLimit() {
-        return 1;
-    }
-
     public static class ReleaseChannel {
         public static final List<String> ALL = null;
         public static final String RELEASE = "release";
@@ -157,6 +159,11 @@ public class ModrinthSource implements Source {
         @Override
         public String sourceName() {
             return NAME;
+        }
+
+        @Override
+        public Endpoint endpoint() {
+            return ENDPOINT;
         }
 
         @ApiStatus.Internal

@@ -1,6 +1,7 @@
 package org.lushplugins.pluginupdater.api.version;
 
 import org.jetbrains.annotations.Nullable;
+import org.lushplugins.pluginupdater.api.http.Endpoint;
 import org.lushplugins.pluginupdater.api.updater.PluginData;
 import org.lushplugins.pluginupdater.api.util.DownloadLogger;
 import org.lushplugins.pluginupdater.api.util.HttpUtil;
@@ -21,6 +22,7 @@ import java.util.Optional;
 
 public record DownloadableRelease(
     PluginData pluginData,
+    Endpoint endpoint,
     String downloadUrl,
     Map<String, String> downloadHeaders,
     Optional<String> jarName
@@ -39,11 +41,14 @@ public record DownloadableRelease(
             .GET()
             .build();
 
+        endpoint.markRequest();
         HttpClient client = HttpUtil.client();
         HttpResponse<Void> response = client.send(
             request,
             HttpResponse.BodyHandlers.discarding()
         );
+
+        HttpUtil.validateResponse(endpoint, pluginData, response);
 
         if (response.statusCode() != 200) {
             throw new IllegalStateException("Response code was " + response.statusCode());
@@ -105,6 +110,7 @@ public record DownloadableRelease(
 
     public static class Builder {
         private PluginData pluginData;
+        private Endpoint endpoint;
         private String downloadUrl;
         private Map<String, String> downloadHeaders;
         private String jarName;
@@ -113,6 +119,11 @@ public record DownloadableRelease(
 
         public Builder pluginData(PluginData pluginData) {
             this.pluginData = pluginData;
+            return this;
+        }
+
+        public Builder endpoint(Endpoint endpoint) {
+            this.endpoint = endpoint;
             return this;
         }
 
@@ -134,6 +145,7 @@ public record DownloadableRelease(
         public DownloadableRelease build() {
             return new DownloadableRelease(
                 Objects.requireNonNull(pluginData),
+                Objects.requireNonNull(endpoint),
                 Objects.requireNonNull(downloadUrl),
                 downloadHeaders != null ? downloadHeaders : Collections.emptyMap(),
                 Optional.ofNullable(jarName)
