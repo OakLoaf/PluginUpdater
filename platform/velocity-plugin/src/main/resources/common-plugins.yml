@@ -1,8 +1,8 @@
 floodgate:
   source: geyser
   project-name: floodgate
-  version-format: "<version>-.+ (b<build>-<commit>)"
-  latest-version-format: "<version>"
+  version-format: <version>-.+ \(b<build>-<commit>\)
+  latest-version-format: <version>
 ForcePack:
   source: modrinth
   modrinth-project-id: v182E90X
@@ -17,7 +17,7 @@ packetevents:
   modrinth-project-id: HYKaKraK
 Plan:
   source: github
-  github-repo: "plan-player-analytics/Plan"
+  github-repo: plan-player-analytics/Plan
 spark:
   source: spigot
   spigot-resource-id: 57242
@@ -29,16 +29,16 @@ Tebex:
   modrinth-project-id: nRA0jiJt
 VentureChat:
   source: github
-  github-repo: "Aust1n46/VentureChat"
+  github-repo: Aust1n46/VentureChat
 ViaBackwards:
   source: modrinth
   modrinth-project-id: NpvuJQoq
-  channels: "release"
+  channels: release
 ViaRewind:
   source: modrinth
   modrinth-project-id: TbHIxhx5
-  channels: "release"
+  channels: release
 ViaVersion:
   source: modrinth
   modrinth-project-id: P1OZGk5p
-  channels: "release"
+  channels: release
