@@ -10,6 +10,7 @@ import org.lushplugins.pluginupdater.api.source.type.GeyserSource;
 import org.lushplugins.pluginupdater.api.source.type.ModrinthSource;
 import org.lushplugins.pluginupdater.api.updater.PluginInfo;
 import org.lushplugins.pluginupdater.api.util.UpdaterConstants;
+import org.lushplugins.pluginupdater.paper.api.util.PaperUtil;
 
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
@@ -23,8 +24,8 @@ public record PaperPluginInfo(Plugin plugin) implements PluginInfo {
     static {
         SourceRegistry.register(new GeyserSource("spigot"));
         SourceRegistry.register(new ModrinthSource(
-                List.of("bukkit", "spigot", "paper", "purpur", "folia"),
-                ServerBuildInfo.buildInfo().minecraftVersionId()));
+            PaperUtil.isFolia() ? List.of("folia") : List.of("bukkit", "spigot", "paper", "purpur"),
+            ServerBuildInfo.buildInfo().minecraftVersionId()));
     }
 
     @Override
