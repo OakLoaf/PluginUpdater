@@ -193,7 +193,7 @@ UltraCosmetics:
 Vault:
   source: spigot
   spigot-resource-id: 34315
-  version-format: "<version>-b<build>"
+  version-format: "v<version>-b<build>"
 VentureChat:
   source: spigot
   spigot-resource-id: 771
