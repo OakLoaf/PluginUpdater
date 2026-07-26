@@ -35,7 +35,7 @@ public record UpdatesCommand(UpdaterImpl<?> updater) implements OrphanCommand {
                     String name = configManager.getMessage("major-update-available-color", "<#ff6969>")
                         + pluginName;
 
-                    if (pluginData.latestVersion().map(Version::potentiallyUnsafe).orElse(false)) {
+                    if (pluginData.latestVersion().map(Version::hasWarningTags).orElse(false)) {
                         name += "<hover:show_text:This version is marked as potentially unsafe for your server version>"
                             + configManager.getMessage("major-update-available-color", "<#ff6969>")
                             + "*"
@@ -47,7 +47,7 @@ public record UpdatesCommand(UpdaterImpl<?> updater) implements OrphanCommand {
                     String name = configManager.getMessage("update-available-color", "<#ffda54>")
                         + pluginName;
 
-                    if (pluginData.latestVersion().map(Version::potentiallyUnsafe).orElse(false)) {
+                    if (pluginData.latestVersion().map(Version::hasWarningTags).orElse(false)) {
                         name += "<hover:show_text:This version is marked as potentially unsafe for your server version>"
                             + configManager.getMessage("major-update-available-color", "<#ff6969>")
                             + "*"
@@ -99,8 +99,9 @@ public record UpdatesCommand(UpdaterImpl<?> updater) implements OrphanCommand {
                     pluginData.latestVersion().orElseThrow().rawVersionString()
                 );
 
-            if (latestVersion.potentiallyUnsafe()) {
-                message += "<hover:show_text:This version is marked as potentially unsafe for your server version>"
+            if (latestVersion.hasWarningTags()) {
+                String warningTags = String.join("\n", latestVersion.warningTags());
+                message += "<hover:show_text:" + warningTags + ">"
                     + majorUpdateAvailableColor
                     + "*"
                     + "</hover>";

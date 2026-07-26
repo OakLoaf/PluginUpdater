@@ -2,6 +2,8 @@ package org.lushplugins.pluginupdater.api.version;
 
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 public record Version(
@@ -10,7 +12,7 @@ public record Version(
     Optional<String> preReleaseMeta,
     Optional<Integer> buildNum,
     Optional<String> buildMeta,
-    boolean potentiallyUnsafe
+    List<String> warningTags
 ) {
 
     public Version(
@@ -18,8 +20,7 @@ public record Version(
         @Nullable String version,
         @Nullable String preReleaseMeta,
         @Nullable Integer buildNum,
-        @Nullable String buildMeta,
-        boolean potentiallyUnsafe
+        @Nullable String buildMeta
     ) {
         this(
             rawVersionString,
@@ -27,7 +28,7 @@ public record Version(
             Optional.ofNullable(preReleaseMeta),
             Optional.ofNullable(buildNum),
             Optional.ofNullable(buildMeta),
-            potentiallyUnsafe
+            new ArrayList<>()
         );
     }
 
@@ -35,23 +36,23 @@ public record Version(
         return version.orElse(rawVersionString);
     }
 
+    public boolean hasWarningTags() {
+        return !warningTags.isEmpty();
+    }
+
+    public void warningTag(String warningTag) {
+        warningTags.add(warningTag);
+    }
+
     public Version withRawVersionString(String rawVersionString) {
-        return new Version(rawVersionString, version, preReleaseMeta, buildNum, buildMeta, potentiallyUnsafe);
+        return new Version(rawVersionString, version, preReleaseMeta, buildNum, buildMeta, warningTags);
     }
 
     public Version withBuildNum(@Nullable Integer buildNum) {
-        return new Version(rawVersionString, version, preReleaseMeta, Optional.ofNullable(buildNum), buildMeta, potentiallyUnsafe);
+        return new Version(rawVersionString, version, preReleaseMeta, Optional.ofNullable(buildNum), buildMeta, warningTags);
     }
 
     public Version withBuildMeta(@Nullable String commitHash) {
-        return new Version(rawVersionString, version, preReleaseMeta, buildNum, Optional.ofNullable(commitHash), potentiallyUnsafe);
-    }
-
-    public Version markAsPotentiallyUnsafe(boolean potentiallyUnsafe) {
-        return new Version(rawVersionString, version, preReleaseMeta, buildNum, buildMeta, potentiallyUnsafe);
-    }
-
-    public Version markAsPotentiallyUnsafe() {
-        return markAsPotentiallyUnsafe(true);
+        return new Version(rawVersionString, version, preReleaseMeta, buildNum, Optional.ofNullable(commitHash), warningTags);
     }
 }

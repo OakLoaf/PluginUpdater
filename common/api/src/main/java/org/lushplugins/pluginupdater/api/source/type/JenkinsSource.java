@@ -53,8 +53,7 @@ public class JenkinsSource implements Source {
             null,
             null,
             buildNum,
-            null,
-            false
+            null
         );
     }
 

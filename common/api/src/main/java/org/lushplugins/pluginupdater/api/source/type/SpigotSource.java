@@ -32,6 +32,16 @@ public class SpigotSource implements Source {
         return ENDPOINT.rateLimit();
     }
 
+    public boolean isPremium(PluginData pluginData, String resourceId) throws IOException, InterruptedException {
+        HttpResponse<String> response = HttpUtil.sendRequest("%s/resources/%s"
+            .formatted(ENDPOINT.url(), resourceId));
+        HttpUtil.validateResponse(ENDPOINT, pluginData, response);
+
+        return JsonParser.parseString(response.body()).getAsJsonObject()
+            .get("premium")
+            .getAsBoolean();
+    }
+
     @Override
     public Version fetchLatestVersion(PluginData pluginData, SourceData sourceData) throws IOException, InterruptedException {
         if (!(sourceData instanceof Data(String resourceId))) {
@@ -44,9 +54,14 @@ public class SpigotSource implements Source {
         HttpUtil.validateResponse(sourceData.endpoint(), pluginData, response);
 
         JsonObject pluginJson = JsonParser.parseString(response.body()).getAsJsonObject();
-        String version = pluginJson.get("name").getAsString();
+        String rawVersion = pluginJson.get("name").getAsString();
+        Version version = pluginData.latestVersionParser().parse(rawVersion);
 
-        return pluginData.latestVersionParser().parse(version);
+        if (isPremium(pluginData, resourceId)) {
+            version.warningTag("This is a premium Spigot resource so must be downloaded manually");
+        }
+
+        return version;
     }
 
     @Override

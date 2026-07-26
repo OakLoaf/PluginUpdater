@@ -35,7 +35,7 @@ public class RegexVersionParser implements VersionParser {
 
         String buildMeta = getNamedGroupContent(matcher, "buildmeta");
 
-        return new Version(rawVersion, version, preReleaseMeta, buildNum, buildMeta, false);
+        return new Version(rawVersion, version, preReleaseMeta, buildNum, buildMeta);
     }
 
     public static String getNamedGroupContent(Matcher matcher, String namedGroup) {

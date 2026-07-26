@@ -79,7 +79,7 @@ public record UpdateCommand(UpdaterImpl<?> updater) implements OrphanCommand {
                     return;
                 }
 
-                if (pluginData.latestVersion().map(Version::potentiallyUnsafe).orElse(false) && !force) {
+                if (pluginData.latestVersion().map(Version::hasWarningTags).orElse(false) && !force) {
                     majorUpdateCount.incrementAndGet();
                     return;
                 }

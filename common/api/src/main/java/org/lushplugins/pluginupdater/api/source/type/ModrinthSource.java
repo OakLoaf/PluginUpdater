@@ -56,11 +56,15 @@ public class ModrinthSource implements Source {
         }
 
         JsonObject versionJson = getLatestVersion(pluginData, modrinthData);
-        String version = versionJson.get("version_number").getAsString();
+        String rawVersion = versionJson.get("version_number").getAsString();
         boolean supportsServerVersion = this.serverVersion == null || versionJson.get("game_versions").getAsJsonArray().contains(new JsonPrimitive(this.serverVersion));
+        Version version = pluginData.latestVersionParser().parse(rawVersion);
 
-        return pluginData.latestVersionParser().parse(version)
-            .markAsPotentiallyUnsafe(!supportsServerVersion);
+        if (!supportsServerVersion) {
+            version.warningTag("This version is marked as potentially unsafe for your server version");
+        }
+
+        return version;
     }
 
     @Override
