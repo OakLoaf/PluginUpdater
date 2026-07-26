@@ -10,6 +10,7 @@ import revxrsal.commands.annotation.Subcommand;
 import revxrsal.commands.orphan.OrphanCommand;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @SuppressWarnings("unused")
@@ -47,8 +48,12 @@ public record UpdatesCommand(UpdaterImpl<?> updater) implements OrphanCommand {
                     String name = configManager.getMessage("update-available-color", "<#ffda54>")
                         + pluginName;
 
-                    if (pluginData.latestVersion().map(Version::hasWarningTags).orElse(false)) {
-                        name += "<hover:show_text:This version is marked as potentially unsafe for your server version>"
+                    List<String> warningTags = pluginData.latestVersion()
+                        .map(Version::warningTags)
+                        .orElse(Collections.emptyList());
+                    if (!warningTags.isEmpty()) {
+                        String warningTagsStr = String.join("\n", warningTags);
+                        name += "<hover:show_text:" + warningTags + ">"
                             + configManager.getMessage("major-update-available-color", "<#ff6969>")
                             + "*"
                             + "</hover>";
