@@ -77,7 +77,7 @@ FastAsyncWorldEdit:
 floodgate:
   source: geyser
   project-name: floodgate
-  version-format: <version>-.+ (b<build>-<commit>)
+  version-format: <version>-.+ \(b<build>-<commit>\)
   latest-version-format: <version>
 ForcePack:
   source: spigot
