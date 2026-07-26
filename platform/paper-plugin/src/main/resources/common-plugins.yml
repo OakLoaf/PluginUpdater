@@ -104,8 +104,8 @@ Images:
   source: spigot
   spigot-resource-id: 53036
 LuckPerms:
-  source: spigot
-  spigot-resource-id: 28140
+  source: modrinth
+  modrinth-project-id: Vebnzrzj
 mclogs:
   source: modrinth
   modrinth-project-id: 6DdCzpTL
