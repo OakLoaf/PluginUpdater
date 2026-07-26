@@ -97,7 +97,7 @@ public class PluginData {
     }
 
     public boolean isUpdateAvailable() {
-        return !versionDifference.equals(VersionDifference.LATEST) && !versionDifference.equals(VersionDifference.UNKNOWN);
+        return !versionDifference.isLatest() && !versionDifference.equals(VersionDifference.UNKNOWN);
     }
 
     public VersionDifference versionDifference() {
@@ -184,7 +184,7 @@ public class PluginData {
         this.checkRan = true;
         this.versionDifference = versionDifference;
 
-        if (!versionDifference.equals(VersionDifference.LATEST)) {
+        if (!versionDifference.isLatest()) {
             this.latestVersion = latestVersion;
             return true;
         } else {

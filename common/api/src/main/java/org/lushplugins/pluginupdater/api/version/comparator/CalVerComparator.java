@@ -22,7 +22,8 @@ public class CalVerComparator implements VersionComparator {
     }
 
     /**
-     * @return {@link VersionDifference#LATEST} if the latest version has the same (or earlier) date and time
+     * @return {@link VersionDifference#LATER} if the latest version has an earlier date and time
+     * <br> {@link VersionDifference#SAME} if the latest version has the same date and time
      * <br> {@link VersionDifference#MINOR} if the latest version has a later date
      * <br> {@link VersionDifference#PATCH} if the latest version has the same date but later time
      */
@@ -30,9 +31,13 @@ public class CalVerComparator implements VersionComparator {
     public VersionDifference compare(Version currentVersion, Version latestVersion) throws InvalidVersionFormatException {
         LocalDateTime currentVersionDateTime = parseDateTime(currentVersion.rawVersionString());
         LocalDateTime latestVersionDateTime = parseDateTime(latestVersion.rawVersionString());
-        if (!latestVersionDateTime.isAfter(currentVersionDateTime)) {
+
+        int comparison = currentVersionDateTime.compareTo(latestVersionDateTime);
+        if (comparison > 0) {
+            return VersionDifference.LATER;
+        } else if (comparison == 0) {
             return VersionDifference.comparePreReleaseMeta(currentVersion, latestVersion)
-                .ifLatestGet(() -> VersionDifference.compareBuildNum(currentVersion, latestVersion));
+                .ifSameGet(() -> VersionDifference.compareBuildNum(currentVersion, latestVersion));
         }
 
         LocalDate currentVersionDate = currentVersionDateTime.toLocalDate();

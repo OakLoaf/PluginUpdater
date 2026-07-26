@@ -13,23 +13,37 @@ public enum VersionDifference {
     PATCH,
     BUILD,
     /**
-     * Using same version or later than release (usually beta/dev-build)
+     * Using same version
      */
-    LATEST,
+    SAME,
+    /**
+     * Later than release (usually beta/dev-build)
+     */
+    LATER,
     UNKNOWN;
 
-    public VersionDifference ifLatestGet(Supplier<VersionDifference> supplier) {
-        return this == VersionDifference.LATEST ? supplier.get() : this;
+    /**
+     * @return whether the VersionDifference is the same or later
+     */
+    public boolean isLatest() {
+        return this == SAME || this == LATER;
+    }
+
+    public VersionDifference ifSameGet(Supplier<VersionDifference> supplier) {
+        return this == SAME ? supplier.get() : this;
     }
 
     public static VersionDifference comparePreReleaseMeta(Version currentVersion, Version latestVersion) {
         String currentPreReleaseMeta = currentVersion.preReleaseMeta().orElse(null);
         String latestPreReleaseMeta = latestVersion.preReleaseMeta().orElse(null);
+        if (currentPreReleaseMeta == null && latestPreReleaseMeta == null) {
+            return SAME;
+        }
         if (currentPreReleaseMeta == null) {
-            return VersionDifference.LATEST;
+            return LATER;
         }
         if (latestPreReleaseMeta == null) {
-            return VersionDifference.BUILD;
+            return BUILD;
         }
 
         String[] currentPreReleaseMetaParts = currentPreReleaseMeta.split("\\.");
@@ -47,30 +61,44 @@ public enum VersionDifference {
                 int latestPreReleaseNum = Integer.parseInt(latestPreReleaseMeta);
 
                 if (currentPreReleaseNum < latestPreReleaseNum) {
-                    return VersionDifference.BUILD;
+                    return BUILD;
                 } else if (currentPreReleaseNum > latestPreReleaseNum) {
-                    return VersionDifference.LATEST;
+                    return LATER;
                 }
             } else if (currentMetaPartNumeric != latestMetaPartNumeric) {
-                return currentMetaPartNumeric ? VersionDifference.BUILD : VersionDifference.LATEST;
+                return currentMetaPartNumeric ? BUILD : LATER;
             } else {
                 int asciiComparison = currentMetaPart.compareTo(latestMetaPart);
-
                 if (asciiComparison < 0) {
-                    return VersionDifference.BUILD;
+                    return BUILD;
                 } else if (asciiComparison > 0) {
-                    return VersionDifference.LATEST;
+                    return LATER;
                 }
             }
         }
 
-        return currentPreReleaseMeta.length() < latestPreReleaseMeta.length() ? VersionDifference.BUILD : VersionDifference.LATEST;
+        if (currentPreReleaseMeta.length() < latestPreReleaseMeta.length()) {
+            return BUILD;
+        } else if (currentPreReleaseMeta.length() > latestPreReleaseMeta.length()) {
+            return LATER;
+        } else {
+            return SAME;
+        }
     }
 
     public static VersionDifference compareBuildNum(Version currentVersion, Version latestVersion) {
         return currentVersion.buildNum()
             .flatMap(currentBuild -> latestVersion.buildNum()
-                .map(latestBuild -> latestBuild > currentBuild  ? VersionDifference.BUILD : VersionDifference.LATEST))
-            .orElse(VersionDifference.LATEST);
+                .map(latestBuild -> {
+                    if (currentBuild < latestBuild) {
+                        return BUILD;
+                    } else if (currentBuild > latestBuild) {
+                        return LATER;
+                    } else {
+                        return SAME;
+                    }
+                }))
+            // If either current or latest are null then we cannot compare
+            .orElse(SAME);
     }
 }

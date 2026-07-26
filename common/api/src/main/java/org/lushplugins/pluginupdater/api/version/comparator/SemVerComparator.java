@@ -33,14 +33,13 @@ public class SemVerComparator implements VersionComparator {
                     return VersionDifference.MAJOR;
                 }
             } else if (latestVersionPart < currentVersionPart) {
-                return VersionDifference.comparePreReleaseMeta(currentVersion, latestVersion)
-                    .ifLatestGet(() -> VersionDifference.compareBuildNum(currentVersion, latestVersion));
+                return VersionDifference.LATER;
             }
 
             i++;
         }
 
         return VersionDifference.comparePreReleaseMeta(currentVersion, latestVersion)
-            .ifLatestGet(() -> VersionDifference.compareBuildNum(currentVersion, latestVersion));
+            .ifSameGet(() -> VersionDifference.compareBuildNum(currentVersion, latestVersion));
     }
 }

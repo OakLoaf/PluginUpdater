@@ -128,7 +128,7 @@ public class ModrinthSource implements Source {
                     .formatted(pluginData.pluginName(), e.getMessage()));
             }
 
-            if (versionDifference != VersionDifference.LATEST) {
+            if (!versionDifference.isLatest()) {
                 return versionJson;
             }
         }

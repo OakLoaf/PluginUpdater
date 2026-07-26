@@ -80,7 +80,7 @@ public record UpdatesCommand(UpdaterImpl<?> updater) implements OrphanCommand {
         List<String> plugins = new ArrayList<>();
         configManager.getAllPluginData().forEach(pluginData -> {
             VersionDifference versionDifference = pluginData.versionDifference();
-            if (!pluginData.isAlreadyDownloaded() && (versionDifference.equals(VersionDifference.LATEST) || versionDifference.equals(VersionDifference.UNKNOWN))) {
+            if (!pluginData.isAlreadyDownloaded() && (versionDifference.isLatest() || versionDifference.equals(VersionDifference.UNKNOWN))) {
                 return;
             }
 
