@@ -59,6 +59,8 @@ public class SpigotSource implements Source {
 
         if (isPremium(pluginData, resourceId)) {
             version.warningTag("This is a premium Spigot resource so must be downloaded manually");
+        } else {
+            version.warningTag("Spigot releases cannot be properly verified against your server version");
         }
 
         return version;
