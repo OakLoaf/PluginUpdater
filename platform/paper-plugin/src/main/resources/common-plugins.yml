@@ -14,8 +14,8 @@ ChunkyBorder:
   source: modrinth
   modrinth-project-id: s86X568j
 CommandPanels:
-  source: spigot
-  spigot-resource-id: 67788
+  source: modrinth
+  modrinth-project-id: towqcvHT
 commandtimer:
   source: github
   github-repo: titivermeesch/CommandTimer
