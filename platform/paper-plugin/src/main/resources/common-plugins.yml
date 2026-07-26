@@ -32,14 +32,14 @@ DeadChest:
   source: modrinth
   modrinth-project-id: pKqnV03Y
 DecentHolograms:
-  source: spigot
-  spigot-resource-id: 96927
+  source: modrinth
+  modrinth-project-id: w02MKsTg
 DeluxeMentions:
   source: github
   github-repo: RubenArtz/DeluxeMentions
 DeluxeMenus:
-  source: spigot
-  spigot-resource-id: 11734
+  source: modrinth
+  modrinth-project-id: kKZkPgJ7
 DHSupport:
   source: modrinth
   modrinth-project-id: IjY7seTG
@@ -62,11 +62,11 @@ EternalTags:
   source: spigot
   spigot-resource-id: 91842
 ExcellentCrates:
-  source: spigot
-  spigot-resource-id: 48732
+  source: modrinth
+  modrinth-project-id: TdefKtjL
 ExcellentEnchants:
-  source: spigot
-  spigot-resource-id: 61693
+  source: modrinth
+  modrinth-project-id: QufNAmjx
 FairyChat:
   source: modrinth
   modrinth-project-id: gnSidBpb
@@ -92,14 +92,14 @@ GriefPrevention:
   source: modrinth
   modrinth-project-id: O4o4mKaq
 GSit:
-  source: spigot
-  spigot-resource-id: 62325
+  source: modrinth
+  modrinth-project-id: GOHbQGyX
 HuskChat:
-  source: spigot
-  spigot-resource-id: 94496
+  source: modrinth
+  modrinth-project-id: SSXTD3me
 HuskHomes:
-  source: spigot
-  spigot-resource-id: 83767
+  source: modrinth
+  modrinth-project-id: J6U9o3JG
 Images:
   source: spigot
   spigot-resource-id: 53036
@@ -137,14 +137,14 @@ packetevents:
   source: modrinth
   modrinth-project-id: HYKaKraK
 PlaceholderAPI:
-  source: spigot
-  spigot-resource-id: 6245
+  source: modrinth
+  modrinth-project-id: lKEzGugV
 Plan:
   source: github
   github-repo: plan-player-analytics/Plan
 PlayerParticles:
-  source: spigot
-  spigot-resource-id: 40261
+  source: modrinth
+  modrinth-project-id: LFI8sNdf
 PluginPortal:
   source: modrinth
   modrinth-project-id: 5qkQnnWO
@@ -158,8 +158,8 @@ SimpleVoiceChat:
   source: modrinth
   modrinth-project-id: 9eGKb6K1
 SkinsRestorer:
-  source: spigot
-  spigot-resource-id: 2124
+  source: modrinth
+  modrinth-project-id: TsLS8Py5
 Skulls:
   source: spigot
   spigot-resource-id: 90098
@@ -170,8 +170,8 @@ squaremap:
   source: modrinth
   modrinth-project-id: PFb7ZqK6
 SunLight:
-  source: spigot
-  spigot-resource-id: 67733
+  source: modrinth
+  modrinth-project-id: ZVX6Kjqj
 TAB:
   source: modrinth
   modrinth-project-id: gG7VFbG0
@@ -184,12 +184,13 @@ TabTPS:
 Tebex:
   source: modrinth
   modrinth-project-id: nRA0jiJt
+  loaders: paper
 Tweakin:
   source: spigot
   spigot-resource-id: 93444
 UltraCosmetics:
-  source: spigot
-  spigot-resource-id: 10905
+  source: modrinth
+  modrinth-project-id: GLJ7ZGMW
 Vault:
   source: spigot
   spigot-resource-id: 34315
