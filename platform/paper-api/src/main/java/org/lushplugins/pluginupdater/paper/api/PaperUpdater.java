@@ -8,6 +8,7 @@ import org.lushplugins.pluginupdater.api.source.SourceRegistry;
 import org.lushplugins.pluginupdater.api.source.type.GeyserSource;
 import org.lushplugins.pluginupdater.api.source.type.HangarSource;
 import org.lushplugins.pluginupdater.api.source.type.ModrinthSource;
+import org.lushplugins.pluginupdater.api.source.type.SpigotSource;
 import org.lushplugins.pluginupdater.api.updater.Updater;
 import org.lushplugins.pluginupdater.paper.api.listener.PlayerListener;
 import org.lushplugins.pluginupdater.paper.api.platform.PaperUpdaterPlatform;
@@ -32,6 +33,7 @@ public class PaperUpdater {
         SourceRegistry.register(new ModrinthSource(
             PaperUtil.isFolia() ? List.of("folia") : List.of("bukkit", "spigot", "paper", "purpur"),
             serverVersion));
+        SourceRegistry.register(new SpigotSource(serverVersion));
     }
 
     public static Updater.Builder<Player> builder(Plugin plugin) {

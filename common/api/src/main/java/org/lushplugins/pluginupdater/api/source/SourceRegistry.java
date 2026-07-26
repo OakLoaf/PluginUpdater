@@ -14,7 +14,6 @@ public class SourceRegistry {
     static {
         register(new GithubSource());
         register(new JenkinsSource());
-        register(new SpigotSource());
     }
 
     public static Optional<Source> get(String name) {

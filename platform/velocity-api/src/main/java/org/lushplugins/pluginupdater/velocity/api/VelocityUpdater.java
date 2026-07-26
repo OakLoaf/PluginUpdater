@@ -7,6 +7,7 @@ import org.lushplugins.pluginupdater.api.source.SourceRegistry;
 import org.lushplugins.pluginupdater.api.source.type.GeyserSource;
 import org.lushplugins.pluginupdater.api.source.type.HangarSource;
 import org.lushplugins.pluginupdater.api.source.type.ModrinthSource;
+import org.lushplugins.pluginupdater.api.source.type.SpigotSource;
 import org.lushplugins.pluginupdater.api.updater.Updater;
 import org.lushplugins.pluginupdater.velocity.api.listener.PlayerListener;
 import org.lushplugins.pluginupdater.velocity.api.platform.VelocityUpdaterPlatform;
@@ -28,6 +29,7 @@ public class VelocityUpdater {
         SourceRegistry.register(new GeyserSource("velocity"));
         SourceRegistry.register(new HangarSource("velocity", server.getVersion().getVersion()));
         SourceRegistry.register(new ModrinthSource(List.of("velocity"), null));
+        SourceRegistry.register(new SpigotSource(null));
     }
 
     public static Updater.Builder<Player> builder(ProxyServer server, PluginContainer plugin, Logger logger) {
