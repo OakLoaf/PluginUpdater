@@ -2,23 +2,14 @@ package org.lushplugins.pluginupdater.velocity.api.plugin;
 
 import com.velocitypowered.api.plugin.PluginContainer;
 import org.jetbrains.annotations.Nullable;
-import org.lushplugins.pluginupdater.api.source.SourceRegistry;
-import org.lushplugins.pluginupdater.api.source.type.GeyserSource;
-import org.lushplugins.pluginupdater.api.source.type.ModrinthSource;
 import org.lushplugins.pluginupdater.api.updater.PluginInfo;
 import org.lushplugins.pluginupdater.api.util.UpdaterConstants;
 
 import java.io.File;
 import java.nio.file.Path;
-import java.util.List;
 import java.util.logging.Logger;
 
 public record VelocityPluginInfo(PluginContainer container, @Nullable Logger logger) implements PluginInfo {
-
-    static {
-        SourceRegistry.register(new GeyserSource("velocity"));
-        SourceRegistry.register(new ModrinthSource(List.of("velocity"), null));
-    }
 
     @Override
     public String getName() {

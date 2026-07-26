@@ -16,6 +16,7 @@ import org.lushplugins.pluginupdater.common.collector.CommonPluginCollector;
 import org.lushplugins.pluginupdater.common.collector.ModrinthCollector;
 import org.lushplugins.pluginupdater.common.platform.UpdaterPlugin;
 import org.lushplugins.pluginupdater.util.BuildParameters;
+import org.lushplugins.pluginupdater.velocity.api.VelocityUpdater;
 import org.lushplugins.pluginupdater.velocity.api.VelocityUpdaterAPI;
 import org.lushplugins.pluginupdater.velocity.api.platform.VelocityUpdaterPlatform;
 import org.lushplugins.pluginupdater.velocity.api.plugin.VelocityPluginInfo;
@@ -44,6 +45,7 @@ public class VelocityUpdaterPlugin implements UpdaterPlugin {
 
     @Inject
     public VelocityUpdaterPlugin(ProxyServer server, Logger logger, @DataDirectory Path dataFolder) {
+        VelocityUpdater.populateRegistries(server);
         instance = this;
 
         this.server = server;

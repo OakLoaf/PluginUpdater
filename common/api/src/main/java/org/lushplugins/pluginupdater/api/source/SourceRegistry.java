@@ -13,7 +13,6 @@ public class SourceRegistry {
 
     static {
         register(new GithubSource());
-        register(new HangarSource());
         register(new JenkinsSource());
         register(new SpigotSource());
     }

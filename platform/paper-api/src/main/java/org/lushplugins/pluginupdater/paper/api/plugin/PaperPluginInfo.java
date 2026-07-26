@@ -1,32 +1,19 @@
 package org.lushplugins.pluginupdater.paper.api.plugin;
 
-import io.papermc.paper.ServerBuildInfo;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.lushplugins.pluginupdater.api.source.SourceRegistry;
-import org.lushplugins.pluginupdater.api.source.type.GeyserSource;
-import org.lushplugins.pluginupdater.api.source.type.ModrinthSource;
 import org.lushplugins.pluginupdater.api.updater.PluginInfo;
 import org.lushplugins.pluginupdater.api.util.UpdaterConstants;
-import org.lushplugins.pluginupdater.paper.api.util.PaperUtil;
 
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public record PaperPluginInfo(Plugin plugin) implements PluginInfo {
-
-    static {
-        SourceRegistry.register(new GeyserSource("spigot"));
-        SourceRegistry.register(new ModrinthSource(
-            PaperUtil.isFolia() ? List.of("folia") : List.of("bukkit", "spigot", "paper", "purpur"),
-            ServerBuildInfo.buildInfo().minecraftVersionId()));
-    }
 
     @Override
     public String getName() {

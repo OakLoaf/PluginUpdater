@@ -44,6 +44,7 @@ public class SourceDataDeserializer {
     public static HangarSource.Data hangarSourceData(Config config) {
         return HangarSource.Data.builder()
             .projectSlug(config.get("hangar-project-slug"))
+            .channel(config.get("channel"))
             .build();
     }
 

@@ -9,6 +9,7 @@ import org.lushplugins.pluginupdater.common.UpdaterImpl;
 import org.lushplugins.pluginupdater.common.collector.CommonPluginCollector;
 import org.lushplugins.pluginupdater.common.collector.ModrinthCollector;
 import org.lushplugins.pluginupdater.common.platform.UpdaterPlugin;
+import org.lushplugins.pluginupdater.paper.api.PaperUpdater;
 import org.lushplugins.pluginupdater.paper.api.PaperUpdaterAPI;
 import org.lushplugins.pluginupdater.paper.api.platform.PaperUpdaterPlatform;
 import org.lushplugins.pluginupdater.paper.api.plugin.PaperPluginInfo;
@@ -31,6 +32,7 @@ public final class PaperUpdaterPlugin extends JavaPlugin implements UpdaterPlugi
 
     @Override
     public void onLoad() {
+        PaperUpdater.populateRegistries();
         plugin = this;
     }
 
