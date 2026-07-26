@@ -53,7 +53,7 @@ public record UpdatesCommand(UpdaterImpl<?> updater) implements OrphanCommand {
                         .orElse(Collections.emptyList());
                     if (!warningTags.isEmpty()) {
                         String warningTagsStr = String.join("\n", warningTags);
-                        name += "<hover:show_text:" + warningTags + ">"
+                        name += "<hover:show_text:" + warningTagsStr + ">"
                             + configManager.getMessage("major-update-available-color", "<#ff6969>")
                             + "*"
                             + "</hover>";
