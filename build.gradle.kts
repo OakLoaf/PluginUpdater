@@ -6,7 +6,7 @@ plugins {
 }
 
 group = "org.lushplugins"
-version = "4.1.4"
+version = "4.2.0"
 
 allprojects {
     plugins.apply("java-library")
