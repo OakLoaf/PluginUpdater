@@ -10,7 +10,6 @@ import org.lushplugins.pluginupdater.cli.command.CLICommandHandler;
 import org.lushplugins.pluginupdater.cli.platform.CLIPlatform;
 import org.lushplugins.pluginupdater.cli.plugin.parser.BukkitInfoParser;
 import org.lushplugins.pluginupdater.cli.plugin.parser.InfoParser;
-import org.lushplugins.pluginupdater.cli.plugin.parser.PaperInfoParser;
 import org.lushplugins.pluginupdater.cli.plugin.parser.VelocityInfoParser;
 import org.lushplugins.pluginupdater.common.UpdaterImpl;
 import org.lushplugins.pluginupdater.common.collector.ModrinthCollector;
@@ -25,8 +24,6 @@ public class PluginUpdaterCLI implements UpdaterPlugin {
     private Platform platform = null;
     private String serverVersion = null;
     private Path pluginsFolder = null;
-    private String pluginResourceName = null;
-    private String pluginResourceConfigPath = null;
 
     public Platform getPlatform() {
         return platform;
