@@ -34,9 +34,9 @@ public class ModrinthSource implements Source {
     private final String serverVersion;
 
     @ApiStatus.Internal
-    public ModrinthSource(List<String> defaultLoaders, @Nullable String serverVersion) {
+    public ModrinthSource(List<String> defaultLoaders, @Nullable String minecraftVersion) {
         this.defaultLoaders = defaultLoaders;
-        this.serverVersion = serverVersion;
+        this.serverVersion = minecraftVersion;
     }
 
     @Override
