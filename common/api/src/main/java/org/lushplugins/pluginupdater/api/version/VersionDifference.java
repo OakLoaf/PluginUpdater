@@ -57,8 +57,8 @@ public enum VersionDifference {
             boolean latestMetaPartNumeric = StringUtil.isNumeric(latestMetaPart);
 
             if (currentMetaPartNumeric && latestMetaPartNumeric) {
-                int currentPreReleaseNum = Integer.parseInt(currentPreReleaseMeta);
-                int latestPreReleaseNum = Integer.parseInt(latestPreReleaseMeta);
+                int currentPreReleaseNum = Integer.parseInt(currentMetaPart);
+                int latestPreReleaseNum = Integer.parseInt(latestMetaPart);
 
                 if (currentPreReleaseNum < latestPreReleaseNum) {
                     return BUILD;
