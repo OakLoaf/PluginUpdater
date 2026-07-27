@@ -31,12 +31,12 @@ public class ModrinthSource implements Source {
     public static final Endpoint ENDPOINT = Endpoint.create("https://api.modrinth.com/v2", new RateLimit(300, Duration.ofMinutes(1)));
 
     private final List<String> defaultLoaders;
-    private final String serverVersion;
+    private final String minecraftVersion;
 
     @ApiStatus.Internal
     public ModrinthSource(List<String> defaultLoaders, @Nullable String minecraftVersion) {
         this.defaultLoaders = defaultLoaders;
-        this.serverVersion = minecraftVersion;
+        this.minecraftVersion = minecraftVersion;
     }
 
     @Override
@@ -57,7 +57,7 @@ public class ModrinthSource implements Source {
 
         JsonObject versionJson = getLatestVersion(pluginData, modrinthData);
         String rawVersion = versionJson.get("version_number").getAsString();
-        boolean supportsServerVersion = this.serverVersion == null || versionJson.get("game_versions").getAsJsonArray().contains(new JsonPrimitive(this.serverVersion));
+        boolean supportsServerVersion = this.minecraftVersion == null || versionJson.get("game_versions").getAsJsonArray().contains(new JsonPrimitive(this.minecraftVersion));
         Version version = pluginData.latestVersionParser().parse(rawVersion);
 
         if (!supportsServerVersion) {
@@ -117,7 +117,7 @@ public class ModrinthSource implements Source {
     }
 
     private JsonObject getLatestVersion(PluginData pluginData, Data modrinthData) throws IOException, InterruptedException {
-        JsonArray versions = getVersions(pluginData, modrinthData, this.serverVersion);
+        JsonArray versions = getVersions(pluginData, modrinthData, this.minecraftVersion);
         if (!versions.isEmpty()) {
             JsonObject versionJson = versions.get(0).getAsJsonObject();
 
