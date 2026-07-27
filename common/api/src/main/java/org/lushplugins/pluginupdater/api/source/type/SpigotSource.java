@@ -70,7 +70,7 @@ public class SpigotSource implements Source {
         Version version = pluginData.latestVersionParser().parse(rawVersion);
 
         JsonObject resourceJson = getResourceJson(pluginData, spigotData);
-        if (minecraftVersion != null && !resourceJson.get("testedVersion").getAsJsonArray().contains(new JsonPrimitive(minecraftVersion))) {
+        if (minecraftVersion != null && !resourceJson.get("testedVersions").getAsJsonArray().contains(new JsonPrimitive(minecraftVersion))) {
             version.warningTag("This version is marked as potentially unsafe for your server version");
         }
         if (resourceJson.get("premium").getAsBoolean()) {
