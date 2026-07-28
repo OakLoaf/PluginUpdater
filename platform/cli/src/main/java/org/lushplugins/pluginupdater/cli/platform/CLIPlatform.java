@@ -1,27 +1,68 @@
 package org.lushplugins.pluginupdater.cli.platform;
 
+import com.electronwill.nightconfig.core.Config;
+import com.electronwill.nightconfig.core.io.ConfigParser;
+import com.electronwill.nightconfig.yaml.YamlFormat;
 import org.jetbrains.annotations.Nullable;
 import org.lushplugins.pluginupdater.api.platform.UpdaterPlatform;
 import org.lushplugins.pluginupdater.cli.PluginUpdaterCLI;
 import org.lushplugins.pluginupdater.cli.plugin.CLIPluginInfo;
 import org.lushplugins.pluginupdater.cli.plugin.parser.InfoParser;
 
-import java.nio.file.Path;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
 import java.util.*;
+import java.util.function.UnaryOperator;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 public class CLIPlatform implements UpdaterPlatform<Object> {
     private final Map<String, CLIPluginInfo> plugins;
 
     public CLIPlatform(PluginUpdaterCLI cli) {
-        // TODO: Load plugin info from jars and map name to info
-        Path pluginsFolder = cli.getPluginsFolder();
-
-        // Get plugin yml from plugin jar and then parse to CLIPluginInfo
         InfoParser infoParser = cli.getPlatform().infoParser();
+        ConfigParser<Config> yamlParser = YamlFormat.defaultInstance().createParser();
+        try {
+            this.plugins = Files.list(cli.getPluginsFolder())
+                .filter(path -> path.toString().endsWith(".jar"))
+                .map(path -> {
+                    File file = path.toFile();
+                    try (JarFile jarFile = new JarFile(file)) {
+                        InfoParser fallbackInfoParser = infoParser;
+                        while (fallbackInfoParser != null) {
+                            JarEntry entry = jarFile.getJarEntry(fallbackInfoParser.getResourceName());
+                            if (entry != null) {
+                                try (InputStream input = jarFile.getInputStream(entry)) {
+                                    Config config = fallbackInfoParser.parseResource(input);
 
-        this.plugins = Collections.emptyMap();
+                                    return new CLIPluginInfo(
+                                        fallbackInfoParser.getName(config),
+                                        fallbackInfoParser.getRawVersion(config),
+                                        file);
+                                }
+                            }
+
+                            fallbackInfoParser = fallbackInfoParser.getFallbackInfoParser();
+                        }
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+
+                    return null;
+                })
+                .filter(Objects::nonNull)
+                .collect(Collectors.toMap(
+                    CLIPluginInfo::getName,
+                    UnaryOperator.identity()
+                ));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override

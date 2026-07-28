@@ -2,7 +2,6 @@ package org.lushplugins.pluginupdater.cli.plugin.parser;
 
 import com.electronwill.nightconfig.core.Config;
 
-// TODO
 public class BukkitInfoParser implements InfoParser {
     public static BukkitInfoParser INSTANCE = new BukkitInfoParser();
 
@@ -18,11 +17,11 @@ public class BukkitInfoParser implements InfoParser {
 
     @Override
     public String getName(Config config) {
-        return "";
+        return config.get("name");
     }
 
     @Override
-    public String getVersion(Config config) {
-        return "";
+    public String getRawVersion(Config config) {
+        return config.get("version");
     }
 }

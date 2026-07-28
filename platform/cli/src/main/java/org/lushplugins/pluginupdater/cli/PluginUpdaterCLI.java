@@ -68,6 +68,8 @@ public class PluginUpdaterCLI implements UpdaterPlugin {
     public static void main(String[] args) {
         PluginUpdaterCLI cli = new PluginUpdaterCLI();
 
+        // TODO: Read arguments
+
         String serverVersion = cli.getServerVersion();
         switch (cli.getPlatform()) {
             case PAPER -> {
