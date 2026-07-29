@@ -1,6 +1,5 @@
 package org.lushplugins.pluginupdater.cli;
 
-import org.apache.commons.cli.*;
 import org.lushplugins.pluginupdater.api.source.SourceRegistry;
 import org.lushplugins.pluginupdater.api.source.type.GeyserSource;
 import org.lushplugins.pluginupdater.api.source.type.HangarSource;
@@ -22,27 +21,23 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class PluginUpdaterCLI implements UpdaterPlugin {
-    private Platform platform = Platform.PAPER;
-    private Path pluginsFolder = null;
+    private final Platform platform;
+    private final Path pluginsFolder;
+
+    public PluginUpdaterCLI() {
+        this.platform = Platform.valueOf(System.getProperty("platform", "paper").toUpperCase());
+        this.pluginsFolder = Path.of(System.getProperty("plugins-folder", "plugins"));
+    }
 
     public Platform getPlatform() {
         return platform;
     }
 
-    public void setPlatform(Platform platform) {
-        this.platform = platform;
-    }
-
     public Path getPluginsFolder() {
         return pluginsFolder;
-    }
-
-    public void setPluginsFolder(Path pluginsFolder) {
-        this.pluginsFolder = pluginsFolder;
     }
 
     @Override
@@ -52,8 +47,8 @@ public class PluginUpdaterCLI implements UpdaterPlugin {
 
     @Override
     public Path getDownloadDir() {
-        // TODO: Support getting folder name from system property
-        return pluginsFolder.resolve("update");
+        String updateFolder = System.getProperty("update-folder", "update");
+        return pluginsFolder.resolve(updateFolder);
     }
 
     @Override
@@ -81,68 +76,35 @@ public class PluginUpdaterCLI implements UpdaterPlugin {
     }
 
     public static void main(String[] args) {
-        CommandLineParser parser = new DefaultParser();
-
         PluginUpdaterCLI cli = new PluginUpdaterCLI();
 
-        try {
-            CommandLine cmd = parser.parse(createOptions(), args, false);
-
-            if (cmd.hasOption("p")) {
-                cli.setPlatform(Platform.valueOf(cmd.getOptionValue("p").toUpperCase()));
+        String serverVersion = System.getProperty("server-version");
+        Platform platform = cli.getPlatform();
+        switch (platform) {
+            case PAPER, FOLIA -> {
+                SourceRegistry.register(new GeyserSource("spigot"));
+                SourceRegistry.register(new HangarSource("paper", serverVersion));
+                SourceRegistry.register(new ModrinthSource(
+                    platform == Platform.FOLIA ? List.of("folia") : List.of("bukkit", "spigot", "paper", "purpur"),
+                    serverVersion));
+                SourceRegistry.register(new SpigotSource(serverVersion));
             }
-
-            if (cmd.hasOption("f")) {
-                cli.setPluginsFolder(Path.of(cmd.getOptionValue("f")));
+            case VELOCITY -> {
+                SourceRegistry.register(new GeyserSource("velocity"));
+                SourceRegistry.register(new HangarSource("velocity", serverVersion));
+                SourceRegistry.register(new ModrinthSource(List.of("velocity"), null));
+                SourceRegistry.register(new SpigotSource(null));
             }
-
-            String serverVersion = null;
-            if (cmd.hasOption("v")) {
-                serverVersion = cmd.getOptionValue("v");
-            }
-
-            switch (cli.getPlatform()) {
-                case PAPER -> {
-                    SourceRegistry.register(new GeyserSource("spigot"));
-                    SourceRegistry.register(new HangarSource("paper", serverVersion));
-                    SourceRegistry.register(new ModrinthSource(List.of("bukkit", "spigot", "paper", "purpur"), serverVersion));
-                    SourceRegistry.register(new SpigotSource(serverVersion));
-                }
-                case FOLIA -> {
-                    SourceRegistry.register(new GeyserSource("spigot"));
-                    SourceRegistry.register(new HangarSource("paper", serverVersion));
-                    SourceRegistry.register(new ModrinthSource(List.of("folia"), serverVersion));
-                    SourceRegistry.register(new SpigotSource(serverVersion));
-                }
-                case VELOCITY -> {
-                    SourceRegistry.register(new GeyserSource("velocity"));
-                    SourceRegistry.register(new HangarSource("velocity", serverVersion));
-                    SourceRegistry.register(new ModrinthSource(List.of("velocity"), null));
-                    SourceRegistry.register(new SpigotSource(null));
-                }
-            }
-
-            UpdaterImpl<?> updater = new UpdaterImpl<>(
-                new CLIPlatform(cli),
-                cli,
-                new CLICommandHandler(),
-                List.of(
-                    ModrinthCollector::new
-                )
-            );
-        } catch (ParseException e) {
-            Logger.getGlobal().log(Level.SEVERE, "Failed to parse arguments", e);
-            System.exit(1);
-        } catch (RuntimeException e) {
-            Logger.getGlobal().log(Level.SEVERE, "Caught an unexpected error", e);
-            System.exit(1);
         }
-    }
 
-    private static Options createOptions() {
-        Options options = new Options();
-
-        return options;
+        new UpdaterImpl<>(
+            new CLIPlatform(cli),
+            cli,
+            new CLICommandHandler(),
+            List.of(
+                ModrinthCollector::new
+            )
+        );
     }
 
     public enum Platform {

@@ -1,6 +1,7 @@
 package org.lushplugins.pluginupdater.cli.platform;
 
 import com.electronwill.nightconfig.core.Config;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.jetbrains.annotations.Nullable;
 import org.lushplugins.pluginupdater.api.platform.UpdaterPlatform;
 import org.lushplugins.pluginupdater.cli.PluginUpdaterCLI;
@@ -90,8 +91,7 @@ public class CLIPlatform implements UpdaterPlatform<Object> {
 
     @Override
     public void broadcastMessage(Collection<Object> users, String message) {
-        // TODO: Strip adventure formatting tags
-        Logger.getGlobal().log(Level.INFO, message);
+        Logger.getGlobal().log(Level.INFO, MiniMessage.miniMessage().stripTags(message));
     }
 
     @Override
