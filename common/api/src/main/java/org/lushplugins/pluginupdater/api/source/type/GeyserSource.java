@@ -34,11 +34,6 @@ public class GeyserSource implements Source {
     }
 
     @Override
-    public RateLimit getRateLimit() {
-        return ENDPOINT.rateLimit();
-    }
-
-    @Override
     public Version fetchLatestVersion(PluginData pluginData, SourceData sourceData) throws IOException, InterruptedException {
         if (!(sourceData instanceof GeyserSource.Data(String projectName))) {
             return null;

@@ -35,11 +35,6 @@ public class JenkinsSource implements Source {
     }
 
     @Override
-    public RateLimit getRateLimit() {
-        return RATE_LIMIT;
-    }
-
-    @Override
     public Version fetchLatestVersion(PluginData pluginData, SourceData sourceData) throws IOException, InterruptedException, InvalidVersionFormatException {
         if (!(sourceData instanceof Data jenkinsData)) {
             return null;

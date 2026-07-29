@@ -28,13 +28,13 @@ public record UpdateCommand(UpdaterImpl<?> updater) implements OrphanCommand {
 
         if (pluginName.startsWith("#")) {
             String tag = pluginName.substring(1);
-            updateAll(actor, (pluginData) -> pluginData.hasTag(tag), true);
+            updateAll(actor, (pluginData) -> pluginData.hasTag(tag), true, true);
             return null;
         } else if (pluginName.startsWith("$")) {
             String sourceName = pluginName.substring(1);
             updateAll(actor, (pluginData) -> pluginData.sourceData().stream().anyMatch(source -> {
                 return source.sourceName().equals(sourceName);
-            }), true);
+            }), true, true);
             return null;
         }
 
@@ -55,13 +55,18 @@ public record UpdateCommand(UpdaterImpl<?> updater) implements OrphanCommand {
 
     @Command("update all")
     @CommandPermission("pluginupdater.downloadupdates")
-    public void updateAll(CommandActor actor, @Switch("force") boolean force) {
-        updateAll(actor, (ignored) -> true, force);
+    public void updateAll(
+        CommandActor actor,
+        @Switch(value = "ignore-warnings", shorthand = 'w') boolean ignoreWarnings,
+        @Switch(value = "include-major", shorthand = 'f') boolean includeMajorChanges
+    ) {
+        updateAll(actor, (ignored) -> true, ignoreWarnings, includeMajorChanges);
     }
 
-    public void updateAll(CommandActor actor, Predicate<PluginData> predicate, boolean force) {
+    public void updateAll(CommandActor actor, Predicate<PluginData> predicate, boolean ignoreWarnings, boolean includeMajorChanges) {
         UpdateHandler<?> updateHandler = updater.updateHandler();
         AtomicInteger updateCount = new AtomicInteger(0);
+        AtomicInteger warningTagCount = new AtomicInteger(0);
         AtomicInteger majorUpdateCount = new AtomicInteger(0);
         updater.config().getAllPluginData().stream()
             .filter(predicate)
@@ -74,12 +79,12 @@ public record UpdateCommand(UpdaterImpl<?> updater) implements OrphanCommand {
                     return;
                 }
 
-                if (pluginData.versionDifference().equals(VersionDifference.MAJOR) && !force) {
-                    majorUpdateCount.incrementAndGet();
+                if (!ignoreWarnings && pluginData.latestVersion().map(Version::hasWarningTags).orElse(false)) {
+                    warningTagCount.incrementAndGet();
                     return;
                 }
 
-                if (pluginData.latestVersion().map(Version::hasWarningTags).orElse(false) && !force) {
+                if (!includeMajorChanges && pluginData.versionDifference().equals(VersionDifference.MAJOR)) {
                     majorUpdateCount.incrementAndGet();
                     return;
                 }
@@ -89,16 +94,21 @@ public record UpdateCommand(UpdaterImpl<?> updater) implements OrphanCommand {
             });
 
         int finalCount = updateCount.get();
+        int finalWarningTagCount = warningTagCount.get();
         int finalMajorCount = majorUpdateCount.get();
 
-        if (finalCount == 0 && finalMajorCount == 0) {
+        if (finalCount == 0 && finalWarningTagCount == 0 && finalMajorCount == 0) {
             actor.reply("<#ff6969>No updates found");
         } else if (finalCount > 0) {
             actor.reply("<#b7faa2>Successfully queued an update for %s plugins".formatted(finalCount));
         }
 
+        if (finalWarningTagCount > 0) {
+            actor.reply("<#e0c01b>%s <#ffe27a>plugins are marked as unsafe, use the <#e0c01b>--ignore-warnings <#ffe27a>flag to ignore warning tags".formatted(finalWarningTagCount));
+        }
+
         if (finalMajorCount > 0) {
-            actor.reply("<#e0c01b>%s <#ffe27a>plugins require major updates or are marked as unsafe for your server version, run <#e0c01b>/updater update all --force <#ffe27a>to force all possible updates".formatted(finalMajorCount));
+            actor.reply("<#e0c01b>%s <#ffe27a>plugins require major updates, use the <#e0c01b>--include-major <#ffe27a>flag to include major updates".formatted(finalMajorCount));
         }
     }
 }

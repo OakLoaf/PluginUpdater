@@ -45,11 +45,6 @@ public class ModrinthSource implements Source {
     }
 
     @Override
-    public RateLimit getRateLimit() {
-        return ENDPOINT.rateLimit();
-    }
-
-    @Override
     public Version fetchLatestVersion(PluginData pluginData, SourceData sourceData) throws IOException, InterruptedException {
         if (!(sourceData instanceof Data modrinthData)) {
             return null;
