@@ -21,6 +21,7 @@ import java.util.Objects;
 
 public class SpigotSource implements Source {
     public static final String NAME = "spigot";
+    // The spiget endpoint has no rate limit but to be reasonable we have implemented one locally
     public static final Endpoint ENDPOINT = Endpoint.create("https://api.spiget.org/v2", new RateLimit(300, Duration.ofMinutes(1)));
 
     private final String minecraftVersion;
@@ -33,12 +34,6 @@ public class SpigotSource implements Source {
     @Override
     public String getName() {
         return NAME;
-    }
-
-    @Override
-    public RateLimit getRateLimit() {
-        // The spiget endpoint has no rate limit but to be reasonable we have implemented one locally
-        return ENDPOINT.rateLimit();
     }
 
     public JsonObject getResourceJson(PluginData pluginData, Data sourceData) throws IOException, InterruptedException {

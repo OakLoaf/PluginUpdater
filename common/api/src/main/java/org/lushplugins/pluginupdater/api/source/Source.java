@@ -13,11 +13,6 @@ public interface Source {
 
     String getName();
 
-    /**
-     * @return The endpoint's rate limit per second, if an endpoint doesn't have a rate limit use a reasonable rate limit
-     */
-    RateLimit getRateLimit();
-
     Version fetchLatestVersion(PluginData pluginData, SourceData sourceData) throws IOException, InterruptedException, InvalidVersionFormatException;
 
     DownloadableRelease fetchDownloadableRelease(PluginData pluginData, SourceData sourceData) throws IOException, InterruptedException;

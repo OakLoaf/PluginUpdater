@@ -41,11 +41,6 @@ public class HangarSource implements Source {
         return NAME;
     }
 
-    @Override
-    public RateLimit getRateLimit() {
-        return ENDPOINT.rateLimit();
-    }
-
     public @Nullable JsonObject fetchLatestVersionJson(PluginData pluginData, Data sourceData, @Nullable String platformVersion) throws IOException, InterruptedException {
         StringBuilder uriBuilder = new StringBuilder("%s/projects/%s/versions?platform=%s&limit=1".formatted(
             sourceData.endpoint().url(),
