@@ -21,6 +21,8 @@ public class CLICommandHandler implements CommandHandler {
     @Override
     public void registerLampCommands(UpdaterImpl<?> updater, Lamp<?> lamp) {
         CommandHandler.super.registerLampCommands(updater, lamp);
+        lamp.register(new StopCommand());
+
         ((Lamp<ConsoleActor>) lamp).accept(CLILamp.pollStdin());
     }
 
