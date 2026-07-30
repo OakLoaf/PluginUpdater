@@ -26,6 +26,7 @@ includeBuild("build-logic")
 
 include("common:api")
 include("common:impl")
+include("platform:cli")
 include("platform:paper-api")
 include("platform:paper-plugin")
 include("platform:velocity-api")
