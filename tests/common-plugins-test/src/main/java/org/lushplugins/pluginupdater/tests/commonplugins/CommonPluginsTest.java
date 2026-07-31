@@ -2,7 +2,6 @@ package org.lushplugins.pluginupdater.tests.commonplugins;
 
 import com.electronwill.nightconfig.core.Config;
 import com.electronwill.nightconfig.yaml.YamlFormat;
-import org.lushplugins.pluginupdater.api.exception.InvalidVersionFormatException;
 import org.lushplugins.pluginupdater.api.updater.PluginData;
 import org.lushplugins.pluginupdater.api.updater.PluginInfo;
 import org.lushplugins.pluginupdater.api.util.UpdaterConstants;
@@ -15,7 +14,6 @@ import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
@@ -31,10 +29,15 @@ public class CommonPluginsTest {
         });
     }
 
-    public static void main(String[] args) {
+    public static void testLocalVersionParsing(List<PluginData> commonPluginData) {
+
+    }
+
+    public static void runTest(String pluginsResource) {
         PluginUpdaterCLI cli = PluginUpdaterCLI.prepareCLI();
 
-        InputStream resource = cli.getResourceStream("common-plugins.yml");
+        boolean passing = true;
+        InputStream resource = cli.getResourceStream(pluginsResource);
         Config config = YamlFormat.defaultInstance().createParser().parse(resource);
         List<PluginData> undownloadedPluginData = config.entrySet().stream()
             .map((entry) -> {
@@ -47,7 +50,7 @@ public class CommonPluginsTest {
                 return PluginDataDeserializer.deserialize(pluginInfo, pluginConfig);
             })
             .filter(Objects::nonNull)
-            .sorted(Comparator.comparing(PluginData::pluginName))
+            .sorted(Comparator.comparing((pluginData) -> pluginData.pluginName().toLowerCase()))
             .toList();
 
         // We fetch all latest versions and then download all jars
@@ -59,12 +62,18 @@ public class CommonPluginsTest {
                 pluginData.latestVersion(pluginData.fetchLatestVersion().version());
             } catch (RuntimeException e) {
                 cli.getLogger().severe(e.getMessage());
+                passing = false;
             }
         }
 
         Path downloadDir = cli.getPluginsFolder();
         for (PluginData pluginData : undownloadedPluginData) {
-            pluginData.downloadUpdate(downloadDir);
+            try {
+                pluginData.downloadUpdate(downloadDir);
+            } catch (Throwable e) {
+                cli.getLogger().log(Level.SEVERE, "Failed to download latest version of " + pluginData.pluginName(), e);
+                passing = false;
+            }
         }
 
         // Platform needs to be created after plugins are downloaded as it collects data from jars on startup
@@ -84,25 +93,10 @@ public class CommonPluginsTest {
             .filter(Objects::nonNull)
             .toList();
 
-        testRemoteVersionParsing(commonPluginData);
-    }
+        testLocalVersionParsing(commonPluginData);
 
-    public static void testLocalVersionParsing(List<PluginData> commonPluginData) {
-
-    }
-
-    public static void testRemoteVersionParsing(List<PluginData> commonPluginData) {
-        List<String> problemPlugins = new ArrayList<>();
-        for (PluginData pluginData : commonPluginData) {
-            try {
-                pluginData.fetchLatestVersion();
-            } catch (InvalidVersionFormatException e) {
-                problemPlugins.add(pluginData.pluginName());
-            }
-        }
-
-        if (!problemPlugins.isEmpty()) {
-            throw new RuntimeException("Failed to parse remote version strings for: " + String.join(", ", problemPlugins));
+        if (!passing) {
+            throw new IllegalStateException("This test has been marked as failed");
         }
     }
 }

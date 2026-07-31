@@ -10,6 +10,9 @@ dependencies {
     implementation(project(":common:impl"))
     implementation(project(":platform:paper-api"))
     implementation("io.github.revxrsal:lamp.bukkit:4.0.0-rc.17")
+
+    testImplementation("org.junit.jupiter:junit-jupiter:5.10.2")
+    testImplementation(project(":tests:common-plugins-test"))
 }
 
 tasks {
