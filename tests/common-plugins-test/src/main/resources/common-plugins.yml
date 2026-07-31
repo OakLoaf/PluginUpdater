@@ -1,0 +1,232 @@
+# TODO: Work out how to use the same file as in paper-plugin
+BannerMaker:
+  source: github
+  github-repo: jyhsu2000/BannerMaker
+BlueMap:
+  source: modrinth
+  modrinth-project-id: swbUV1cr
+CarbonChat:
+  source: modrinth
+  modrinth-project-id: QzooIsZI
+Chunky:
+  source: modrinth
+  modrinth-project-id: fALzjamp
+ChunkyBorder:
+  source: modrinth
+  modrinth-project-id: s86X568j
+CommandPanels:
+  source: modrinth
+  modrinth-project-id: towqcvHT
+commandtimer:
+  source: github
+  github-repo: titivermeesch/CommandTimer
+ConditionalEvents:
+  source: modrinth
+  modrinth-project-id: 4EEcEnDG
+CoreProtect:
+  source: modrinth
+  modrinth-project-id: Lu3KuzdV
+CrazyCrates:
+  source: modrinth
+  modrinth-project-id: r3BBZyf3
+DeadChest:
+  source: modrinth
+  modrinth-project-id: pKqnV03Y
+DecentHolograms:
+  source: modrinth
+  modrinth-project-id: w02MKsTg
+DeluxeMentions:
+  source: github
+  github-repo: RubenArtz/DeluxeMentions
+DeluxeMenus:
+  source: modrinth
+  modrinth-project-id: kKZkPgJ7
+DHSupport:
+  source: modrinth
+  modrinth-project-id: IjY7seTG
+DiscordSRV:
+  source: modrinth
+  modrinth-project-id: UmLGoGij
+Dynmap:
+  source: modrinth
+  modrinth-project-id: fRQREgAc
+EpicRename:
+  source: spigot
+  spigot-resource-id: 4341
+Essentials:
+  source: modrinth
+  modrinth-project-id: hXiIvTyT
+EssentialsSpawn:
+  source: modrinth
+  modrinth-project-id: sYpvDxGJ
+EternalTags:
+  source: spigot
+  spigot-resource-id: 91842
+ExcellentCrates:
+  source: modrinth
+  modrinth-project-id: TdefKtjL
+ExcellentEnchants:
+  source: modrinth
+  modrinth-project-id: QufNAmjx
+FairyChat:
+  source: modrinth
+  modrinth-project-id: gnSidBpb
+FastAsyncWorldEdit:
+  source: modrinth
+  modrinth-project-id: z4HZZnLr
+  loaders: paper
+floodgate:
+  source: geyser
+  project-name: floodgate
+  version-format: <version>-.+ \(b<build>-<commit>\)
+  latest-version-format: <version>
+ForcePack:
+  source: modrinth
+  modrinth-project-id: v182E90X
+Geyser-Spigot:
+  source: geyser
+  project-name: geyser
+GPFlags:
+  source: spigot
+  spigot-resource-id: 55773
+GriefPrevention:
+  source: modrinth
+  modrinth-project-id: O4o4mKaq
+GSit:
+  source: modrinth
+  modrinth-project-id: GOHbQGyX
+HuskChat:
+  source: modrinth
+  modrinth-project-id: SSXTD3me
+HuskHomes:
+  source: modrinth
+  modrinth-project-id: J6U9o3JG
+Images:
+  source: spigot
+  spigot-resource-id: 53036
+LuckPerms:
+  source: modrinth
+  modrinth-project-id: Vebnzrzj
+mclogs:
+  source: modrinth
+  modrinth-project-id: 6DdCzpTL
+Minepacks:
+  source: spigot
+  spigot-resource-id: 19286
+Multiverse-Core:
+  source: modrinth
+  modrinth-project-id: 3wmN97b8
+Multiverse-Inventories:
+  source: modrinth
+  modrinth-project-id: qvdtDX3s
+Multiverse-NetherPortals:
+  source: modrinth
+  modrinth-project-id: vtawPsTo
+Multiverse-Portals:
+  source: modrinth
+  modrinth-project-id: 8VMk6P0I
+Multiverse-SignPortals:
+  source: modrinth
+  modrinth-project-id: WuErDeI1
+NametagEdit:
+  source: spigot
+  spigot-resource-id: 3836
+nightcore:
+  source: modrinth
+  modrinth-project-id: Y4NRwMW5
+packetevents:
+  source: modrinth
+  modrinth-project-id: HYKaKraK
+PlaceholderAPI:
+  source: modrinth
+  modrinth-project-id: lKEzGugV
+Plan:
+  source: github
+  github-repo: plan-player-analytics/Plan
+PlayerParticles:
+  source: modrinth
+  modrinth-project-id: LFI8sNdf
+PluginPortal:
+  source: modrinth
+  modrinth-project-id: 5qkQnnWO
+ProtocolLib:
+  source: github
+  github-repo: dmulloy2/ProtocolLib
+SimplePortals:
+  source: spigot
+  spigot-resource-id: 56772
+SimpleVoiceChat:
+  source: modrinth
+  modrinth-project-id: 9eGKb6K1
+SkinsRestorer:
+  source: modrinth
+  modrinth-project-id: TsLS8Py5
+Skulls:
+  source: spigot
+  spigot-resource-id: 90098
+spark:
+  source: spigot
+  spigot-resource-id: 57242
+squaremap:
+  source: modrinth
+  modrinth-project-id: PFb7ZqK6
+SunLight:
+  source: modrinth
+  modrinth-project-id: ZVX6Kjqj
+TAB:
+  source: modrinth
+  modrinth-project-id: gG7VFbG0
+TAB-Bridge:
+  source: modrinth
+  modrinth-project-id: kG3hVbBX
+TabTPS:
+  source: modrinth
+  modrinth-project-id: cUhi3iB2
+Tebex:
+  source: modrinth
+  modrinth-project-id: nRA0jiJt
+  loaders: paper
+Tweakin:
+  source: spigot
+  spigot-resource-id: 93444
+UltraCosmetics:
+  source: modrinth
+  modrinth-project-id: GLJ7ZGMW
+Vault:
+  source: spigot
+  spigot-resource-id: 34315
+  version-format: <version>(?:-b<build>)?
+VentureChat:
+  source: spigot
+  spigot-resource-id: 771
+ViaBackwards:
+  source: modrinth
+  modrinth-project-id: NpvuJQoq
+  channels: release
+ViaRewind:
+  source: modrinth
+  modrinth-project-id: TbHIxhx5
+  channels: release
+ViaVersion:
+  source: modrinth
+  modrinth-project-id: P1OZGk5p
+  channels: release
+VillagerMarket:
+  source: spigot
+  spigot-resource-id: 82965
+voicechat:
+  source: modrinth
+  modrinth-project-id: 9eGKb6K1
+VoidGen:
+  source: modrinth
+  modrinth-project-id: DCTiMOWF
+WorldEdit:
+  source: modrinth
+  modrinth-project-id: 1u6JkXh5
+WorldGuard:
+  source: modrinth
+  modrinth-project-id: DKY9btbd
+  channels: release
+WorldGuardExtraFlagsPlus:
+  source: modrinth
+  modrinth-project-id: DsxKmIdB
