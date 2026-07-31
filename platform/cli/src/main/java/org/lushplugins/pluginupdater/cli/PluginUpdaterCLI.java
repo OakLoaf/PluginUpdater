@@ -76,7 +76,7 @@ public class PluginUpdaterCLI implements UpdaterPlugin {
         return UpdaterConstants.LOGGER;
     }
 
-    public static void main(String[] args) {
+    public static PluginUpdaterCLI prepareCLI() {
         PluginUpdaterCLI cli = new PluginUpdaterCLI();
 
         String serverVersion = System.getProperty("server-version");
@@ -97,6 +97,12 @@ public class PluginUpdaterCLI implements UpdaterPlugin {
                 SourceRegistry.register(new SpigotSource(null));
             }
         }
+
+        return cli;
+    }
+
+    public static void main(String[] args) {
+        PluginUpdaterCLI cli = prepareCLI();
 
         new UpdaterImpl<>(
             new CLIPlatform(cli),
