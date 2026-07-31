@@ -6,6 +6,7 @@ import org.lushplugins.pluginupdater.api.source.type.HangarSource;
 import org.lushplugins.pluginupdater.api.source.type.ModrinthSource;
 import org.lushplugins.pluginupdater.api.source.type.SpigotSource;
 import org.lushplugins.pluginupdater.api.updater.PluginInfo;
+import org.lushplugins.pluginupdater.api.util.UpdaterConstants;
 import org.lushplugins.pluginupdater.cli.command.CLICommandHandler;
 import org.lushplugins.pluginupdater.cli.platform.CLIPlatform;
 import org.lushplugins.pluginupdater.cli.plugin.parser.BukkitInfoParser;
@@ -72,7 +73,7 @@ public class PluginUpdaterCLI implements UpdaterPlugin {
 
     @Override
     public Logger getLogger() {
-        return Logger.getGlobal();
+        return UpdaterConstants.LOGGER;
     }
 
     public static void main(String[] args) {

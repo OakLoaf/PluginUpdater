@@ -4,6 +4,7 @@ import com.electronwill.nightconfig.core.Config;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.jetbrains.annotations.Nullable;
 import org.lushplugins.pluginupdater.api.platform.UpdaterPlatform;
+import org.lushplugins.pluginupdater.api.util.UpdaterConstants;
 import org.lushplugins.pluginupdater.cli.PluginUpdaterCLI;
 import org.lushplugins.pluginupdater.cli.plugin.CLIPluginInfo;
 import org.lushplugins.pluginupdater.cli.plugin.parser.InfoParser;
@@ -91,7 +92,7 @@ public class CLIPlatform implements UpdaterPlatform<Object> {
 
     @Override
     public void broadcastMessage(Collection<Object> users, String message) {
-        Logger.getGlobal().log(Level.INFO, MiniMessage.miniMessage().stripTags(message));
+        UpdaterConstants.LOGGER.log(Level.INFO, MiniMessage.miniMessage().stripTags(message));
     }
 
     @Override
