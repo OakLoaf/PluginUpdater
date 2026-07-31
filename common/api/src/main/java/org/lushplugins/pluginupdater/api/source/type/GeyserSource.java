@@ -63,8 +63,8 @@ public class GeyserSource implements Source {
         String downloadUrl = "%s/projects/%s/versions/%s/builds/%s/downloads/%s".formatted(
             sourceData.endpoint().url(),
             projectName,
-            version.version(),
-            version.buildNum(),
+            version.version().orElseThrow(),
+            version.buildNum().orElseThrow(),
             this.platform);
 
         return DownloadableRelease.builder()
