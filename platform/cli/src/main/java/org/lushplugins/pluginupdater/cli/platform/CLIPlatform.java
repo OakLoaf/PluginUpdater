@@ -27,6 +27,8 @@ public class CLIPlatform implements UpdaterPlatform<Object> {
     public CLIPlatform(PluginUpdaterCLI cli) {
         InfoParser infoParser = cli.getPlatform().infoParser();
         try {
+            Files.createDirectories(cli.getPluginsFolder());
+
             this.plugins = Files.list(cli.getPluginsFolder())
                 .filter(path -> path.toString().endsWith(".jar"))
                 .map(path -> {
