@@ -11,8 +11,9 @@ dependencies {
     implementation(project(":platform:paper-api"))
     implementation("io.github.revxrsal:lamp.bukkit:4.0.0-rc.17")
 
-    testImplementation("org.junit.jupiter:junit-jupiter:5.10.2")
     testImplementation(project(":tests:common-plugins-test"))
+    testImplementation("org.junit.jupiter:junit-jupiter:5.10.2")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
 tasks {
@@ -49,6 +50,10 @@ tasks {
             modrinth("nMwMeNFr", "2025.07") // UltimateAutoRestart
             modrinth("z4HZZnLr", "zAlVhTdU") // FastAsyncWorldEdit
         }
+    }
+
+    test {
+        useJUnitPlatform()
     }
 }
 
