@@ -7,7 +7,7 @@ import org.lushplugins.pluginupdater.api.util.UpdaterConstants;
 import java.io.File;
 import java.util.logging.Logger;
 
-public record CLIPluginInfo(String name, String version, File file) implements PluginInfo {
+public record CLIPluginInfo(String name, String version, @Nullable File file) implements PluginInfo {
 
     @Override
     public String getName() {
