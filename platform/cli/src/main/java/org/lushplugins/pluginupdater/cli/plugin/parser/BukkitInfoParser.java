@@ -22,6 +22,6 @@ public class BukkitInfoParser implements InfoParser {
 
     @Override
     public String getRawVersion(Config config) {
-        return config.get("version");
+        return config.get("version").toString();
     }
 }
