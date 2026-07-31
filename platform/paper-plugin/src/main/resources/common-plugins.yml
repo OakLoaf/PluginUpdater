@@ -86,8 +86,8 @@ Geyser-Spigot:
   source: geyser
   project-name: geyser
 GPFlags:
-  source: spigot
-  spigot-resource-id: 55773
+  source: modrinth
+  modrinth-project-id: Z0NVSlL6
 GriefPrevention:
   source: modrinth
   modrinth-project-id: O4o4mKaq
