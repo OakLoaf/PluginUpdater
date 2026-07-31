@@ -80,8 +80,8 @@ floodgate:
   version-format: <version>-.+ \(b<build>-<commit>\)
   latest-version-format: <version>
 ForcePack:
-  source: spigot
-  spigot-resource-id: 45439
+  source: modrinth
+  modrinth-project-id: v182E90X
 Geyser-Spigot:
   source: geyser
   project-name: geyser
