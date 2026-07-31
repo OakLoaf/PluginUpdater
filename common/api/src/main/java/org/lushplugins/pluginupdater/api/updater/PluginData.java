@@ -21,6 +21,7 @@ import java.util.logging.Level;
 
 public class PluginData {
     private final String pluginName;
+    // TODO: Make currentVersion modifiable
     private final Version currentVersion;
     private final VersionParser latestVersionParser;
     private final List<SourceData> sourceData;
