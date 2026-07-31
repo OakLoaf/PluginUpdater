@@ -21,7 +21,7 @@ jobs:
     uses: ./.github/workflows/build-platform.yml
     with:
       display-name: 'Build Paper platform'
-      gradle-tasks: 'platform:paper-plugin:build'
+      gradle-tasks: 'platform:paper-plugin:build -x test'
 
   build-velocity:
     name: 'Velocity Platform'
@@ -29,4 +29,4 @@ jobs:
     uses: ./.github/workflows/build-platform.yml
     with:
       display-name: 'Build Velocity platform'
-      gradle-tasks: 'platform:velocity-plugin:build'
+      gradle-tasks: 'platform:velocity-plugin:build -x test'

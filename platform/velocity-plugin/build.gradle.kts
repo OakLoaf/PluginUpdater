@@ -12,6 +12,10 @@ dependencies {
     implementation(project(":platform:velocity-api"))
     implementation("io.github.revxrsal:lamp.velocity:4.0.0-rc.17")
     implementation("io.github.revxrsal:lamp.brigadier:4.0.0-rc.17")
+
+    testImplementation(project(":tests:common-plugins-test"))
+    testImplementation("org.junit.jupiter:junit-jupiter:5.10.2")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
 tasks {
@@ -31,6 +35,10 @@ tasks {
             github("NEZNAMY", "VelocityScoreboardAPI", "2.1.0", "VelocityScoreboardAPI.v2.1.0.jar")
             modrinth("tab-was-taken", "MsHr6ITb")
         }
+    }
+
+    test {
+        useJUnitPlatform()
     }
 }
 
