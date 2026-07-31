@@ -4,6 +4,7 @@ import com.electronwill.nightconfig.core.Config;
 import org.lushplugins.pluginupdater.api.source.SourceData;
 import org.lushplugins.pluginupdater.api.updater.PluginData;
 import org.lushplugins.pluginupdater.api.updater.PluginInfo;
+import org.lushplugins.pluginupdater.api.util.UpdaterConstants;
 import org.lushplugins.pluginupdater.api.version.comparator.VersionComparator;
 import org.lushplugins.pluginupdater.api.version.parser.RegexVersionParser;
 import org.lushplugins.pluginupdater.api.version.parser.VersionParser;
@@ -17,11 +18,11 @@ import java.util.logging.Level;
 public class PluginDataDeserializer {
 
     public static PluginData deserialize(UpdaterImpl<?> updater, String pluginName, Config config) {
-        PluginInfo currPlugin = updater.platform().getPlugin(pluginName);
-        if (currPlugin == null) {
-            return null;
-        }
+        PluginInfo pluginInfo = updater.platform().getPlugin(pluginName);
+        return pluginInfo != null ? deserialize(pluginInfo, config) : null;
+    }
 
+    public static PluginData deserialize(PluginInfo pluginInfo, Config config) {
         VersionParser versionParser = config.contains("version-format") ? new RegexVersionParser(config.get("version-format")) : RegexVersionParser.INSTANCE;
         VersionParser latestVersionParser = config.contains("latest-version-format") ? new RegexVersionParser(config.get("latest-version-format")) : versionParser;
 
@@ -38,9 +39,9 @@ public class PluginDataDeserializer {
         boolean allowDownloads = config.getOrElse("allow-downloads", true);
 
         try {
-            SourceData sourceData = SourceDataDeserializer.deserialize(updater.updaterPlugin(), config);
+            SourceData sourceData = SourceDataDeserializer.deserialize(config);
             if (sourceData != null) {
-                return PluginData.builder(currPlugin)
+                return PluginData.builder(pluginInfo)
                     .versionParser(versionParser)
                     .latestVersionParser(latestVersionParser)
                     .sourceData(sourceData)
@@ -50,8 +51,8 @@ public class PluginDataDeserializer {
                     .build();
             }
         } catch (Exception e) {
-            updater.updaterPlugin().getLogger().log(Level.SEVERE, "Caught error whilst reading data for '%s'"
-                .formatted(pluginName), e);
+            UpdaterConstants.LOGGER.log(Level.SEVERE, "Caught error whilst reading data for '%s'"
+                .formatted(pluginInfo.getName()), e);
         }
 
         return null;
