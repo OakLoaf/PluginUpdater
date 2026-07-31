@@ -51,7 +51,7 @@ public class CLIPlatform implements UpdaterPlatform<Object> {
                             fallbackInfoParser = fallbackInfoParser.getFallbackInfoParser();
                         }
                     } catch (IOException e) {
-                        throw new RuntimeException(e);
+                        cli.getLogger().log(Level.SEVERE, "Failed to interpret jar file for " + path, e);
                     }
 
                     return null;
