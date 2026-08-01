@@ -66,6 +66,8 @@ public class SpigotSource implements Source {
         }
         if (resourceJson.get("premium").getAsBoolean()) {
             version.warningTag("This is a premium Spigot resource so must be downloaded manually");
+        } else if (resourceJson.get("external").getAsBoolean()) {
+            version.warningTag("This resource uses an external download url which may not be reliable");
         }
 
         return version;
