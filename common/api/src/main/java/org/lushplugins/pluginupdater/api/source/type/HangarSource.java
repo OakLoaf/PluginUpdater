@@ -57,7 +57,7 @@ public class HangarSource implements Source {
 
         sourceData.endpoint().markRequest();
         HttpResponse<String> response = HttpUtil.sendRequest(uriBuilder.toString());
-        HttpUtil.validateResponse(sourceData.endpoint(), pluginData, response);
+        HttpUtil.assertResponse(sourceData.endpoint(), pluginData, response);
 
         JsonArray result = JsonParser.parseString(response.body()).getAsJsonObject()
             .get("result").getAsJsonArray();

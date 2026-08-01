@@ -48,7 +48,7 @@ public record DownloadableRelease(
             HttpResponse.BodyHandlers.discarding()
         );
 
-        HttpUtil.validateResponse(endpoint, pluginData, response);
+        HttpUtil.assertResponse(endpoint, pluginData, response);
 
         if (response.statusCode() != 200) {
             throw new IllegalStateException("Response code was " + response.statusCode());

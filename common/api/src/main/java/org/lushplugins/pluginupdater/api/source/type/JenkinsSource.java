@@ -83,7 +83,7 @@ public class JenkinsSource implements Source {
         jenkinsData.endpoint().markRequest();
         HttpResponse<String> response = HttpUtil.sendRequest("%s/job/%s/lastSuccessfulBuild/api/json"
             .formatted(jenkinsData.url(), jenkinsData.job()));
-        HttpUtil.validateResponse(jenkinsData.endpoint(), pluginData, response);
+        HttpUtil.assertResponse(jenkinsData.endpoint(), pluginData, response);
 
         return JsonParser.parseString(response.body()).getAsJsonObject();
     }

@@ -40,7 +40,7 @@ public class SpigotSource implements Source {
         sourceData.endpoint().markRequest();
         HttpResponse<String> response = HttpUtil.sendRequest("%s/resources/%s"
             .formatted(ENDPOINT.url(), sourceData.resourceId()));
-        HttpUtil.validateResponse(ENDPOINT, pluginData, response);
+        HttpUtil.assertResponse(ENDPOINT, pluginData, response);
 
         return JsonParser.parseString(response.body()).getAsJsonObject();
     }
@@ -58,7 +58,7 @@ public class SpigotSource implements Source {
         sourceData.endpoint().markRequest();
         HttpResponse<String> response = HttpUtil.sendRequest("%s/resources/%s/versions/latest"
             .formatted(sourceData.endpoint().url(), spigotData.resourceId()));
-        HttpUtil.validateResponse(sourceData.endpoint(), pluginData, response);
+        HttpUtil.assertResponse(sourceData.endpoint(), pluginData, response);
 
         JsonObject pluginJson = JsonParser.parseString(response.body()).getAsJsonObject();
         String rawVersion = pluginJson.get("name").getAsString();

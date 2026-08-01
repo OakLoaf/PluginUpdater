@@ -106,7 +106,7 @@ public class GithubSource implements Source {
             HttpResponse.BodyHandlers.ofString());
         client.close();
 
-        HttpUtil.validateResponse(githubData.endpoint(), pluginData, response);
+        HttpUtil.assertResponse(githubData.endpoint(), pluginData, response);
 
         return JsonParser.parseString(response.body()).getAsJsonObject();
     }

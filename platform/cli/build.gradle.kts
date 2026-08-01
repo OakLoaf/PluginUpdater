@@ -5,8 +5,12 @@ dependencies {
     api("com.electronwill.night-config:json:3.9.0")
 }
 
-tasks.jar {
-    manifest.attributes (
-        "Main-Class" to "org.lushplugins.pluginupdater.cli.PluginUpdaterCLI"
-    )
+tasks{
+    jar {
+        archiveFileName.set("${rootProject.name}-cli-${project.version}.jar")
+
+        manifest.attributes (
+            "Main-Class" to "org.lushplugins.pluginupdater.cli.PluginUpdaterCLI"
+        )
+    }
 }

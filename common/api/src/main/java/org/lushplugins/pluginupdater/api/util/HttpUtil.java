@@ -2,6 +2,7 @@ package org.lushplugins.pluginupdater.api.util;
 
 import com.google.gson.JsonElement;
 import org.jetbrains.annotations.Nullable;
+import org.lushplugins.pluginupdater.api.exception.InvalidHttpResponse;
 import org.lushplugins.pluginupdater.api.http.Endpoint;
 import org.lushplugins.pluginupdater.api.updater.PluginData;
 import org.lushplugins.pluginupdater.util.BuildParameters;
@@ -54,7 +55,7 @@ public class HttpUtil {
         return requestBuilder;
     }
 
-    public static void validateResponse(Endpoint endpoint, PluginData pluginData, HttpResponse<?> response) throws IllegalStateException {
+    public static void assertResponse(Endpoint endpoint, PluginData pluginData, HttpResponse<?> response) throws InvalidHttpResponse {
         switch(response.statusCode()) {
             case 200 -> {}
             case 429 -> {
@@ -77,10 +78,10 @@ public class HttpUtil {
                     endpoint.rateLimitReset(epochSeconds);
                 }
 
-                throw new IllegalStateException("Hit rate limit for '%s' endpoint, please report this."
+                throw new InvalidHttpResponse("Hit rate limit for '%s' endpoint, please report this."
                     .formatted(endpoint.url()));
             }
-            default -> throw new IllegalStateException("Received invalid response code (%s) whilst checking '%s' for updates."
+            default -> throw new InvalidHttpResponse("Received invalid response code (%s) whilst checking '%s' for updates."
                 .formatted(response.statusCode(), pluginData.pluginName()));
         }
     }

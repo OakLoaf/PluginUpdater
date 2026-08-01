@@ -106,7 +106,7 @@ public class ModrinthSource implements Source {
 
         modrinthData.endpoint().markRequest();
         HttpResponse<String> response = HttpUtil.sendRequest(uriBuilder.toString());
-        HttpUtil.validateResponse(modrinthData.endpoint(), pluginData, response);
+        HttpUtil.assertResponse(modrinthData.endpoint(), pluginData, response);
 
         return JsonParser.parseString(response.body()).getAsJsonArray();
     }

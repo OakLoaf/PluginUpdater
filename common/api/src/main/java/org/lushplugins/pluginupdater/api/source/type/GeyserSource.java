@@ -42,7 +42,7 @@ public class GeyserSource implements Source {
         sourceData.endpoint().markRequest();
         HttpResponse<String> response = HttpUtil.sendRequest("%s/projects/%s/versions/latest/builds/latest"
             .formatted(sourceData.endpoint().url(), projectName));
-        HttpUtil.validateResponse(sourceData.endpoint(), pluginData, response);
+        HttpUtil.assertResponse(sourceData.endpoint(), pluginData, response);
 
         JsonObject releaseJson = JsonParser.parseString(response.body()).getAsJsonObject();
         String version = releaseJson.get("version").getAsString();

@@ -2,6 +2,7 @@ package org.lushplugins.pluginupdater.api.updater;
 
 import org.jetbrains.annotations.Nullable;
 import org.lushplugins.pluginupdater.api.exception.FailedAttemptsOnSourcesException;
+import org.lushplugins.pluginupdater.api.exception.InvalidHttpResponse;
 import org.lushplugins.pluginupdater.api.exception.InvalidVersionFormatException;
 import org.lushplugins.pluginupdater.api.source.*;
 import org.lushplugins.pluginupdater.api.util.UpdaterConstants;
@@ -223,6 +224,8 @@ public class PluginData {
 
             try {
                 return supplier.apply(new SourceContext(source, sourceData));
+            } catch (InvalidHttpResponse e) {
+                UpdaterConstants.LOGGER.severe(e.getMessage());
             } catch (Throwable e) {
                 UpdaterConstants.LOGGER.log(Level.SEVERE, e.getMessage(), e);
             }
