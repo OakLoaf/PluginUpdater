@@ -53,7 +53,7 @@ public record UpdateCommand(UpdaterImpl<?> updater) implements OrphanCommand {
         }
     }
 
-    @Command("update all")
+    @Subcommand("update all")
     @CommandPermission("pluginupdater.downloadupdates")
     public void updateAll(
         CommandActor actor,
