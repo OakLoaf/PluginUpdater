@@ -45,10 +45,6 @@ public class SpigotSource implements Source {
         return JsonParser.parseString(response.body()).getAsJsonObject();
     }
 
-    public boolean isPremium(JsonObject resourceJson) {
-        return resourceJson.get("premium").getAsBoolean();
-    }
-
     @Override
     public Version fetchLatestVersion(PluginData pluginData, SourceData sourceData) throws IOException, InterruptedException {
         if (!(sourceData instanceof Data spigotData)) {
