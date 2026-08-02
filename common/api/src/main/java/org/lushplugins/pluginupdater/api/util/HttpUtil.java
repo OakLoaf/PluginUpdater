@@ -55,34 +55,44 @@ public class HttpUtil {
         return requestBuilder;
     }
 
-    public static void assertResponse(Endpoint endpoint, PluginData pluginData, HttpResponse<?> response) throws InvalidHttpResponse {
-        switch(response.statusCode()) {
-            case 200 -> {}
-            case 429 -> {
-                long epochSeconds = response.headers()
-                    .firstValue("Retry-After")
-                    .map(value -> {
-                        if (StringUtil.isNumeric(value)) {
-                            return Long.parseLong(value) + Instant.now().getEpochSecond();
-                        }
-
-                        return ZonedDateTime.parse(value, DateTimeFormatter.RFC_1123_DATE_TIME)
-                            .toInstant()
-                            .getEpochSecond();
-                    })
-                    .orElseGet(() -> response.headers()
-                        .firstValueAsLong("X-RateLimit-Reset")
-                        .orElse(-1));
-
-                if (epochSeconds > 0) {
-                    endpoint.rateLimitReset(epochSeconds);
+    public static void readRateLimitHeaders(Endpoint endpoint, HttpResponse<?> response) {
+        long epochSeconds = response.headers()
+            .firstValue("Retry-After")
+            .map(value -> {
+                if (StringUtil.isNumeric(value)) {
+                    return Long.parseLong(value) + Instant.now().getEpochSecond();
                 }
+
+                return ZonedDateTime.parse(value, DateTimeFormatter.RFC_1123_DATE_TIME)
+                    .toInstant()
+                    .getEpochSecond();
+            })
+            .orElseGet(() -> response.headers()
+                .firstValueAsLong("X-RateLimit-Reset")
+                .orElse(-1));
+
+        if (epochSeconds > 0) {
+            endpoint.rateLimitReset(epochSeconds);
+        }
+    }
+
+    public static void assertResponse(Endpoint endpoint, PluginData pluginData, HttpResponse<?> response) throws InvalidHttpResponse {
+        int statusCode = response.statusCode();
+        switch(statusCode) {
+            case 200 -> {
+                return;
+            }
+            case 429 -> {
+                readRateLimitHeaders(endpoint, response);
 
                 throw new InvalidHttpResponse("Hit rate limit for '%s' endpoint, please report this."
                     .formatted(endpoint.url()));
             }
-            default -> throw new InvalidHttpResponse("Received invalid response code (%s) whilst checking '%s' for updates."
-                .formatted(response.statusCode(), pluginData.pluginName()));
         }
+
+        readRateLimitHeaders(endpoint, response);
+
+        throw new InvalidHttpResponse("Received invalid response code (%s) whilst checking '%s' for updates."
+            .formatted(statusCode, pluginData.pluginName()));
     }
 }
