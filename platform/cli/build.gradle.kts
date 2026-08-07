@@ -8,12 +8,14 @@ dependencies {
     api("net.kyori:adventure-text-minimessage:5.2.0")
     implementation("net.kyori:adventure-text-serializer-ansi:5.2.0")
     api("com.electronwill.night-config:json:3.9.0")
+    implementation("org.jline:jline:3.30.16")
 }
 
 tasks {
     jar {
         manifest.attributes(
-            "Main-Class" to "org.lushplugins.pluginupdater.cli.PluginUpdaterCLI"
+            "Main-Class" to "org.lushplugins.pluginupdater.cli.PluginUpdaterCLI",
+            "Enable-Native-Access" to "ALL-UNNAMED"
         )
     }
 
