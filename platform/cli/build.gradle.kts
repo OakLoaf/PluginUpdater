@@ -20,15 +20,15 @@ tasks {
     }
 
     shadowJar {
-        archiveFileName.set("${rootProject.name}-CLI-${project.version}.jar")
+        archiveFileName.set("${rootProject.name}-cli-${project.version}.jar")
     }
 }
 
 tasks.processResources {
     from(project(":platform:paper-plugin").file("src/main/resources/common-plugins.yml")) {
-        rename { "paper-common-plugins.yml" }
+        rename { "common-plugins/paper.yml" }
     }
     from(project(":platform:velocity-plugin").file("src/main/resources/common-plugins.yml")) {
-        rename { "velocity-common-plugins.yml" }
+        rename { "common-plugins/velocity.yml" }
     }
 }

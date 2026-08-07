@@ -45,7 +45,7 @@ public class PluginUpdaterCLI implements UpdaterPlugin {
 
     @Override
     public Path getDataPath() {
-        return pluginsFolder.resolve(System.getProperty("data-folder", "PluginUpdater"));
+        return Path.of(System.getProperty("data-folder", "PluginUpdater"));
     }
 
     @Override
@@ -107,14 +107,14 @@ public class PluginUpdaterCLI implements UpdaterPlugin {
         try {
             PluginUpdaterCLI cli = prepareCLI();
 
-            String finalCommonPluginsFile = cli.getPlatform() == Platform.VELOCITY ? "velocity-common-plugins.yml" : "paper-common-plugins.yml";
+            String commonPluginsFile = "common-plugins/" + (cli.getPlatform() == Platform.VELOCITY ? "velocity.yml" : "paper.yml");
             new UpdaterImpl<>(
                 new CLIPlatform(cli),
                 cli,
                 new CLICommandHandler(),
                 List.of(
                         ModrinthCollector::new,
-                        updater -> new CommonPluginCollector(updater, finalCommonPluginsFile)
+                        updater -> new CommonPluginCollector(updater, commonPluginsFile)
                 )
             );
         } catch (Exception e) {
