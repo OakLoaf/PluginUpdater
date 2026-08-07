@@ -1,6 +1,8 @@
 package org.lushplugins.pluginupdater.cli.command;
 
+import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.serializer.ansi.ANSIComponentSerializer;
 import org.lushplugins.pluginupdater.common.UpdaterImpl;
 import org.lushplugins.pluginupdater.common.platform.CommandHandler;
 import revxrsal.commands.Lamp;
@@ -14,7 +16,8 @@ public class CLICommandHandler implements CommandHandler {
     public Lamp.Builder<?> prepareLamp() {
         return CLILamp.builder()
             .defaultMessageSender((actor, input) -> {
-                actor.sendRawMessage(MiniMessage.miniMessage().stripTags(input));
+                Component message = MiniMessage.miniMessage().deserialize(input);
+                actor.sendRawMessage(ANSIComponentSerializer.ansi().serialize(message));
             });
     }
 
