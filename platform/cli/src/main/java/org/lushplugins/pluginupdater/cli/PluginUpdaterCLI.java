@@ -45,7 +45,7 @@ public class PluginUpdaterCLI implements UpdaterPlugin {
 
     @Override
     public Path getDataPath() {
-        return pluginsFolder.resolve("PluginUpdater");
+        return pluginsFolder.resolve(System.getProperty("data-folder", "PluginUpdater"));
     }
 
     @Override
