@@ -1,3 +1,7 @@
+plugins {
+    id("com.gradleup.shadow")
+}
+
 dependencies {
     api(project(":common:impl"))
     implementation("io.github.revxrsal:lamp.cli:4.0.0-rc.18")
@@ -5,14 +9,17 @@ dependencies {
     api("com.electronwill.night-config:json:3.9.0")
 }
 
-tasks{
+tasks {
     jar {
-        archiveFileName.set("${rootProject.name}-cli-${project.version}.jar")
-
-        manifest.attributes (
+        manifest.attributes(
             "Main-Class" to "org.lushplugins.pluginupdater.cli.PluginUpdaterCLI"
         )
     }
+
+    shadowJar {
+        archiveFileName.set("${rootProject.name}-CLI-${project.version}.jar")
+    }
+}
 
 tasks.processResources {
     from(project(":platform:paper-plugin").file("src/main/resources/common-plugins.yml")) {
