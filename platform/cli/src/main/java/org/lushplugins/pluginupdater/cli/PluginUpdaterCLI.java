@@ -13,6 +13,7 @@ import org.lushplugins.pluginupdater.cli.plugin.parser.BukkitInfoParser;
 import org.lushplugins.pluginupdater.cli.plugin.parser.InfoParser;
 import org.lushplugins.pluginupdater.cli.plugin.parser.VelocityInfoParser;
 import org.lushplugins.pluginupdater.common.UpdaterImpl;
+import org.lushplugins.pluginupdater.common.collector.CommonPluginCollector;
 import org.lushplugins.pluginupdater.common.collector.ModrinthCollector;
 import org.lushplugins.pluginupdater.common.platform.UpdaterPlugin;
 
@@ -22,6 +23,7 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class PluginUpdaterCLI implements UpdaterPlugin {
@@ -102,16 +104,22 @@ public class PluginUpdaterCLI implements UpdaterPlugin {
     }
 
     public static void main(String[] args) {
-        PluginUpdaterCLI cli = prepareCLI();
+        try {
+            PluginUpdaterCLI cli = prepareCLI();
 
-        new UpdaterImpl<>(
-            new CLIPlatform(cli),
-            cli,
-            new CLICommandHandler(),
-            List.of(
-                ModrinthCollector::new
-            )
-        );
+            String finalCommonPluginsFile = cli.getPlatform() == Platform.VELOCITY ? "velocity-common-plugins.yml" : "paper-common-plugins.yml";
+            new UpdaterImpl<>(
+                new CLIPlatform(cli),
+                cli,
+                new CLICommandHandler(),
+                List.of(
+                        ModrinthCollector::new,
+                        updater -> new CommonPluginCollector(updater, finalCommonPluginsFile)
+                )
+            );
+        } catch (Exception e) {
+            UpdaterConstants.LOGGER.log(Level.WARNING, "An error occurred while running the PluginUpdater CLI", e);
+        }
     }
 
     public enum Platform {

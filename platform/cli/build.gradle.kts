@@ -13,4 +13,12 @@ tasks{
             "Main-Class" to "org.lushplugins.pluginupdater.cli.PluginUpdaterCLI"
         )
     }
+
+tasks.processResources {
+    from(project(":platform:paper-plugin").file("src/main/resources/common-plugins.yml")) {
+        rename { "paper-common-plugins.yml" }
+    }
+    from(project(":platform:velocity-plugin").file("src/main/resources/common-plugins.yml")) {
+        rename { "velocity-common-plugins.yml" }
+    }
 }
