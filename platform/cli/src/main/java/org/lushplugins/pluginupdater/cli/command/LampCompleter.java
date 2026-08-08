@@ -15,8 +15,8 @@ public final class LampCompleter implements Completer {
     private final ConsoleActor actor;
 
     public LampCompleter(
-            Lamp<ConsoleActor> lamp,
-            ConsoleActor actor
+        Lamp<ConsoleActor> lamp,
+        ConsoleActor actor
     ) {
         this.lamp = lamp;
         this.actor = actor;
@@ -24,9 +24,9 @@ public final class LampCompleter implements Completer {
 
     @Override
     public void complete(
-            LineReader reader,
-            ParsedLine line,
-            List<Candidate> candidates
+        LineReader reader,
+        ParsedLine line,
+        List<Candidate> candidates
     ) {
         String input = line.line();
 

@@ -15,7 +15,6 @@ import revxrsal.commands.cli.CLILamp;
 import revxrsal.commands.cli.ConsoleActor;
 import revxrsal.commands.cli.actor.ActorFactory;
 import revxrsal.commands.command.CommandActor;
-
 import java.io.IOException;
 import java.nio.file.Path;
 
@@ -28,10 +27,10 @@ public class CLICommandHandler implements CommandHandler {
     @Override
     public Lamp.Builder<?> prepareLamp() {
         return CLILamp.builder()
-                .defaultMessageSender((actor, input) -> {
-                    Component message = MINI_MESSAGE.deserialize(input);
-                    actor.sendRawMessage(ANSI.serialize(message));
-                });
+            .defaultMessageSender((actor, input) -> {
+                Component message = MINI_MESSAGE.deserialize(input);
+                actor.sendRawMessage(ANSI.serialize(message));
+            });
     }
 
     @Override
@@ -44,24 +43,23 @@ public class CLICommandHandler implements CommandHandler {
     }
 
     private void startConsole(Lamp<ConsoleActor> lamp) {
-        ConsoleActor actor =
-                ActorFactory.defaultFactory().createForStdIo(lamp);
+        ConsoleActor actor = ActorFactory.defaultFactory().createForStdIo(lamp);
 
         try (Terminal terminal = TerminalBuilder.builder()
-                .system(true)
-                .build()) {
+            .system(true)
+            .build()) {
 
             LineReader reader = LineReaderBuilder.builder()
-                    .terminal(terminal)
-                    .appName("plugin-updater")
-                    .completer(new LampCompleter(lamp, actor))
-                    .variable(
-                            LineReader.HISTORY_FILE,
-                            Path.of(".plugin-updater-history")
-                    )
-                    .option(LineReader.Option.HISTORY_IGNORE_DUPS, true)
-                    .option(LineReader.Option.HISTORY_BEEP, false)
-                    .build();
+                .terminal(terminal)
+                .appName("plugin-updater")
+                .completer(new LampCompleter(lamp, actor))
+                .variable(
+                    LineReader.HISTORY_FILE,
+                    Path.of(".plugin-updater-history")
+                )
+                .option(LineReader.Option.HISTORY_IGNORE_DUPS, true)
+                .option(LineReader.Option.HISTORY_BEEP, false)
+                .build();
 
             printWelcome(terminal);
 
@@ -83,24 +81,21 @@ public class CLICommandHandler implements CommandHandler {
             }
 
         } catch (IOException e) {
-            throw new RuntimeException(
-                    "Failed to initialize CLI terminal",
-                    e
-            );
+            throw new RuntimeException("Failed to initialize CLI terminal", e);
         }
     }
 
     private void printWelcome(Terminal terminal) {
         terminal.writer().println();
         terminal.writer().println(
-                ANSI.serialize(MINI_MESSAGE.deserialize(
-                        "<gradient:#5e81ac:#88c0d0><bold>PluginUpdater CLI</bold></gradient>"
-                ))
+            ANSI.serialize(MINI_MESSAGE.deserialize(
+                "<gradient:#5e81ac:#88c0d0><bold>PluginUpdater CLI</bold></gradient>"
+            ))
         );
         terminal.writer().println(
-                ANSI.serialize(MINI_MESSAGE.deserialize(
-                        "<dark_gray>Type <white>upd <tab></white> for available commands. Visit https://github.com/OakLoaf/PluginUpdater/wiki/PluginUpdater-CLI for more infos."
-                ))
+            ANSI.serialize(MINI_MESSAGE.deserialize(
+                "<dark_gray>Type <white>upd <tab></white> for available commands. Visit https://github.com/OakLoaf/PluginUpdater/wiki/PluginUpdater-CLI for more infos."
+            ))
         );
         terminal.writer().println();
         terminal.writer().flush();

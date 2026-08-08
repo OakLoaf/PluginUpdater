@@ -113,8 +113,8 @@ public class PluginUpdaterCLI implements UpdaterPlugin {
                 cli,
                 new CLICommandHandler(),
                 List.of(
-                        ModrinthCollector::new,
-                        updater -> new CommonPluginCollector(updater, commonPluginsFile)
+                    ModrinthCollector::new,
+                    updater -> new CommonPluginCollector(updater, commonPluginsFile)
                 )
             );
         } catch (Exception e) {
