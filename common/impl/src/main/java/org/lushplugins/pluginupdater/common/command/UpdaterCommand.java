@@ -93,4 +93,18 @@ public record UpdaterCommand(UpdaterImpl<?> updater) implements OrphanCommand {
             return "<#ff6969>No unregistered plugins found";
         }
     }
+
+    @Subcommand("list disabled")
+    @CommandPermission("pluginupdater.disabledplugins")
+    public String listDisabled() {
+        List<String> disabledPlugins = updater.config().getDisabledPlugins().stream()
+            .sorted(String.CASE_INSENSITIVE_ORDER)
+            .toList();
+        if (!disabledPlugins.isEmpty()) {
+            return "<white>Disabled Plugins (%s):\n<dark_gray>%s"
+                .formatted(disabledPlugins.size(), String.join("<gray>, <dark_gray>", disabledPlugins));
+        } else {
+            return "<#ff6969>No disabled plugins found";
+        }
+    }
 }

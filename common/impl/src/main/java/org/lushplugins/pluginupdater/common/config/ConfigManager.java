@@ -130,6 +130,10 @@ public class ConfigManager {
         plugins.remove(pluginName);
     }
 
+    public Set<String> getDisabledPlugins() {
+        return disabledPlugins;
+    }
+
     public @Nullable String getMessage(String name) {
         return messages.get(name);
     }
