@@ -25,7 +25,7 @@ public record UpdatesCommand(UpdaterImpl<?> updater) implements OrphanCommand {
                 String pluginName = pluginData.pluginName();
                 VersionDifference versionDifference = pluginData.versionDifference();
                 if (!pluginData.hasCheckRan()) {
-                    return configManager.getMessage("unchecked-color", "<gray>")
+                    return configManager.getMessage("unchecked-color", "<dark_gray>")
                         + pluginName;
                 } else if (pluginData.isAlreadyDownloaded()) {
                     return configManager.getMessage("latest-version-color", "<#b7faa2>")
