@@ -10,6 +10,8 @@ import org.lushplugins.pluginupdater.common.updater.UpdateHandler;
 import org.lushplugins.pluginupdater.paper.PaperUpdaterPlugin;
 import org.lushplugins.pluginupdater.paper.api.platform.PaperUpdaterPlatform;
 
+import java.util.concurrent.TimeUnit;
+
 public class PlayerListener implements Listener {
     private final PaperUpdaterPlatform platform;
 
@@ -28,9 +30,8 @@ public class PlayerListener implements Listener {
         if (updater.updateHandler().remainingWithState(UpdateHandler.ProcessingData.State.SEND_NOTIFICATION) == 0) {
              String message = updater.constructUpdateMessage();
              if (message != null) {
-                 Bukkit.getScheduler().runTaskLaterAsynchronously(PaperUpdaterPlugin.getInstance(), () -> {
-                     platform.sendMessage(player, updater.constructUpdateMessage());
-                 }, 100);
+                 Bukkit.getAsyncScheduler().runDelayed(PaperUpdaterPlugin.getInstance(), t ->
+                     platform.sendMessage(player, updater.constructUpdateMessage()), 5, TimeUnit.SECONDS);
              }
          }
     }
