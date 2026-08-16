@@ -6,15 +6,14 @@ import com.electronwill.nightconfig.core.file.FileConfig;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.lushplugins.pluginupdater.api.updater.PluginData;
-import org.lushplugins.pluginupdater.common.config.deserializer.PluginDataDeserializer;
 import org.lushplugins.pluginupdater.common.UpdaterImpl;
+import org.lushplugins.pluginupdater.common.config.deserializer.PluginDataDeserializer;
 import org.lushplugins.pluginupdater.common.updater.UpdateHandler;
 import org.lushplugins.pluginupdater.common.util.ConfigUtil;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.*;
-import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 public class ConfigManager {
@@ -42,7 +41,7 @@ public class ConfigManager {
 
         boolean checkOnReload = ConfigUtil.getOrAliasOrElse(
             config, "check-updates-on-reload", "check-updates-on-start", true,
-            () -> updater.updaterPlugin().getLogger().log(Level.WARNING, "Deprecated: The config section 'check-updates-on-start' has been renamed to 'check-updates-on-reload'")
+            () -> updater.updaterPlugin().getComponentLogger().warn("Deprecated: The config section 'check-updates-on-start' has been renamed to 'check-updates-on-reload'")
         );
 
         this.allowDownloads = config.getOrElse("allow-downloads", true);

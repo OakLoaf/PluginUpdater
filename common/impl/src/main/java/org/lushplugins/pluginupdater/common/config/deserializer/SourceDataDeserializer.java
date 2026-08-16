@@ -8,13 +8,12 @@ import org.lushplugins.pluginupdater.common.util.ConfigUtil;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.logging.Level;
 
 public class SourceDataDeserializer {
 
     public static SourceData deserialize(Config config) {
         String source = ConfigUtil.getOrAlias(config, "source", "platform",
-            () -> UpdaterConstants.LOGGER.log(Level.WARNING, "Deprecated: The config option 'updater' has been renamed to 'source'"));
+            () -> UpdaterConstants.LOGGER.warn("Deprecated: The config option 'updater' has been renamed to 'source'"));
 
         return switch (source) {
             case GeyserSource.NAME -> geyserSourceData(config);
