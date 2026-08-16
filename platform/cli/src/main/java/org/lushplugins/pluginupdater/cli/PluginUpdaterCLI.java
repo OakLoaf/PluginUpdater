@@ -1,5 +1,7 @@
 package org.lushplugins.pluginupdater.cli;
 
+import net.kyori.adventure.text.logger.slf4j.ComponentLogger;
+import org.jspecify.annotations.NonNull;
 import org.lushplugins.pluginupdater.api.source.SourceRegistry;
 import org.lushplugins.pluginupdater.api.source.type.GeyserSource;
 import org.lushplugins.pluginupdater.api.source.type.HangarSource;
@@ -23,8 +25,6 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class PluginUpdaterCLI implements UpdaterPlugin {
     private final Platform platform;
@@ -74,7 +74,7 @@ public class PluginUpdaterCLI implements UpdaterPlugin {
     }
 
     @Override
-    public Logger getLogger() {
+    public @NonNull ComponentLogger getComponentLogger() {
         return UpdaterConstants.LOGGER;
     }
 
@@ -118,7 +118,7 @@ public class PluginUpdaterCLI implements UpdaterPlugin {
                 )
             );
         } catch (Exception e) {
-            UpdaterConstants.LOGGER.log(Level.WARNING, "An error occurred while running the PluginUpdater CLI", e);
+            UpdaterConstants.LOGGER.warn("An error occurred while running the PluginUpdater CLI", e);
         }
     }
 
