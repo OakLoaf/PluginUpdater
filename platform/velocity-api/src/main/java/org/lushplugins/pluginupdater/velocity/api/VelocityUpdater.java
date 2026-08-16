@@ -3,6 +3,7 @@ package org.lushplugins.pluginupdater.velocity.api;
 import com.velocitypowered.api.plugin.PluginContainer;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
+import net.kyori.adventure.text.logger.slf4j.ComponentLogger;
 import org.lushplugins.pluginupdater.api.source.SourceRegistry;
 import org.lushplugins.pluginupdater.api.source.type.GeyserSource;
 import org.lushplugins.pluginupdater.api.source.type.HangarSource;
@@ -15,7 +16,6 @@ import org.lushplugins.pluginupdater.velocity.api.plugin.VelocityPluginInfo;
 import org.lushplugins.pluginupdater.velocity.api.util.VelocityUtil;
 
 import java.util.List;
-import java.util.logging.Logger;
 
 public class VelocityUpdater {
     private static boolean registriesPopulated = false;
@@ -32,7 +32,7 @@ public class VelocityUpdater {
         SourceRegistry.register(new SpigotSource(null));
     }
 
-    public static Updater.Builder<Player> builder(ProxyServer server, PluginContainer plugin, Logger logger) {
+    public static Updater.Builder<Player> builder(ProxyServer server, PluginContainer plugin, ComponentLogger logger) {
         populateRegistries(server);
 
         return Updater.builder(new VelocityUpdaterPlatform(server, logger), new VelocityPluginInfo(plugin, logger))

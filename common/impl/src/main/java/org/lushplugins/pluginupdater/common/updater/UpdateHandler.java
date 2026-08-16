@@ -7,8 +7,10 @@ import org.lushplugins.pluginupdater.common.UpdaterImpl;
 
 import java.io.IOException;
 import java.util.*;
-import java.util.concurrent.*;
-import java.util.logging.Level;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class UpdateHandler<T> {
     private final UpdaterImpl<T> updater;
@@ -35,7 +37,8 @@ public class UpdateHandler<T> {
             this.threads.shutdown();
             return this.threads.awaitTermination(5, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            Thread.currentThread().interrupt();
+            updater.updaterPlugin().getComponentLogger().error("Failed to shutdown update thread.", e);
             return false;
         }
     }
@@ -96,7 +99,7 @@ public class UpdateHandler<T> {
                         pluginData.setCheckRan(true);
                         break;
                     } catch (Exception e) {
-                        updater.updaterPlugin().getLogger().log(Level.SEVERE, e.getMessage(), e);
+                        updater.updaterPlugin().getComponentLogger().error("Failed update checking.", e);
                     }
 
                     String sourceNames = String.join(", ", pluginData.sourceData().stream().map(SourceData::sourceName).toList());
