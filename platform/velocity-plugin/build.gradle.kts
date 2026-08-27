@@ -5,8 +5,8 @@ plugins {
 }
 
 dependencies {
-    compileOnly("com.velocitypowered:velocity-api:4.1.0-SNAPSHOT")
-    annotationProcessor("com.velocitypowered:velocity-api:4.1.0-SNAPSHOT")
+    compileOnly("com.velocitypowered:velocity-api:4.1.0")
+    annotationProcessor("com.velocitypowered:velocity-api:4.1.0")
 
     implementation(project(":common:impl"))
     implementation(project(":platform:velocity-api"))
