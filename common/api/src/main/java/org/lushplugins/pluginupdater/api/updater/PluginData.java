@@ -18,7 +18,6 @@ import org.lushplugins.pluginupdater.api.version.parser.VersionParser;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.*;
-import java.util.logging.Level;
 
 public class PluginData {
     private final String pluginName;
@@ -170,7 +169,7 @@ public class PluginData {
             latestVersion = fetchedVersion.version();
             sourceContext = fetchedVersion.sourceContext();
         } catch (InvalidVersionFormatException e) {
-            UpdaterConstants.LOGGER.severe("Failed to read latest version for '%s': %s".formatted(this.pluginName, e.getMessage()));
+            UpdaterConstants.LOGGER.error("Failed to read latest version for {}: {}", this.pluginName, e.getMessage());
             return false;
         }
 
@@ -179,7 +178,7 @@ public class PluginData {
             VersionComparator comparator = versionComparator().orElse(sourceContext.sourceData().defaultComparator());
             versionDifference = comparator.compare(this.currentVersion, latestVersion);
         } catch (InvalidVersionFormatException e) {
-            UpdaterConstants.LOGGER.severe("Failed to compare versions for '%s': %s".formatted(this.pluginName, e.getMessage()));
+            UpdaterConstants.LOGGER.error("Failed to compare versions for {}: {}", this.pluginName, e.getMessage());
             return false;
         }
 
@@ -209,8 +208,12 @@ public class PluginData {
             prepareDownloadableRelease()
                 .downloadTo(destinationDir);
             return true;
-        } catch (IOException | InterruptedException e) {
-            UpdaterConstants.LOGGER.log(Level.SEVERE, "Failed to download update for plugin '" + this.pluginName + "'.", e);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            UpdaterConstants.LOGGER.error("Failed to download update for plugin '{}'.", this.pluginName, e);
+            return false;
+        } catch (IOException e) {
+            UpdaterConstants.LOGGER.error("Failed to download update for plugin '{}'.", this.pluginName, e);
             return false;
         }
     }
@@ -225,9 +228,12 @@ public class PluginData {
             try {
                 return supplier.apply(new SourceContext(source, sourceData));
             } catch (InvalidHttpResponse e) {
-                UpdaterConstants.LOGGER.severe(e.getMessage());
-            } catch (Throwable e) {
-                UpdaterConstants.LOGGER.log(Level.SEVERE, e.getMessage(), e);
+                UpdaterConstants.LOGGER.error(e.getMessage());
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                UpdaterConstants.LOGGER.error("Thread interrupted while fetching data from source '{}' for plugin '{}'.", sourceData.sourceName(), this.pluginName, e);
+            } catch (Exception e) {
+                UpdaterConstants.LOGGER.error("Failed to fetch data from source '{}' for plugin '{}'.", sourceData.sourceName(), this.pluginName, e);
             }
         }
 

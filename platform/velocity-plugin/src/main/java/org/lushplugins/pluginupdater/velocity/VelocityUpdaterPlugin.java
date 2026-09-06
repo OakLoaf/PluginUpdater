@@ -9,8 +9,10 @@ import com.velocitypowered.api.plugin.PluginContainer;
 import com.velocitypowered.api.plugin.annotation.DataDirectory;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
+import net.kyori.adventure.text.logger.slf4j.ComponentLogger;
 import org.lushplugins.pluginupdater.api.updater.PluginInfo;
 import org.lushplugins.pluginupdater.api.util.DownloadLogger;
+import org.lushplugins.pluginupdater.api.util.UpdaterConstants;
 import org.lushplugins.pluginupdater.common.UpdaterImpl;
 import org.lushplugins.pluginupdater.common.collector.CommonPluginCollector;
 import org.lushplugins.pluginupdater.common.collector.ModrinthCollector;
@@ -27,7 +29,6 @@ import org.lushplugins.pluginupdater.velocity.listener.PlayerListener;
 import java.io.InputStream;
 import java.nio.file.Path;
 import java.util.List;
-import java.util.logging.Logger;
 
 @Plugin(
     id = "pluginupdater",
@@ -38,13 +39,14 @@ public class VelocityUpdaterPlugin implements UpdaterPlugin {
     private static VelocityUpdaterPlugin instance;
 
     private final ProxyServer server;
-    private final Logger logger;
+    private final ComponentLogger logger;
     private final Path dataFolder;
     private UpdaterImpl<Player> updater;
     private VelocityUpdaterAPI api;
 
     @Inject
-    public VelocityUpdaterPlugin(ProxyServer server, Logger logger, @DataDirectory Path dataFolder) {
+    public VelocityUpdaterPlugin(ProxyServer server, ComponentLogger logger, @DataDirectory Path dataFolder) {
+        UpdaterConstants.LOGGER = logger;
         VelocityUpdater.populateRegistries(server);
         instance = this;
 
@@ -113,7 +115,7 @@ public class VelocityUpdaterPlugin implements UpdaterPlugin {
     }
 
     @Override
-    public Logger getLogger() {
+    public ComponentLogger getComponentLogger() {
         return logger;
     }
 

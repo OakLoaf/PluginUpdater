@@ -13,7 +13,6 @@ import org.lushplugins.pluginupdater.common.config.ComparatorRegistry;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.logging.Level;
 
 public class PluginDataDeserializer {
 
@@ -51,8 +50,8 @@ public class PluginDataDeserializer {
                     .build();
             }
         } catch (Exception e) {
-            UpdaterConstants.LOGGER.log(Level.SEVERE, "Caught error whilst reading data for '%s'"
-                .formatted(pluginInfo.getName()), e);
+            UpdaterConstants.LOGGER.error("Caught error whilst reading data for '{}'",
+                pluginInfo.getName(), e);
         }
 
         return null;

@@ -9,6 +9,7 @@ dependencies {
     implementation("net.kyori:adventure-text-serializer-ansi:5.2.0")
     api("com.electronwill.night-config:json:3.9.0")
     implementation("org.jline:jline:4.3.1")
+    implementation("org.slf4j:slf4j-simple:2.0.18")
 }
 
 tasks {
