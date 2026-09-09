@@ -4,6 +4,7 @@ BannerMaker:
 BlueMap:
   source: modrinth
   modrinth-project-id: swbUV1cr
+  loaders: paper
 CarbonChat:
   source: modrinth
   modrinth-project-id: QzooIsZI
@@ -82,6 +83,7 @@ floodgate:
 ForcePack:
   source: modrinth
   modrinth-project-id: v182E90X
+  channels: release
 Geyser-Spigot:
   source: geyser
   project-name: geyser
@@ -115,18 +117,23 @@ Minepacks:
 Multiverse-Core:
   source: modrinth
   modrinth-project-id: 3wmN97b8
+  channels: release
 Multiverse-Inventories:
   source: modrinth
   modrinth-project-id: qvdtDX3s
+  channels: release
 Multiverse-NetherPortals:
   source: modrinth
   modrinth-project-id: vtawPsTo
+  channels: release
 Multiverse-Portals:
   source: modrinth
   modrinth-project-id: 8VMk6P0I
+  channels: release
 Multiverse-SignPortals:
   source: modrinth
   modrinth-project-id: WuErDeI1
+  channels: release
 NametagEdit:
   source: spigot
   spigot-resource-id: 3836
