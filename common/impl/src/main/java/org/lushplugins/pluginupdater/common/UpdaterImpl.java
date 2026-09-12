@@ -10,6 +10,7 @@ import org.lushplugins.pluginupdater.common.command.annotation.CommandPermission
 import org.lushplugins.pluginupdater.common.command.annotation.PluginName;
 import org.lushplugins.pluginupdater.common.command.response.StringMessageResponseHandler;
 import org.lushplugins.pluginupdater.common.config.ConfigManager;
+import org.lushplugins.pluginupdater.common.notifier.DiscordWebhookNotifier;
 import org.lushplugins.pluginupdater.common.platform.CommandHandler;
 import org.lushplugins.pluginupdater.common.platform.UpdaterPlugin;
 import org.lushplugins.pluginupdater.common.updater.UpdateHandler;
@@ -30,6 +31,7 @@ public class UpdaterImpl<T> {
     private final List<PluginDataCollector.Factory> collectors;
     private final UpdateHandler<T> updateHandler;
     private final ConfigManager config;
+    private DiscordWebhookNotifier discordWebhookNotifier;
 
     public UpdaterImpl(UpdaterPlatform<T> platform, UpdaterPlugin updaterPlugin, CommandHandler commandPlatform, List<PluginDataCollector.Factory> collectors) {
         this.platform = platform;
@@ -42,6 +44,13 @@ public class UpdaterImpl<T> {
 
         config = new ConfigManager(this);
         config.reload();
+        
+        // Initialize Discord webhook notifier
+        this.discordWebhookNotifier = new DiscordWebhookNotifier(
+            updaterPlugin.getLogger(),
+            config.isDiscordWebhookEnabled(),
+            config.getDiscordWebhookUrl()
+        );
 
         Lamp<?> lamp = commandPlatform.prepareLamp()
             .permissionFactory(new CommandPermissionFactory(this))
@@ -84,6 +93,9 @@ public class UpdaterImpl<T> {
 
     public void shutdown() {
         updateHandler.shutdown();
+        if (discordWebhookNotifier != null) {
+            discordWebhookNotifier.close();
+        }
     }
 
     public UpdaterPlatform<T> platform() {
@@ -108,6 +120,14 @@ public class UpdaterImpl<T> {
 
     public ConfigManager config() {
         return config;
+    }
+
+    public DiscordWebhookNotifier discordWebhookNotifier() {
+        return discordWebhookNotifier;
+    }
+
+    public void setDiscordWebhookNotifier(DiscordWebhookNotifier notifier) {
+        this.discordWebhookNotifier = notifier;
     }
 
     public CompletableFuture<List<PluginData>> collectUnknownPlugins() {
