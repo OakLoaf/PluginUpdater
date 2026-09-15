@@ -1,7 +1,6 @@
 package org.lushplugins.pluginupdater.geyser.listener;
 
 import org.geysermc.event.subscribe.Subscribe;
-import org.geysermc.geyser.api.GeyserApi;
 import org.geysermc.geyser.api.connection.GeyserConnection;
 import org.geysermc.geyser.api.event.bedrock.SessionJoinEvent;
 import org.lushplugins.pluginupdater.common.UpdaterImpl;
