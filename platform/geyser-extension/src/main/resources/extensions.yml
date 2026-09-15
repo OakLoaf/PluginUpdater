@@ -1,0 +1,5 @@
+id: pluginupdater
+name: PluginUpdater
+main: org.lushplugins.pluginupdater.geyser.GeyserUpdaterExtension
+api: 2.9.0
+version: '${version}+${commit}'
