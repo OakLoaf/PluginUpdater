@@ -60,7 +60,7 @@ public record DownloadableRelease(
         // Ensures update folder exists
         Files.createDirectories(downloadPath.getParent());
 
-        UpdaterConstants.LOGGER.info("Saving '" + fileName + "' to '" + downloadPath.toAbsolutePath() + "'");
+        UpdaterConstants.LOGGER.info("Saving '{}' to '{}'", fileName, downloadPath.toAbsolutePath());
         HttpResponse<Path> downloadResponse = client.send(
             request,
             HttpResponse.BodyHandlers.ofFile(downloadPath)

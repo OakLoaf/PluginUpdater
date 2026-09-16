@@ -6,20 +6,20 @@ import com.electronwill.nightconfig.core.file.FileConfig;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.lushplugins.pluginupdater.api.updater.PluginData;
-import org.lushplugins.pluginupdater.common.config.deserializer.PluginDataDeserializer;
 import org.lushplugins.pluginupdater.common.UpdaterImpl;
+import org.lushplugins.pluginupdater.common.config.deserializer.PluginDataDeserializer;
 import org.lushplugins.pluginupdater.common.updater.UpdateHandler;
 import org.lushplugins.pluginupdater.common.util.ConfigUtil;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.*;
-import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 public class ConfigManager {
     private final UpdaterImpl<?> updater;
     private boolean allowDownloads;
+    private int scheduleFrequencyMins;
     private final Map<String, PluginData> plugins = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
     private final Set<String> disabledPlugins = new HashSet<>();
     private Messages messages;
@@ -42,10 +42,11 @@ public class ConfigManager {
 
         boolean checkOnReload = ConfigUtil.getOrAliasOrElse(
             config, "check-updates-on-reload", "check-updates-on-start", true,
-            () -> updater.updaterPlugin().getLogger().log(Level.WARNING, "Deprecated: The config section 'check-updates-on-start' has been renamed to 'check-updates-on-reload'")
+            () -> updater.updaterPlugin().getComponentLogger().warn("Deprecated: The config section 'check-updates-on-start' has been renamed to 'check-updates-on-reload'")
         );
 
         this.allowDownloads = config.getOrElse("allow-downloads", true);
+        this.scheduleFrequencyMins = config.getOrElse("schedule-frequency", -1);
 
         Config messagesConfig = config.get("messages");
         if (messagesConfig != null) {
@@ -86,7 +87,7 @@ public class ConfigManager {
 
             if (checkOnReload && !skipCheck) {
                 UpdateHandler<?> updateHandler = updater.updateHandler();
-                getPlugins().forEach(updateHandler::queueUpdateCheck);
+                updateHandler.queueUpdateChecks(getPlugins());
                 updateHandler.queueBroadcastNotification();
             }
         });
@@ -100,6 +101,10 @@ public class ConfigManager {
 
     public boolean shouldAllowDownloads() {
         return allowDownloads;
+    }
+
+    public int getScheduleFrequencyMins() {
+        return scheduleFrequencyMins;
     }
 
     public boolean canRegisterPluginData(String pluginName) {

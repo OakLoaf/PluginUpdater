@@ -20,7 +20,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
-import java.util.logging.Level;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 public class UpdaterImpl<T> {
@@ -42,6 +42,14 @@ public class UpdaterImpl<T> {
 
         config = new ConfigManager(this);
         config.reload();
+
+        int delay = config.getScheduleFrequencyMins();
+        if (delay > 0) {
+            updateHandler.scheduler().scheduleAtFixedRate(() -> {
+                updateHandler.queueUpdateChecks(config.getPlugins());
+                updateHandler.queueBroadcastNotification();
+            }, delay, delay, TimeUnit.MINUTES);
+        }
 
         Lamp<?> lamp = commandPlatform.prepareLamp()
             .permissionFactory(new CommandPermissionFactory(this))
@@ -127,8 +135,8 @@ public class UpdaterImpl<T> {
                 List<PluginData> foundPluginData;
                 try {
                     foundPluginData = collector.collect(unknownPlugins.values());
-                } catch (Throwable e) {
-                    updaterPlugin.getLogger().log(Level.WARNING, "Caught exception whilst collecting unknown plugin data: ", e);
+                } catch (Exception e) {
+                    updaterPlugin.getComponentLogger().warn("Caught exception whilst collecting unknown plugin data: ", e);
                     continue;
                 }
 
