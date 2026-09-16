@@ -19,6 +19,7 @@ import java.util.stream.Collectors;
 public class ConfigManager {
     private final UpdaterImpl<?> updater;
     private boolean allowDownloads;
+    private int scheduleFrequencyMins;
     private final Map<String, PluginData> plugins = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
     private final Set<String> disabledPlugins = new HashSet<>();
     private Messages messages;
@@ -45,6 +46,7 @@ public class ConfigManager {
         );
 
         this.allowDownloads = config.getOrElse("allow-downloads", true);
+        this.scheduleFrequencyMins = config.getOrElse("schedule-frequency", -1);
 
         Config messagesConfig = config.get("messages");
         if (messagesConfig != null) {
@@ -85,7 +87,7 @@ public class ConfigManager {
 
             if (checkOnReload && !skipCheck) {
                 UpdateHandler<?> updateHandler = updater.updateHandler();
-                getPlugins().forEach(updateHandler::queueUpdateCheck);
+                updateHandler.queueUpdateChecks(getPlugins());
                 updateHandler.queueBroadcastNotification();
             }
         });
@@ -99,6 +101,10 @@ public class ConfigManager {
 
     public boolean shouldAllowDownloads() {
         return allowDownloads;
+    }
+
+    public int getScheduleFrequencyMins() {
+        return scheduleFrequencyMins;
     }
 
     public boolean canRegisterPluginData(String pluginName) {
