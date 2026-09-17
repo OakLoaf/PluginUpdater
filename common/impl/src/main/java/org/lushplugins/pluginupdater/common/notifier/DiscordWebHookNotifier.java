@@ -5,60 +5,52 @@ import io.github._4drian3d.jdwebhooks.component.ContainerableComponent;
 import io.github._4drian3d.jdwebhooks.webhook.WebHookClient;
 import io.github._4drian3d.jdwebhooks.webhook.WebHookExecution;
 import net.kyori.adventure.text.logger.slf4j.ComponentLogger;
-import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.NotNull;
 import org.lushplugins.pluginupdater.api.updater.PluginData;
 import org.lushplugins.pluginupdater.api.version.Version;
+import org.lushplugins.pluginupdater.api.version.VersionDifference;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class DiscordWebhookNotifier {
+public class DiscordWebHookNotifier {
     private final ComponentLogger logger;
-    private final WebHookClient webhookClient;
-    private final boolean enabled;
+    private final WebHookClient webHookClient;
 
-    public DiscordWebhookNotifier(ComponentLogger logger, boolean enabled, @Nullable String webhookUrl) {
+    public DiscordWebHookNotifier(ComponentLogger logger, @NotNull String webhookUrl) {
         this.logger = logger;
-        this.enabled = enabled && webhookUrl != null && !webhookUrl.isBlank();
 
-        if (this.enabled) {
-            this.webhookClient = WebHookClient.fromURL(webhookUrl);
-        } else {
-            this.webhookClient = null;
+        try {
+            this.webHookClient = WebHookClient.fromURL(webhookUrl);
+        } catch (Exception e) {
+            logger.warn("Failed to create Discord webhook client. Webhook notifications will be disabled. Possible wrong url.", e);
+            throw e;
         }
     }
 
     public void notifyDownload(PluginData pluginData) {
-        if (!enabled || webhookClient == null) {
-            return;
-        }
-
         try {
             Version currentVersion = pluginData.currentVersion();
-            Optional<Version> latestVersionOpt = pluginData.latestVersion();
-
-            if (latestVersionOpt.isEmpty()) {
+            Optional<Version> latestVersionOptional = pluginData.latestVersion();
+            if (latestVersionOptional.isEmpty()) {
                 return;
             }
 
-            Version latestVersion = latestVersionOpt.get();
             String pluginName = pluginData.pluginName();
 
             String versionString = String.format("%s → %s",
                 currentVersion.rawVersionString(),
-                latestVersion.rawVersionString()
+                latestVersionOptional.get().rawVersionString()
             );
 
             List<ContainerableComponent> components = new ArrayList<>();
-
             components.add(Component.textDisplay("**" + pluginName + " Updated**"));
-
             components.add(Component.textDisplay("**Version:** " + versionString));
 
-            String versionDiff = pluginData.versionDifference().name();
-            if (!versionDiff.equals("UNKNOWN")) {
-                components.add(Component.textDisplay("**Update Type:** " + versionDiff));
+            VersionDifference versionDiff = pluginData.versionDifference();
+            if (versionDiff != VersionDifference.UNKNOWN) {
+                components.add(Component.textDisplay("**Update Type:** " + versionDiff.name()));
             }
 
             pluginData.getChangelogUrl().ifPresent(s -> components.add(Component.textDisplay("**Changelog:** [View Changelog](" + s + ")")));
@@ -74,7 +66,7 @@ public class DiscordWebhookNotifier {
                 )
                 .build();
 
-            webhookClient.executeWebHook(webHook)
+            webHookClient.executeWebHook(webHook)
                 .whenComplete((response, throwable) -> {
                     int statusCode = response.statusCode();
 
@@ -90,7 +82,7 @@ public class DiscordWebhookNotifier {
         }
     }
 
-    public void close() {
+    public void shutdown() {
         // Might come handy in the future
     }
 }

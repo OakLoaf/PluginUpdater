@@ -121,11 +121,8 @@ public class UpdateHandler<T> {
                         if (pluginData.downloadUpdate(updater.updaterPlugin().getDownloadDir())) {
                             pluginData.versionDifference(VersionDifference.UNKNOWN);
                             pluginData.setAlreadyDownloaded(true);
-                            
-                            // Send Discord webhook notification
-                            if (updater.discordWebhookNotifier() != null) {
-                                updater.discordWebhookNotifier().notifyDownload(pluginData);
-                            }
+
+                            updater.discordWebHookNotifier().ifPresent(notifier -> notifier.notifyDownload(pluginData));
                             
                             processingData.getFuture().complete(true);
                             break;
