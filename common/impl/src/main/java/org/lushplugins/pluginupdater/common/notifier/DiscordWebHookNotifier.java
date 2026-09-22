@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class DiscordWebHookNotifier {
+public class DiscordWebHookNotifier implements Notifier {
     private final ComponentLogger logger;
     private final WebHookClient webHookClient;
 
@@ -29,6 +29,7 @@ public class DiscordWebHookNotifier {
         }
     }
 
+    @Override
     public void notifyDownload(PluginData pluginData) {
         try {
             Version currentVersion = pluginData.currentVersion();
@@ -39,10 +40,9 @@ public class DiscordWebHookNotifier {
 
             String pluginName = pluginData.pluginName();
 
-            String versionString = String.format("%s → %s",
+            String versionString = "%s → %s".formatted(
                 currentVersion.rawVersionString(),
-                latestVersionOptional.get().rawVersionString()
-            );
+                latestVersionOptional.get().rawVersionString());
 
             List<ContainerableComponent> components = new ArrayList<>();
             components.add(Component.textDisplay("**" + pluginName + " Updated**"));
@@ -80,9 +80,5 @@ public class DiscordWebHookNotifier {
         } catch (Exception e) {
             logger.warn("Failed to send Discord webhook notification", e);
         }
-    }
-
-    public void shutdown() {
-        // Might come handy in the future
     }
 }

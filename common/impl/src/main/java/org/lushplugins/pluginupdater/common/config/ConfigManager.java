@@ -8,7 +8,8 @@ import org.jetbrains.annotations.Nullable;
 import org.lushplugins.pluginupdater.api.updater.PluginData;
 import org.lushplugins.pluginupdater.common.UpdaterImpl;
 import org.lushplugins.pluginupdater.common.config.deserializer.PluginDataDeserializer;
-import org.lushplugins.pluginupdater.common.notifier.DiscordWebHookNotifier;
+import org.lushplugins.pluginupdater.common.notifier.Notifier;
+import org.lushplugins.pluginupdater.common.notifier.NotifierRegistry;
 import org.lushplugins.pluginupdater.common.updater.UpdateHandler;
 import org.lushplugins.pluginupdater.common.util.ConfigUtil;
 
@@ -24,6 +25,7 @@ public class ConfigManager {
     private final Set<String> disabledPlugins = new HashSet<>();
     private Messages messages;
     private String discordWebhookUrl;
+    private List<Notifier> notifiers;
 
     public ConfigManager(UpdaterImpl<?> updater) {
         this.updater = updater;
@@ -104,16 +106,11 @@ public class ConfigManager {
             }
         });
 
-        updater.discordWebHookNotifier().ifPresent(DiscordWebHookNotifier::shutdown);
-        if (this.discordWebhookUrl != null && !this.discordWebhookUrl.isBlank()) {
-            try {
-                updater.discordWebHookNotifier(new DiscordWebHookNotifier(
-                    updater.updaterPlugin().getComponentLogger(),
-                    this.discordWebhookUrl
-                ));
-            } catch (Exception e) {
-                updater.discordWebHookNotifier(null);
-            }
+        this.notifiers.forEach(Notifier::shutdown);
+        if (config.contains("notifications")) {
+            this.notifiers = NotifierRegistry.deserializeNotifiers(updater, config.get("notifications"));
+        } else {
+            this.notifiers = Collections.emptyList();
         }
 
         config.close();
@@ -169,6 +166,15 @@ public class ConfigManager {
 
     public String getDiscordWebHookUrl() {
         return discordWebhookUrl;
+    }
+
+    public List<Notifier> getNotifiers() {
+        return notifiers;
+    }
+
+    public void shutdownNotifiers() {
+        notifiers.forEach(Notifier::shutdown);
+        notifiers.clear();
     }
 
 

@@ -27,7 +27,6 @@ public class UpdaterImpl<T> {
     private final List<PluginDataCollector.Factory> collectors;
     private final UpdateHandler<T> updateHandler;
     private final ConfigManager config;
-    private DiscordWebHookNotifier discordWebHookNotifier;
 
     public UpdaterImpl(UpdaterPlatform<T> platform, UpdaterPlugin updaterPlugin, CommandHandler commandPlatform, List<PluginDataCollector.Factory> collectors) {
         this.platform = platform;
@@ -40,17 +39,6 @@ public class UpdaterImpl<T> {
 
         config = new ConfigManager(this);
         config.reload();
-
-        if (config.getDiscordWebHookUrl() != null && !config.getDiscordWebHookUrl().isBlank()) {
-            try {
-                discordWebHookNotifier = new DiscordWebHookNotifier(
-                    updaterPlugin.getComponentLogger(),
-                    config.getDiscordWebHookUrl()
-                );
-            } catch (Exception e) {
-                discordWebHookNotifier = null;
-            }
-        }
 
         Lamp<?> lamp = commandPlatform.prepareLamp()
             .permissionFactory(new CommandPermissionFactory(this))
@@ -93,9 +81,7 @@ public class UpdaterImpl<T> {
 
     public void shutdown() {
         updateHandler.shutdown();
-        if (discordWebHookNotifier != null) {
-            discordWebHookNotifier.shutdown();
-        }
+        config.shutdownNotifiers();
     }
 
     public UpdaterPlatform<T> platform() {
@@ -124,10 +110,6 @@ public class UpdaterImpl<T> {
 
     public Optional<DiscordWebHookNotifier> discordWebHookNotifier() {
         return Optional.ofNullable(discordWebHookNotifier);
-    }
-
-    public void discordWebHookNotifier(DiscordWebHookNotifier notifier) {
-        this.discordWebHookNotifier = notifier;
     }
 
     public CompletableFuture<List<PluginData>> collectUnknownPlugins() {
