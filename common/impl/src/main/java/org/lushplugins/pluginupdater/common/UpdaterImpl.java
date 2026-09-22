@@ -108,10 +108,6 @@ public class UpdaterImpl<T> {
         return config;
     }
 
-    public Optional<DiscordWebHookNotifier> discordWebHookNotifier() {
-        return Optional.ofNullable(discordWebHookNotifier);
-    }
-
     public CompletableFuture<List<PluginData>> collectUnknownPlugins() {
         return CompletableFuture.supplyAsync(() -> {
             Map<String, PluginInfo> unknownPlugins = platform.getPlugins().stream()
