@@ -125,6 +125,9 @@ public class UpdateHandler<T> {
                         if (pluginData.downloadUpdate(updater.updaterPlugin().getDownloadDir())) {
                             pluginData.versionDifference(VersionDifference.UNKNOWN);
                             pluginData.setAlreadyDownloaded(true);
+
+                            updater.config().getNotifiers().forEach(notifier -> notifier.notifyDownload(pluginData));
+                            
                             processingData.getFuture().complete(true);
                             break;
                         } else {

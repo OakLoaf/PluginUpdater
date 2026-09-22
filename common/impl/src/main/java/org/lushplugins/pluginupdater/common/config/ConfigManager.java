@@ -8,6 +8,8 @@ import org.jetbrains.annotations.Nullable;
 import org.lushplugins.pluginupdater.api.updater.PluginData;
 import org.lushplugins.pluginupdater.common.UpdaterImpl;
 import org.lushplugins.pluginupdater.common.config.deserializer.PluginDataDeserializer;
+import org.lushplugins.pluginupdater.common.notifier.Notifier;
+import org.lushplugins.pluginupdater.common.notifier.NotifierRegistry;
 import org.lushplugins.pluginupdater.common.updater.UpdateHandler;
 import org.lushplugins.pluginupdater.common.util.ConfigUtil;
 
@@ -23,6 +25,8 @@ public class ConfigManager {
     private final Map<String, PluginData> plugins = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
     private final Set<String> disabledPlugins = new HashSet<>();
     private Messages messages;
+    private String discordWebhookUrl;
+    private List<Notifier> notifiers;
 
     public ConfigManager(UpdaterImpl<?> updater) {
         this.updater = updater;
@@ -47,6 +51,18 @@ public class ConfigManager {
 
         this.allowDownloads = config.getOrElse("allow-downloads", true);
         this.scheduleFrequencyMins = config.getOrElse("schedule-frequency", -1);
+
+        Config discordConfig = config.get("discord-webhook");
+        if (discordConfig != null) {
+            boolean discordWebhookEnabled = discordConfig.getOrElse("enabled", false);
+            if (!discordWebhookEnabled) {
+                discordWebhookUrl = "";
+            } else {
+                this.discordWebhookUrl = discordConfig.getOrElse("webhook-url", "");
+            }
+        } else {
+            this.discordWebhookUrl = "";
+        }
 
         Config messagesConfig = config.get("messages");
         if (messagesConfig != null) {
@@ -91,6 +107,13 @@ public class ConfigManager {
                 updateHandler.queueBroadcastNotification();
             }
         });
+
+        this.notifiers.forEach(Notifier::shutdown);
+        if (config.contains("notifications")) {
+            this.notifiers = NotifierRegistry.deserializeNotifiers(updater, config.get("notifications"));
+        } else {
+            this.notifiers = Collections.emptyList();
+        }
 
         config.close();
     }
@@ -145,6 +168,19 @@ public class ConfigManager {
 
     public String getMessage(String name, String def) {
         return messages.get(name, def);
+    }
+
+    public String getDiscordWebHookUrl() {
+        return discordWebhookUrl;
+    }
+
+    public List<Notifier> getNotifiers() {
+        return notifiers;
+    }
+
+    public void shutdownNotifiers() {
+        notifiers.forEach(Notifier::shutdown);
+        notifiers.clear();
     }
 
 

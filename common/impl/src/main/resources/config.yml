@@ -14,6 +14,12 @@ plugins:
   ExamplePlugin:
     enabled: false
 
+# Notifications for downloads
+notifications:
+    discord-webhook:
+      enabled: false
+      webhook-url: ""
+
 messages:
   unchecked-color: "<dark_gray>"
   update-available-color: "<#ffda54>"
