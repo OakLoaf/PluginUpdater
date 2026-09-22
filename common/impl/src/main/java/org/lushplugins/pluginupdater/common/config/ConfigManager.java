@@ -8,6 +8,7 @@ import org.jetbrains.annotations.Nullable;
 import org.lushplugins.pluginupdater.api.updater.PluginData;
 import org.lushplugins.pluginupdater.common.UpdaterImpl;
 import org.lushplugins.pluginupdater.common.config.deserializer.PluginDataDeserializer;
+import org.lushplugins.pluginupdater.common.notifier.DiscordWebHookNotifier;
 import org.lushplugins.pluginupdater.common.updater.UpdateHandler;
 import org.lushplugins.pluginupdater.common.util.ConfigUtil;
 
@@ -22,6 +23,7 @@ public class ConfigManager {
     private final Map<String, PluginData> plugins = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
     private final Set<String> disabledPlugins = new HashSet<>();
     private Messages messages;
+    private String discordWebhookUrl;
 
     public ConfigManager(UpdaterImpl<?> updater) {
         this.updater = updater;
@@ -45,6 +47,18 @@ public class ConfigManager {
         );
 
         this.allowDownloads = config.getOrElse("allow-downloads", true);
+
+        Config discordConfig = config.get("discord-webhook");
+        if (discordConfig != null) {
+            boolean discordWebhookEnabled = discordConfig.getOrElse("enabled", false);
+            if (!discordWebhookEnabled) {
+                discordWebhookUrl = "";
+            } else {
+                this.discordWebhookUrl = discordConfig.getOrElse("webhook-url", "");
+            }
+        } else {
+            this.discordWebhookUrl = "";
+        }
 
         Config messagesConfig = config.get("messages");
         if (messagesConfig != null) {
@@ -89,6 +103,18 @@ public class ConfigManager {
                 updateHandler.queueBroadcastNotification();
             }
         });
+
+        updater.discordWebHookNotifier().ifPresent(DiscordWebHookNotifier::shutdown);
+        if (this.discordWebhookUrl != null && !this.discordWebhookUrl.isBlank()) {
+            try {
+                updater.discordWebHookNotifier(new DiscordWebHookNotifier(
+                    updater.updaterPlugin().getComponentLogger(),
+                    this.discordWebhookUrl
+                ));
+            } catch (Exception e) {
+                updater.discordWebHookNotifier(null);
+            }
+        }
 
         config.close();
     }
@@ -139,6 +165,10 @@ public class ConfigManager {
 
     public String getMessage(String name, String def) {
         return messages.get(name, def);
+    }
+
+    public String getDiscordWebHookUrl() {
+        return discordWebhookUrl;
     }
 
 

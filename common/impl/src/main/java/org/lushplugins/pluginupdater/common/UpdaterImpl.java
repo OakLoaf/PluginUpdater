@@ -10,15 +10,13 @@ import org.lushplugins.pluginupdater.common.command.annotation.CommandPermission
 import org.lushplugins.pluginupdater.common.command.annotation.PluginName;
 import org.lushplugins.pluginupdater.common.command.response.StringMessageResponseHandler;
 import org.lushplugins.pluginupdater.common.config.ConfigManager;
+import org.lushplugins.pluginupdater.common.notifier.DiscordWebHookNotifier;
 import org.lushplugins.pluginupdater.common.platform.CommandHandler;
 import org.lushplugins.pluginupdater.common.platform.UpdaterPlugin;
 import org.lushplugins.pluginupdater.common.updater.UpdateHandler;
 import revxrsal.commands.Lamp;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
@@ -29,6 +27,7 @@ public class UpdaterImpl<T> {
     private final List<PluginDataCollector.Factory> collectors;
     private final UpdateHandler<T> updateHandler;
     private final ConfigManager config;
+    private DiscordWebHookNotifier discordWebHookNotifier;
 
     public UpdaterImpl(UpdaterPlatform<T> platform, UpdaterPlugin updaterPlugin, CommandHandler commandPlatform, List<PluginDataCollector.Factory> collectors) {
         this.platform = platform;
@@ -41,6 +40,17 @@ public class UpdaterImpl<T> {
 
         config = new ConfigManager(this);
         config.reload();
+
+        if (config.getDiscordWebHookUrl() != null && !config.getDiscordWebHookUrl().isBlank()) {
+            try {
+                discordWebHookNotifier = new DiscordWebHookNotifier(
+                    updaterPlugin.getComponentLogger(),
+                    config.getDiscordWebHookUrl()
+                );
+            } catch (Exception e) {
+                discordWebHookNotifier = null;
+            }
+        }
 
         Lamp<?> lamp = commandPlatform.prepareLamp()
             .permissionFactory(new CommandPermissionFactory(this))
@@ -83,6 +93,9 @@ public class UpdaterImpl<T> {
 
     public void shutdown() {
         updateHandler.shutdown();
+        if (discordWebHookNotifier != null) {
+            discordWebHookNotifier.shutdown();
+        }
     }
 
     public UpdaterPlatform<T> platform() {
@@ -107,6 +120,14 @@ public class UpdaterImpl<T> {
 
     public ConfigManager config() {
         return config;
+    }
+
+    public Optional<DiscordWebHookNotifier> discordWebHookNotifier() {
+        return Optional.ofNullable(discordWebHookNotifier);
+    }
+
+    public void discordWebHookNotifier(DiscordWebHookNotifier notifier) {
+        this.discordWebHookNotifier = notifier;
     }
 
     public CompletableFuture<List<PluginData>> collectUnknownPlugins() {
