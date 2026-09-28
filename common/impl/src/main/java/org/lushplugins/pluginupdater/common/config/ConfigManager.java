@@ -26,7 +26,7 @@ public class ConfigManager {
     private final Set<String> disabledPlugins = new HashSet<>();
     private Messages messages;
     private String discordWebhookUrl;
-    private List<Notifier> notifiers;
+    private List<Notifier> notifiers = Collections.emptyList();
 
     public ConfigManager(UpdaterImpl<?> updater) {
         this.updater = updater;
