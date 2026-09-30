@@ -1,10 +1,13 @@
 package org.lushplugins.pluginupdater.paper;
 
+import net.kyori.adventure.text.logger.slf4j.ComponentLogger;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.jspecify.annotations.NonNull;
 import org.lushplugins.pluginupdater.api.updater.PluginInfo;
 import org.lushplugins.pluginupdater.api.util.DownloadLogger;
+import org.lushplugins.pluginupdater.api.util.UpdaterConstants;
 import org.lushplugins.pluginupdater.common.UpdaterImpl;
 import org.lushplugins.pluginupdater.common.collector.CommonPluginCollector;
 import org.lushplugins.pluginupdater.common.collector.ModrinthCollector;
@@ -17,7 +20,6 @@ import org.lushplugins.pluginupdater.paper.collector.PluginYamlCollector;
 import org.lushplugins.pluginupdater.paper.collector.SpigotCollector;
 import org.lushplugins.pluginupdater.paper.command.PaperCommandHandler;
 import org.lushplugins.pluginupdater.paper.listener.PlayerListener;
-import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.io.InputStream;
@@ -34,6 +36,7 @@ public final class PaperUpdaterPlugin extends JavaPlugin implements UpdaterPlugi
     public void onLoad() {
         PaperUpdater.populateRegistries();
         plugin = this;
+        UpdaterConstants.LOGGER = getComponentLogger();
     }
 
     @Override
@@ -94,5 +97,10 @@ public final class PaperUpdaterPlugin extends JavaPlugin implements UpdaterPlugi
 
     public static PaperUpdaterPlugin getInstance() {
         return plugin;
+    }
+
+    @Override
+    public @NonNull ComponentLogger getComponentLogger() {
+        return super.getComponentLogger();
     }
 }

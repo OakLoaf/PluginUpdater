@@ -16,7 +16,6 @@ import java.io.File;
 import java.io.IOException;
 import java.net.http.HttpResponse;
 import java.util.*;
-import java.util.logging.Level;
 
 public record ModrinthCollector(UpdaterImpl<?> updater) implements PluginDataCollector {
 
@@ -34,7 +33,7 @@ public record ModrinthCollector(UpdaterImpl<?> updater) implements PluginDataCol
                 hash = Files.asByteSource(pluginFile).hash(Hashing.sha512());
                 pluginHashes.put(hash.toString(), unknownPlugin);
             } catch (IOException e) {
-                updater.updaterPlugin().getLogger().log(Level.WARNING, "Caught error whilst hashing plugin file: ", e);
+                updater.updaterPlugin().getComponentLogger().warn("Caught error whilst hashing plugin file: ", e);
             }
         }
 
@@ -49,13 +48,17 @@ public record ModrinthCollector(UpdaterImpl<?> updater) implements PluginDataCol
         HttpResponse<String> response;
         try {
             response = HttpUtil.sendRequest(String.format("%s/version_files", ModrinthSource.ENDPOINT.url()), payload);
-        } catch (IOException | InterruptedException e) {
-            updater.updaterPlugin().getLogger().log(Level.WARNING, "Caught error whilst getting project data from hashes: ", e);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            updater.updaterPlugin().getComponentLogger().warn("Caught error whilst getting project data from hashes: ", e);
+            return Collections.emptyList();
+        } catch (IOException e) {
+            updater.updaterPlugin().getComponentLogger().warn("Caught error whilst getting project data from hashes: ", e);
             return Collections.emptyList();
         }
 
         if (response.statusCode() != 200) {
-            updater.updaterPlugin().getLogger().log(Level.WARNING, "Received invalid response code (" + response.statusCode() + ") whilst getting project data from hashes.");
+            updater.updaterPlugin().getComponentLogger().warn("Received invalid response code ({}) whilst getting project data from hashes.", response.statusCode());
             return Collections.emptyList();
         }
 

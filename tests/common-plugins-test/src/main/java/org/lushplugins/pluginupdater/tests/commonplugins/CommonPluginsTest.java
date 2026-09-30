@@ -17,7 +17,6 @@ import java.nio.file.Path;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
-import java.util.logging.Level;
 
 public class CommonPluginsTest {
 
@@ -25,7 +24,7 @@ public class CommonPluginsTest {
         Thread.setDefaultUncaughtExceptionHandler((thread, throwable) -> {
             StringWriter sw = new StringWriter();
             throwable.printStackTrace(new PrintWriter(sw));
-            UpdaterConstants.LOGGER.severe(sw.toString());
+            UpdaterConstants.LOGGER.error(sw.toString());
         });
     }
 
@@ -56,12 +55,11 @@ public class CommonPluginsTest {
         // We fetch all latest versions and then download all jars
         // This is to ensure that each process is handled in batches
         for (PluginData pluginData : undownloadedPluginData) {
-            cli.getLogger().info("Fetching %s's latest version"
-                .formatted(pluginData.pluginName()));
+            cli.getComponentLogger().info("Fetching {}'s latest version", pluginData.pluginName());
             try {
                 pluginData.latestVersion(pluginData.fetchLatestVersion().version());
             } catch (RuntimeException e) {
-                cli.getLogger().severe(e.getMessage());
+                cli.getComponentLogger().error(e.getMessage());
                 passing = false;
             }
         }
@@ -70,8 +68,8 @@ public class CommonPluginsTest {
         for (PluginData pluginData : undownloadedPluginData) {
             try {
                 pluginData.downloadUpdate(downloadDir);
-            } catch (Throwable e) {
-                cli.getLogger().log(Level.SEVERE, "Failed to download latest version of " + pluginData.pluginName(), e);
+            } catch (Exception e) {
+                cli.getComponentLogger().error("Failed to download latest version of {}", pluginData.pluginName(), e);
                 passing = false;
             }
         }
@@ -83,8 +81,7 @@ public class CommonPluginsTest {
                 String pluginName = entry.getKey();
                 PluginInfo pluginInfo = platform.getPlugin(pluginName);
                 if (pluginInfo == null) {
-                    cli.getLogger().log(Level.WARNING, "Failed to find plugin jar for %s"
-                        .formatted(pluginName));
+                    cli.getComponentLogger().warn("Failed to find plugin jar for {}", pluginName);
                     return null;
                 }
 

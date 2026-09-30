@@ -2,9 +2,9 @@ package org.lushplugins.pluginupdater.common.command;
 
 import org.lushplugins.pluginupdater.api.updater.PluginData;
 import org.lushplugins.pluginupdater.api.updater.PluginInfo;
+import org.lushplugins.pluginupdater.common.UpdaterImpl;
 import org.lushplugins.pluginupdater.common.command.annotation.CommandPermission;
 import org.lushplugins.pluginupdater.common.command.annotation.PluginName;
-import org.lushplugins.pluginupdater.common.UpdaterImpl;
 import org.lushplugins.pluginupdater.common.updater.UpdateHandler;
 import revxrsal.commands.annotation.Subcommand;
 import revxrsal.commands.annotation.Switch;
@@ -13,7 +13,6 @@ import revxrsal.commands.orphan.OrphanCommand;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.logging.Level;
 
 @SuppressWarnings("unused")
 public record UpdaterCommand(UpdaterImpl<?> updater) implements OrphanCommand {
@@ -23,8 +22,8 @@ public record UpdaterCommand(UpdaterImpl<?> updater) implements OrphanCommand {
     public String reload(@Switch("skip-check") boolean skipCheck) {
         try {
             updater.config().reload(skipCheck);
-        } catch (Throwable e) {
-            updater.updaterPlugin().getLogger().log(Level.SEVERE, "Caught error whilst reloading: ", e);
+        } catch (Exception e) {
+            updater.updaterPlugin().getComponentLogger().error("Caught error whilst reloading: ", e);
             return "<#ff6969>Something went wrong whilst reloading the plugin, check the console for errors";
         }
 

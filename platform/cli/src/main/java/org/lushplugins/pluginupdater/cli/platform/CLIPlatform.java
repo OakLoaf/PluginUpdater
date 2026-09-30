@@ -17,7 +17,6 @@ import java.util.*;
 import java.util.function.UnaryOperator;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
-import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 public class CLIPlatform implements UpdaterPlatform<Object> {
@@ -50,7 +49,7 @@ public class CLIPlatform implements UpdaterPlatform<Object> {
                             fallbackInfoParser = fallbackInfoParser.getFallbackInfoParser();
                         }
                     } catch (IOException e) {
-                        cli.getLogger().log(Level.SEVERE, "Failed to interpret jar file for " + path, e);
+                        cli.getComponentLogger().error("Failed to interpret jar file for {}", path, e);
                     }
 
                     return null;
@@ -93,7 +92,7 @@ public class CLIPlatform implements UpdaterPlatform<Object> {
 
     @Override
     public void broadcastMessage(Collection<Object> users, String message) {
-        UpdaterConstants.LOGGER.log(Level.INFO, MiniMessage.miniMessage().stripTags(message));
+        UpdaterConstants.LOGGER.info(MiniMessage.miniMessage().deserialize(message));
     }
 
     @Override

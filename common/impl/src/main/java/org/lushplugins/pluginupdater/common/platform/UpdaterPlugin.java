@@ -1,10 +1,10 @@
 package org.lushplugins.pluginupdater.common.platform;
 
+import net.kyori.adventure.text.logger.slf4j.ComponentLogger;
 import org.lushplugins.pluginupdater.api.updater.PluginInfo;
 
 import java.io.InputStream;
 import java.nio.file.Path;
-import java.util.logging.Logger;
 
 public interface UpdaterPlugin {
 
@@ -16,5 +16,5 @@ public interface UpdaterPlugin {
 
     InputStream getResourceStream(PluginInfo pluginInfo, String path);
 
-    Logger getLogger();
+    ComponentLogger getComponentLogger();
 }

@@ -4,6 +4,7 @@ BannerMaker:
 BlueMap:
   source: modrinth
   modrinth-project-id: swbUV1cr
+  loaders: paper
 CarbonChat:
   source: modrinth
   modrinth-project-id: QzooIsZI
