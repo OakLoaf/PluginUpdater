@@ -149,8 +149,8 @@ PluginPortal:
   source: modrinth
   modrinth-project-id: 5qkQnnWO
 ProtocolLib:
-  source: github
-  github-repo: dmulloy2/ProtocolLib
+  source: spigot
+  spigot-resource-id: 19273
 SimplePortals:
   source: spigot
   spigot-resource-id: 56772
