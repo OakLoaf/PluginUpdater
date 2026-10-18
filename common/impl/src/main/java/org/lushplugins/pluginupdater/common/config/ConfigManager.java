@@ -180,7 +180,7 @@ public class ConfigManager {
 
     public void shutdownNotifiers() {
         notifiers.forEach(Notifier::shutdown);
-        notifiers.clear();
+        notifiers = Collections.emptyList();
     }
 
 
