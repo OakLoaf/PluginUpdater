@@ -5,7 +5,7 @@ plugins {
 }
 
 dependencies {
-    compileOnly("io.papermc.paper:paper-api:26.1.2.build.70-stable")
+    compileOnly("io.papermc.paper:paper-api:26.3.build.190-stable")
 
     implementation(project(":common:impl"))
     implementation(project(":platform:paper-api"))
