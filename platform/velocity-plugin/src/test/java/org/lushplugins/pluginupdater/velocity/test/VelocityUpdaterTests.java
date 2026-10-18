@@ -1,4 +1,4 @@
-package org.lushplugins.pluginupdater.paper.test;
+package org.lushplugins.pluginupdater.velocity.test;
 
 import org.junit.jupiter.api.Test;
 import org.lushplugins.pluginupdater.tests.commonplugins.CommonPluginsTest;

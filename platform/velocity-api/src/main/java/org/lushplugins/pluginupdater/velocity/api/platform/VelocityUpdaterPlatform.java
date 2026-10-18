@@ -4,6 +4,7 @@ import com.velocitypowered.api.plugin.PluginContainer;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.text.logger.slf4j.ComponentLogger;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.jetbrains.annotations.Nullable;
 import org.lushplugins.pluginupdater.api.platform.UpdaterPlatform;
@@ -13,13 +14,12 @@ import org.lushplugins.pluginupdater.velocity.api.plugin.VelocityPluginInfo;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-import java.util.logging.Logger;
 
 public class VelocityUpdaterPlatform implements UpdaterPlatform<Player> {
     private final ProxyServer server;
-    private final Logger logger;
+    private final ComponentLogger logger;
 
-    public VelocityUpdaterPlatform(ProxyServer server, Logger logger) {
+    public VelocityUpdaterPlatform(ProxyServer server, ComponentLogger logger) {
         this.server = server;
         this.logger = logger;
     }

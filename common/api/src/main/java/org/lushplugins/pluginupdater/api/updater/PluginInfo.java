@@ -1,9 +1,9 @@
 package org.lushplugins.pluginupdater.api.updater;
 
+import net.kyori.adventure.text.logger.slf4j.ComponentLogger;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
-import java.util.logging.Logger;
 
 public interface PluginInfo {
 
@@ -25,5 +25,5 @@ public interface PluginInfo {
     /**
      * @return The plugin's logger instance
      */
-    Logger getLogger();
+    ComponentLogger getComponentLogger();
 }
