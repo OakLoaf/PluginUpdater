@@ -10,7 +10,6 @@ import org.lushplugins.pluginupdater.common.command.annotation.CommandPermission
 import org.lushplugins.pluginupdater.common.command.annotation.PluginName;
 import org.lushplugins.pluginupdater.common.command.response.StringMessageResponseHandler;
 import org.lushplugins.pluginupdater.common.config.ConfigManager;
-import org.lushplugins.pluginupdater.common.notifier.DiscordWebHookNotifier;
 import org.lushplugins.pluginupdater.common.platform.CommandHandler;
 import org.lushplugins.pluginupdater.common.platform.UpdaterPlugin;
 import org.lushplugins.pluginupdater.common.updater.UpdateHandler;
