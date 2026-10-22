@@ -1,4 +1,4 @@
 dependencies {
-    compileOnly("com.velocitypowered:velocity-api:4.2.0")
+    compileOnly("com.velocitypowered:velocity-api:4.3.0")
     compileOnly(project(":common:api"))
 }
