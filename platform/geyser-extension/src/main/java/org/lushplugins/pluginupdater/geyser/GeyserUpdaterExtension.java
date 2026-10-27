@@ -49,7 +49,7 @@ public class GeyserUpdaterExtension implements UpdaterPlugin, Extension {
             this,
             new GeyserCommandHandler(this),
             List.of(
-                CommonPluginCollector::new,
+                (updater) -> new CommonPluginCollector(updater, "common-extensions.yml"),
                 ModrinthCollector::new
             )
         );
