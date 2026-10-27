@@ -6,10 +6,12 @@ import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.geysermc.geyser.api.GeyserApi;
 import org.geysermc.geyser.api.connection.GeyserConnection;
 import org.geysermc.geyser.api.extension.Extension;
+import org.geysermc.geyser.session.GeyserSession;
 import org.jetbrains.annotations.Nullable;
 import org.lushplugins.pluginupdater.api.platform.UpdaterPlatform;
 import org.lushplugins.pluginupdater.api.updater.PluginInfo;
 import org.lushplugins.pluginupdater.geyser.api.plugin.GeyserExtensionInfo;
+import org.lushplugins.pluginupdater.geyser.api.util.GeyserUtil;
 
 import java.util.Collection;
 import java.util.List;
@@ -63,14 +65,18 @@ public class GeyserUpdaterPlatform implements UpdaterPlatform<GeyserConnection> 
 
     @Override
     public void sendActionBar(GeyserConnection connection, String message) {
-        connection.sendActionBar(parseMessage(message));
+        if (connection instanceof GeyserSession session) {
+            GeyserUtil.sendActionBar(session, parseMessage(message));
+        }
     }
 
     @Override
     public void broadcastActionBar(List<GeyserConnection> connections, String message) {
         String parsedMessage = parseMessage(message);
         for (GeyserConnection connection : connections) {
-            connection.sendActionBar(parsedMessage);
+            if (connection instanceof GeyserSession session) {
+                GeyserUtil.sendActionBar(session, parsedMessage);
+            }
         }
     }
 

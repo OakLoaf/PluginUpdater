@@ -1,5 +1,5 @@
 dependencies {
-    compileOnly("org.geysermc.geyser:api:2.11.3-SNAPSHOT")
+    compileOnly("org.geysermc.geyser:core:2.11.3-SNAPSHOT")
     compileOnly(project(":common:api"))
 
     api("net.kyori:adventure-text-minimessage:5.2.0")
