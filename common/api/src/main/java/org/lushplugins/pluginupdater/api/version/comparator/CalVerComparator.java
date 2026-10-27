@@ -58,7 +58,7 @@ public class CalVerComparator implements VersionComparator {
 
             return LocalDateTime.of(year, month, day, hour, minute);
         } catch (DateTimeParseException e) {
-            throw new InvalidVersionFormatException("Version ('%s') does not match required formatting"
+            throw new InvalidVersionFormatException("Version ('%s') does not match CalVer formatting"
                 .formatted(versionString), e);
         }
     }
