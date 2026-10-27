@@ -103,7 +103,7 @@ public record UpdatesCommand(UpdaterImpl<?> updater) implements OrphanCommand {
                     updateColor,
                     pluginData.latestVersion().orElseThrow().rawVersionString(),
                     closeRawComponent(updateColor),
-                    !interactComponent.isBlank() ? "</interact>" : ""
+                    !interactComponent.isBlank() ? "</hover>" : ""
                 );
 
             if (latestVersion.hasWarningTags()) {
