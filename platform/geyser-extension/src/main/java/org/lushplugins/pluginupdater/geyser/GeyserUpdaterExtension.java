@@ -32,7 +32,7 @@ public class GeyserUpdaterExtension implements UpdaterPlugin, Extension {
 
     private UpdaterImpl<GeyserConnection> updater;
     private GeyserUpdaterAPI api;
-    private ScheduledExecutorService scheduler;
+    private final ScheduledExecutorService scheduler;
 
     public GeyserUpdaterExtension() {
         GeyserUpdater.populateRegistries();
@@ -55,7 +55,6 @@ public class GeyserUpdaterExtension implements UpdaterPlugin, Extension {
         );
         this.api = new GeyserUpdaterAPI(updater);
 
-        // TODO: Check whether we need to register this class as a listener
         GeyserApi.api().eventBus().register(this, new PlayerListener(this));
     }
 
