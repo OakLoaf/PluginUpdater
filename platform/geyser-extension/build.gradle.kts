@@ -16,6 +16,18 @@ dependencies {
 }
 
 tasks {
+    processResources {
+        inputs.property("version", rootProject.version)
+        inputs.property("commit", rootProject.getCurrentCommitHash())
+
+        filesMatching("extension.yml") {
+            expand(
+                "version" to rootProject.version,
+                "commit" to rootProject.getCurrentCommitHash()
+            )
+        }
+    }
+
     shadowJar {
         archiveFileName.set("${rootProject.name}-geyser-${project.version}.jar")
 
