@@ -1,6 +1,8 @@
 package org.lushplugins.pluginupdater.geyser.api.platform;
 
-import net.kyori.adventure.text.logger.slf4j.ComponentLogger;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.geysermc.geyser.api.GeyserApi;
 import org.geysermc.geyser.api.connection.GeyserConnection;
 import org.geysermc.geyser.api.extension.Extension;
@@ -14,11 +16,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class GeyserUpdaterPlatform implements UpdaterPlatform<GeyserConnection> {
-    private final ComponentLogger logger;
-
-    public GeyserUpdaterPlatform(ComponentLogger logger) {
-        this.logger = logger;
-    }
 
     @Override
     public @Nullable PluginInfo getPlugin(String name) {
@@ -53,12 +50,12 @@ public class GeyserUpdaterPlatform implements UpdaterPlatform<GeyserConnection> 
 
     @Override
     public void sendMessage(GeyserConnection connection, String message) {
-        connection.sendMessage(message); // TODO: Parse/strip components
+        connection.sendMessage(parseMessage(message));
     }
 
     @Override
     public void broadcastMessage(Collection<GeyserConnection> connections, String message) {
-        String parsedMessage = message; // TODO: Parse/strip components
+        String parsedMessage = parseMessage(message);
         for (GeyserConnection connection : connections) {
             connection.sendMessage(parsedMessage);
         }
@@ -66,14 +63,19 @@ public class GeyserUpdaterPlatform implements UpdaterPlatform<GeyserConnection> 
 
     @Override
     public void sendActionBar(GeyserConnection connection, String message) {
-        connection.sendActionBar(message); // TODO: Parse/strip components
+        connection.sendActionBar(parseMessage(message));
     }
 
     @Override
     public void broadcastActionBar(List<GeyserConnection> connections, String message) {
-        String parsedMessage = message; // TODO: Parse/strip components
+        String parsedMessage = parseMessage(message);
         for (GeyserConnection connection : connections) {
             connection.sendActionBar(parsedMessage);
         }
+    }
+
+    private static String parseMessage(String message) {
+        Component component = MiniMessage.miniMessage().deserialize(message);
+        return PlainTextComponentSerializer.plainText().serialize(component);
     }
 }

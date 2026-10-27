@@ -1,6 +1,5 @@
 package org.lushplugins.pluginupdater.geyser.api;
 
-import net.kyori.adventure.text.logger.slf4j.ComponentLogger;
 import org.geysermc.geyser.api.connection.GeyserConnection;
 import org.geysermc.geyser.api.extension.Extension;
 import org.lushplugins.pluginupdater.api.source.SourceRegistry;
@@ -29,8 +28,8 @@ public class GeyserUpdater {
         SourceRegistry.register(new SpigotSource(null));
     }
 
-    public static Updater.Builder<GeyserConnection> builder(Extension extension, ComponentLogger logger) {
-        return Updater.builder(new GeyserUpdaterPlatform(logger), new GeyserExtensionInfo(extension))
+    public static Updater.Builder<GeyserConnection> builder(Extension extension) {
+        return Updater.builder(new GeyserUpdaterPlatform(), new GeyserExtensionInfo(extension))
             .downloadDir(GeyserUtil.getUpdateFolder())
             .onBuild(PlayerListener::new);
     }

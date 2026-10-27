@@ -39,7 +39,7 @@ public class GeyserUpdaterExtension implements UpdaterPlugin, Extension {
     @Subscribe
     public void onPostInitialize(GeyserPostInitializeEvent event) {
         DownloadLogger.setLogFile(dataFolder().resolve("downloads.log").toFile());
-        GeyserUpdaterPlatform platform = new GeyserUpdaterPlatform(getComponentLogger());
+        GeyserUpdaterPlatform platform = new GeyserUpdaterPlatform();
         this.updater = new UpdaterImpl<>(
             platform,
             this,

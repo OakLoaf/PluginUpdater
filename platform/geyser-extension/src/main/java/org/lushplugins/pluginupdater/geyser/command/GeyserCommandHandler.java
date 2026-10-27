@@ -1,16 +1,17 @@
 package org.lushplugins.pluginupdater.geyser.command;
 
 import net.kyori.adventure.text.Component;
-import org.lushplugins.pluginupdater.common.UpdaterImpl;
+import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.lushplugins.pluginupdater.common.platform.CommandHandler;
 import org.lushplugins.pluginupdater.geyser.GeyserUpdaterExtension;
 import revxrsal.commands.Lamp;
 import revxrsal.commands.command.CommandActor;
-import revxrsal.commands.velocity.VelocityLamp;
-import revxrsal.commands.velocity.VelocityVisitors;
-import revxrsal.commands.velocity.actor.VelocityCommandActor;
+import revxrsal.commands.geyser.GeyserLamp;
+import revxrsal.commands.geyser.actor.GeyserCommandActor;
 
 public class GeyserCommandHandler implements CommandHandler {
+
     private final GeyserUpdaterExtension instance;
 
     public GeyserCommandHandler(GeyserUpdaterExtension instance) {
@@ -29,22 +30,15 @@ public class GeyserCommandHandler implements CommandHandler {
 
     @Override
     public Lamp.Builder<?> prepareLamp() {
-        return VelocityLamp.builder(instance, instance.server())
+        return GeyserLamp.builder(instance)
             .defaultMessageSender((actor, rawMessage) -> {
                 Component message = MiniMessage.miniMessage().deserialize(rawMessage);
-                actor.source().sendMessage(message);
+                actor.source().sendMessage(PlainTextComponentSerializer.plainText().serialize(message));
             });
     }
 
     @Override
-    public void registerLampCommands(UpdaterImpl<?> updater, Lamp<?> lamp) {
-        CommandHandler.super.registerLampCommands(updater, lamp);
-
-        ((Lamp<VelocityCommandActor>) lamp).accept(VelocityVisitors.brigadier(this.instance.server()));
-    }
-
-    @Override
     public boolean hasPermission(CommandActor actor, String permission) {
-        return ((VelocityCommandActor) actor).source().hasPermission(permission);
+        return ((GeyserCommandActor) actor).source().hasPermission(permission);
     }
 }
