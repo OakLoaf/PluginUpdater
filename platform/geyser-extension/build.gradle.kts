@@ -38,3 +38,7 @@ tasks {
         useJUnitPlatform()
     }
 }
+
+modrinth {
+    loaders.addAll("geyser")
+}
