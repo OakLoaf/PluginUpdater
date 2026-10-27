@@ -30,9 +30,10 @@ public class PlayerListener {
             if (message != null) {
                 GeyserUpdaterPlatform platform = (GeyserUpdaterPlatform) updater.platform();
                 instance.scheduler()
-                    .buildTask(instance, () -> platform.sendMessage(player, updater.constructUpdateMessage()))
-                    .delay(5L, TimeUnit.SECONDS)
-                    .schedule();
+                    .schedule(
+                        () -> platform.sendMessage(player, updater.constructUpdateMessage()),
+                        5, TimeUnit.SECONDS
+                    );
             }
         }
     }
