@@ -29,10 +29,8 @@ public class PlayerListener {
             String message = updater.constructUpdateMessage();
             if (message != null) {
                 GeyserUpdaterPlatform platform = (GeyserUpdaterPlatform) updater.platform();
-                instance.server().getScheduler()
-                    .buildTask(instance, () -> {
-                        platform.sendMessage(player, updater.constructUpdateMessage());
-                    })
+                instance.scheduler()
+                    .buildTask(instance, () -> platform.sendMessage(player, updater.constructUpdateMessage()))
                     .delay(5L, TimeUnit.SECONDS)
                     .schedule();
             }

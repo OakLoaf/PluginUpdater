@@ -24,16 +24,20 @@ import org.lushplugins.pluginupdater.geyser.listener.PlayerListener;
 import java.io.InputStream;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 
 public class GeyserUpdaterExtension implements UpdaterPlugin, Extension {
     private static GeyserUpdaterExtension instance;
 
     private UpdaterImpl<GeyserConnection> updater;
     private GeyserUpdaterAPI api;
+    private ScheduledExecutorService scheduler;
 
     public GeyserUpdaterExtension() {
         GeyserUpdater.populateRegistries();
         instance = this;
+        scheduler = Executors.newSingleThreadScheduledExecutor();
     }
 
     @Subscribe
@@ -69,6 +73,10 @@ public class GeyserUpdaterExtension implements UpdaterPlugin, Extension {
 
     public GeyserUpdaterAPI api() {
         return api;
+    }
+
+    public ScheduledExecutorService scheduler() {
+        return scheduler;
     }
 
     @Override
