@@ -80,4 +80,5 @@ jobs:
         if: env.MODRINTH_TOKEN != ''
         run: |
           chmod +x ./gradlew
+          ./gradlew platform:geyser-extension:modrinth
           ./gradlew platform:paper-plugin:modrinth
