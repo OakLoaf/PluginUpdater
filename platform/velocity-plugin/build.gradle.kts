@@ -10,8 +10,8 @@ dependencies {
 
     implementation(project(":common:impl"))
     implementation(project(":platform:velocity-api"))
-    implementation("io.github.revxrsal:lamp.velocity:4.0.0-rc.19")
-    implementation("io.github.revxrsal:lamp.brigadier:4.0.0-rc.19")
+    implementation("io.github.revxrsal:lamp.velocity:4.0.0")
+    implementation("io.github.revxrsal:lamp.brigadier:4.0.0")
 
     testImplementation(project(":tests:common-plugins-test"))
     testImplementation("org.junit.jupiter:junit-jupiter:6.1.3")
