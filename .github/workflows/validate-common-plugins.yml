@@ -15,6 +15,7 @@ jobs:
       - name: Validate alphabetical order of common plugins files
         run: |
           FILES=(
+            "platform/geyser-extension/src/main/resources/common-extensions.yml"
             "platform/paper-plugin/src/main/resources/common-plugins.yml"
             "platform/velocity-plugin/src/main/resources/common-plugins.yml"
           )

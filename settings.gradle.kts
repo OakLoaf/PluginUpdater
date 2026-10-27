@@ -1,6 +1,7 @@
 dependencyResolutionManagement {
     repositories {
         maven("https://repo.papermc.io/repository/maven-public/") // Paper, Velocity
+        maven("https://repo.opencollab.dev/main/") // Geyser
         maven("https://repo.lushplugins.org/snapshots") // ChatColorHandler
         mavenCentral()
     }
@@ -27,6 +28,8 @@ includeBuild("build-logic")
 include("common:api")
 include("common:impl")
 include("platform:cli")
+include("platform:geyser-api")
+include("platform:geyser-extension")
 include("platform:paper-api")
 include("platform:paper-plugin")
 include("platform:velocity-api")

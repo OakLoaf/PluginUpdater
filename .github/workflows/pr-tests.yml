@@ -15,6 +15,14 @@ jobs:
       display-name: 'Build common'
       gradle-tasks: 'common:impl:build'
 
+  build-geyser:
+      name: 'Geyser Platform'
+      needs: build-common
+      uses: ./.github/workflows/build-platform.yml
+      with:
+          display-name: 'Build Geyser platform'
+          gradle-tasks: 'platform:geyser-extension:build -x test'
+
   build-paper:
     name: 'Paper Platform'
     needs: build-common
