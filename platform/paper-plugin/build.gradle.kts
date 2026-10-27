@@ -5,11 +5,11 @@ plugins {
 }
 
 dependencies {
-    compileOnly("io.papermc.paper:paper-api:26.1.2.build.70-stable")
+    compileOnly("io.papermc.paper:paper-api:26.2.build.+")
 
     implementation(project(":common:impl"))
     implementation(project(":platform:paper-api"))
-    implementation("io.github.revxrsal:lamp.bukkit:4.0.0-rc.18")
+    implementation("io.github.revxrsal:lamp.bukkit:4.0.0")
 
     testImplementation(project(":tests:common-plugins-test"))
     testImplementation("org.junit.jupiter:junit-jupiter:6.1.3")
@@ -39,8 +39,8 @@ tasks {
         minecraftVersion("1.21.4")
 
         downloadPlugins {
-            modrinth("viaversion", "5.7.1") // ViaVersion
-            modrinth("viabackwards", "5.7.1") // ViaBackwards
+            modrinth("viaversion", "5.11.0") // ViaVersion
+            modrinth("viabackwards", "5.11.0") // ViaBackwards
             // The following plugins are intentionally outdated for testing purposes
             modrinth("djC8I9ui", "3.2.0") // LushRewards
             modrinth("discordsrv", "1.27.0") // DiscordSRV

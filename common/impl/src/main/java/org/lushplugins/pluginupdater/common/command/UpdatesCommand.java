@@ -25,50 +25,49 @@ public record UpdatesCommand(UpdaterImpl<?> updater) implements OrphanCommand {
                 String pluginName = pluginData.pluginName();
                 VersionDifference versionDifference = pluginData.versionDifference();
                 if (!pluginData.hasCheckRan()) {
-                    return configManager.getMessage("unchecked-color", "<dark_gray>")
-                        + pluginName;
+                    String uncheckedColor = configManager.getMessage("unchecked-color", "<dark_gray>");
+                    return uncheckedColor + pluginName + closeRawComponent(uncheckedColor);
                 } else if (pluginData.isAlreadyDownloaded()) {
-                    return configManager.getMessage("latest-version-color", "<#b7faa2>")
-                        + pluginName
-                        + configManager.getMessage("update-prepared-color", "<#ffda54>")
-                        + "*";
+                    String latestVersionColor = configManager.getMessage("latest-version-color", "<#b7faa2>");
+                    String updatePreparedColor = configManager.getMessage("update-prepared-color", "<#ffda54>");
+                    return latestVersionColor + pluginName + closeRawComponent(latestVersionColor)
+                        + updatePreparedColor + "*" + closeRawComponent(updatePreparedColor);
                 } else if (versionDifference.equals(VersionDifference.MAJOR)) {
-                    String name = configManager.getMessage("major-update-available-color", "<#ff6969>")
-                        + pluginName;
+                    String majorUpdateAvailableColor = configManager.getMessage("major-update-available-color", "<#ff6969>");
+                    String name = majorUpdateAvailableColor + pluginName + closeRawComponent(majorUpdateAvailableColor);
 
                     if (pluginData.latestVersion().map(Version::hasWarningTags).orElse(false)) {
                         name += "<hover:show_text:This version is marked as potentially unsafe for your server version>"
-                            + configManager.getMessage("major-update-available-color", "<#ff6969>")
-                            + "*"
+                            + majorUpdateAvailableColor + "*" + closeRawComponent(majorUpdateAvailableColor)
                             + "</hover>";
                     }
 
                     return name;
                 } else if (versionDifference.equals(VersionDifference.MINOR) || versionDifference.equals(VersionDifference.PATCH) || versionDifference.equals(VersionDifference.BUILD)) {
-                    String name = configManager.getMessage("update-available-color", "<#ffda54>")
-                        + pluginName;
+                    String updateAvailableColor = configManager.getMessage("update-available-color", "<#ffda54>");
+                    String name = updateAvailableColor + pluginName + closeRawComponent(updateAvailableColor);
 
                     List<String> warningTags = pluginData.latestVersion()
                         .map(Version::warningTags)
                         .orElse(Collections.emptyList());
                     if (!warningTags.isEmpty()) {
+                        String majorUpdateAvailableColor = configManager.getMessage("major-update-available-color", "<#ff6969>");
                         String warningTagsStr = String.join("\n", warningTags);
                         name += "<hover:show_text:" + warningTagsStr + ">"
-                            + configManager.getMessage("major-update-available-color", "<#ff6969>")
-                            + "*"
+                            + majorUpdateAvailableColor + "*" + closeRawComponent(majorUpdateAvailableColor)
                             + "</hover>";
                     }
 
                     return name;
                 } else {
-                    return configManager.getMessage("latest-version-color", "<#b7faa2>")
-                        + pluginName;
+                    String latestVersionColor = configManager.getMessage("latest-version-color", "<#b7faa2>");
+                    return latestVersionColor + pluginName + closeRawComponent(latestVersionColor);
                 }
             })
             .toList();
 
         if (!plugins.isEmpty()) {
-            return "<white>Registered Plugins (%s):\n%s".formatted(plugins.size(), String.join("<gray>, ", plugins));
+            return "<white>Registered Plugins (%s):</white>\n%s".formatted(plugins.size(), String.join("<gray>,</gray> ", plugins));
         } else {
             return "<#ff6969>Could not find any registered plugins in PluginUpdater";
         }
@@ -95,25 +94,27 @@ public record UpdatesCommand(UpdaterImpl<?> updater) implements OrphanCommand {
                 .orElse("");
 
             Version latestVersion = pluginData.latestVersion().orElseThrow();
-            String message = "%s<white>%s: <gray>%s <white>-> %s%s"
+            String updateColor = versionDifference.equals(VersionDifference.MAJOR) ? majorUpdateAvailableColor : updateAvailableColor;
+            String message = "%s<white>%s: <gray>%s</gray> -> %s%s%s%s</white>"
                 .formatted(
                     interactComponent,
                     pluginData.pluginName(),
                     pluginData.currentVersion().rawVersionString(),
-                    versionDifference.equals(VersionDifference.MAJOR) ? majorUpdateAvailableColor : updateAvailableColor,
-                    pluginData.latestVersion().orElseThrow().rawVersionString()
+                    updateColor,
+                    pluginData.latestVersion().orElseThrow().rawVersionString(),
+                    closeRawComponent(updateColor),
+                    !interactComponent.isBlank() ? "</interact>" : ""
                 );
 
             if (latestVersion.hasWarningTags()) {
                 String warningTags = String.join("\n", latestVersion.warningTags());
                 message += "<hover:show_text:" + warningTags + ">"
-                    + majorUpdateAvailableColor
-                    + "*"
+                    + majorUpdateAvailableColor + "*" + closeRawComponent(majorUpdateAvailableColor)
                     + "</hover>";
             }
 
             if (pluginData.isAlreadyDownloaded()) {
-                message += latestVersionColor + " ᴅᴏᴡɴʟᴏᴀᴅᴇᴅ";
+                message += latestVersionColor + " ᴅᴏᴡɴʟᴏᴀᴅᴇᴅ" + closeRawComponent(latestVersionColor);
             }
 
             plugins.add(message);
@@ -124,5 +125,9 @@ public record UpdatesCommand(UpdaterImpl<?> updater) implements OrphanCommand {
         } else {
             return "<#ff6969>No updates found";
         }
+    }
+
+    private static String closeRawComponent(String rawComponent) {
+        return rawComponent.replace("<", "</");
     }
 }

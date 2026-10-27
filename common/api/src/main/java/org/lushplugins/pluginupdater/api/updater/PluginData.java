@@ -215,6 +215,9 @@ public class PluginData {
         } catch (IOException e) {
             UpdaterConstants.LOGGER.error("Failed to download update for plugin '{}'.", this.pluginName, e);
             return false;
+        } catch (RuntimeException e) {
+            UpdaterConstants.LOGGER.error("Failed to prepare or download update for plugin '{}'.", this.pluginName, e);
+            return false;
         }
     }
 

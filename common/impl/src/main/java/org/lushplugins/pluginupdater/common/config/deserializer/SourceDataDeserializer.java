@@ -71,13 +71,14 @@ public class SourceDataDeserializer {
 
         List<String> releaseChannels;
         if (ConfigUtil.isOfType(config, "channels", String.class)) {
-            releaseChannels = Collections.singletonList(config.getOrElse("channels", ModrinthSource.ReleaseChannel.RELEASE).toLowerCase());
+            String channel = config.getOrElse("channels", ModrinthSource.ReleaseChannel.RELEASE).toLowerCase();
+            releaseChannels = channel.equals("all") ? ModrinthSource.ReleaseChannel.ALL : Collections.singletonList(channel);
         } else if (ConfigUtil.isOfType(config, "channels", List.class)) {
             releaseChannels = config.<List<String>>get("channels").stream()
                 .map(String::toLowerCase)
                 .toList();
         } else {
-            releaseChannels = ModrinthSource.ReleaseChannel.ALL;
+            releaseChannels = Collections.singletonList(ModrinthSource.ReleaseChannel.RELEASE);
         }
 
         return ModrinthSource.Data.builder()

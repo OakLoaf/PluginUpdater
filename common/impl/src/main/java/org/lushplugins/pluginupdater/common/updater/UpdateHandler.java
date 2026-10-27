@@ -22,7 +22,7 @@ public class UpdateHandler<T> {
         this.updater = updater;
     }
 
-    public ScheduledExecutorService getThreads() {
+    public ScheduledExecutorService scheduler() {
         return threads;
     }
 
@@ -57,6 +57,10 @@ public class UpdateHandler<T> {
         ProcessingData processingData = new ProcessingData(updater, pluginName, ProcessingData.State.UPDATE_CHECK);
         queue(processingData);
         return processingData;
+    }
+
+    public void queueUpdateChecks(Collection<String> pluginNames) {
+        pluginNames.forEach(this::queueUpdateCheck);
     }
 
     public ProcessingData queueDownload(String pluginName) {
@@ -121,6 +125,9 @@ public class UpdateHandler<T> {
                         if (pluginData.downloadUpdate(updater.updaterPlugin().getDownloadDir())) {
                             pluginData.versionDifference(VersionDifference.UNKNOWN);
                             pluginData.setAlreadyDownloaded(true);
+
+                            updater.config().getNotifiers().forEach(notifier -> notifier.notifyDownload(pluginData));
+                            
                             processingData.getFuture().complete(true);
                             break;
                         } else {

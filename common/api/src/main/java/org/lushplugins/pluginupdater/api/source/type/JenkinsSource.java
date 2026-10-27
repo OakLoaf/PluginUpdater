@@ -70,11 +70,12 @@ public class JenkinsSource implements Source {
                 .formatted(jenkinsData.artifactName())));
 
         String fileName = artifactJson.get("fileName").getAsString();
+        String relativePath = artifactJson.get("relativePath").getAsString();
         return DownloadableRelease.builder()
             .pluginData(pluginData)
             .endpoint(sourceData.endpoint())
-            .downloadUrl("%s/job/%s/lastSuccessfulBuild/artifact/artifacts/%s"
-                .formatted(jenkinsData.url(), jenkinsData.job(), fileName))
+            .downloadUrl("%s/job/%s/lastSuccessfulBuild/artifact/%s"
+                .formatted(jenkinsData.url(), jenkinsData.job(), relativePath))
             .jarName(fileName)
             .build();
     }

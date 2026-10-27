@@ -5,13 +5,13 @@ plugins {
 }
 
 dependencies {
-    compileOnly("com.velocitypowered:velocity-api:4.1.1")
-    annotationProcessor("com.velocitypowered:velocity-api:4.1.1")
+    compileOnly("com.velocitypowered:velocity-api:4.3.0")
+    annotationProcessor("com.velocitypowered:velocity-api:4.3.0")
 
     implementation(project(":common:impl"))
     implementation(project(":platform:velocity-api"))
-    implementation("io.github.revxrsal:lamp.velocity:4.0.0-rc.18")
-    implementation("io.github.revxrsal:lamp.brigadier:4.0.0-rc.18")
+    implementation("io.github.revxrsal:lamp.velocity:4.0.0")
+    implementation("io.github.revxrsal:lamp.brigadier:4.0.0")
 
     testImplementation(project(":tests:common-plugins-test"))
     testImplementation("org.junit.jupiter:junit-jupiter:6.1.3")
