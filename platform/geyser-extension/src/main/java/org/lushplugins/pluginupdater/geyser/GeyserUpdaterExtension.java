@@ -4,7 +4,7 @@ import net.kyori.adventure.text.logger.slf4j.ComponentLogger;
 import org.geysermc.event.subscribe.Subscribe;
 import org.geysermc.geyser.api.GeyserApi;
 import org.geysermc.geyser.api.connection.GeyserConnection;
-import org.geysermc.geyser.api.event.lifecycle.GeyserPostInitializeEvent;
+import org.geysermc.geyser.api.event.lifecycle.GeyserPreInitializeEvent;
 import org.geysermc.geyser.api.event.lifecycle.GeyserShutdownEvent;
 import org.geysermc.geyser.api.extension.Extension;
 import org.lushplugins.pluginupdater.api.updater.PluginInfo;
@@ -41,7 +41,7 @@ public class GeyserUpdaterExtension implements UpdaterPlugin, Extension {
     }
 
     @Subscribe
-    public void onPostInitialize(GeyserPostInitializeEvent event) {
+    public void onPreInitialize(GeyserPreInitializeEvent event) {
         DownloadLogger.setLogFile(dataFolder().resolve("downloads.log").toFile());
         GeyserUpdaterPlatform platform = new GeyserUpdaterPlatform();
         this.updater = new UpdaterImpl<>(
