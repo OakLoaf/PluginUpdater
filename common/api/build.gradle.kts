@@ -16,7 +16,7 @@ sourceSets {
 
 dependencies {
     api("com.google.guava:guava:33.7.2-jre")
-    api("com.google.code.gson:gson:2.14.0")
+    api("com.google.code.gson:gson:2.15.0")
     api("net.kyori:adventure-text-logger-slf4j:5.2.0")
     api("org.slf4j:slf4j-api:2.0.20")
     compileOnlyApi("org.jetbrains:annotations:26.1.0")
