@@ -8,7 +8,7 @@ dependencies {
 
     implementation(project(":common:impl"))
     implementation(project(":platform:geyser-api"))
-    implementation("io.github.revxrsal:lamp.geyser:4.0.0")
+    implementation("io.github.revxrsal:lamp.geyser:4.0.1")
 
     testImplementation(project(":tests:common-plugins-test"))
     testImplementation("org.junit.jupiter:junit-jupiter:6.1.3")
