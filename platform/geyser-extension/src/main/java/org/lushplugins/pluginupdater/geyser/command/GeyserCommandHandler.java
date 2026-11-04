@@ -19,16 +19,6 @@ public class GeyserCommandHandler implements CommandHandler {
     }
 
     @Override
-    public String getUpdaterCommandName() {
-        return "geyserupdater";
-    }
-
-    @Override
-    public String getUpdatesCommandName() {
-        return "geyserupdates";
-    }
-
-    @Override
     public Lamp.Builder<?> prepareLamp() {
         return GeyserLamp.builder(instance)
             .defaultMessageSender((actor, rawMessage) -> {
